@@ -596,7 +596,7 @@ async function aGround(lat,lon){if(!BAY||!BAY.low)return {kind:'none',zone:aZone
   const zone=aZoneRule(lat,lon),tp=BAY.topo;
   if(tp&&tp.light){try{const d=await aPx(tp.light,tp,lat,lon);if(d&&d[3]>127)return {kind:'high',zone}}catch(e){}}
   return {kind:'none',zone}}
-function aShort(r){const a=r.address||{},parts=[];if(r.name)parts.push(r.name);const st=[a.house_number,a.road].filter(Boolean).join(' ');if(st&&st!==r.name)parts.push(st);
+function aShort(r){const a=r.address||{},parts=[];if(r.name)parts.push(r.name);const st=a.road?[a.house_number,a.road].filter(Boolean).join(' '):'';if(st&&st!==r.name)parts.push(st);
   const city=a.city||a.town||a.village||a.hamlet||a.suburb;if(city&&!parts.includes(city))parts.push(city);return parts.length?parts.slice(0,3).join(', '):String(r.display_name||'').split(',').slice(0,3).join(',')}
 function aMsg(t){const o=document.getElementById('addro');o.hidden=!t;o.textContent=t||''}
 function aFail(t){if(ADDR){ADDR=null;drawMap()}aMsg(t);document.getElementById('addrx').hidden=!document.getElementById('addrq').value}
@@ -607,7 +607,8 @@ function addrRead(){if(!ADDR)return;const o=document.getElementById('addro');if(
   else t+='No ground height for this exact spot; it may be over water. ';
   if(w==null)t+='Bay levels are still loading.';
   else{t+=`At ${lab(sel)} the bay near ${ZNM[z]||'here'} is forecast at ${w.toFixed(1)} ft`;
-    if(G.kind==='low'){const d=w-G.g;t+=d>0?`, so this spot sits about ${d.toFixed(1)} ft below the water level. The shoreline and seawalls are what keep it dry.`:`, so this spot sits about ${(-d).toFixed(1)} ft above it.`}
+    if(G.kind==='low'&&G.c===0){const d=w-4;t+=d>0?`, so this spot sits more than ${d.toFixed(1)} ft below the water level. The shoreline and seawalls are what keep it dry.`:'.'}
+    else if(G.kind==='low'){const d=w-G.g;t+=d>0?`, so this spot sits about ${d.toFixed(1)} ft below the water level. The shoreline and seawalls are what keep it dry.`:`, so this spot sits about ${(-d).toFixed(1)} ft above it.`}
     else if(G.kind==='high')t+=', well below this spot.';else t+='.'}
   o.hidden=false;o.innerHTML=t}
 function aShow(r){const lat=+r.lat,lon=+r.lon;
