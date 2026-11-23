@@ -340,6 +340,7 @@ def wetlands():
          f'way["natural"="wetland"]({bb});relation["natural"="wetland"]({bb});'
          f');out geom;')
     data = None
+    cache = os.path.join(os.path.dirname(os.path.abspath(__file__)), "cache", "osm_wet.wkb.gz")
     for url in OVERPASS:
         try:
             r = get(url, params={"data": q}, timeout=240, tries=2)
@@ -348,7 +349,13 @@ def wetlands():
         except Exception as ex:
             log("overpass fail", url, ex)
     if data is None:
-        raise RuntimeError("all Overpass endpoints failed")
+        if os.path.exists(cache):
+            import gzip
+            from shapely import wkb
+            G["wet_ll"] = wkb.loads(gzip.open(cache, "rb").read())
+            log("Overpass down; using cached OSM water and marsh from", time.ctime(os.path.getmtime(cache)))
+            return
+        raise RuntimeError("all Overpass endpoints failed and no cache")
     els = data.get("elements", [])
     # Open water and salt ponds are always water. Marsh is only dropped when it is tidal, i.e. it
     # touches open bay water; diked wetlands behind levees (like the OAK infield) stay as ground.
@@ -358,8 +365,17 @@ def wetlands():
     bay = G.get("bay_ll")
     near = bay.buffer(0.0002) if bay is not None else None
     tidal = [g for g in marsh if near is not None and g.intersects(near)]
-    wet = unary_union(water + tidal).intersection(BBOX)
+    wet = make_valid(unary_union(water + tidal).intersection(BBOX).simplify(0.00003))
     G["wet_ll"] = wet
+    try:
+        import gzip
+        from shapely import wkb
+        os.makedirs(os.path.dirname(cache), exist_ok=True)
+        with gzip.open(cache, "wb") as fh:
+            fh.write(wkb.dumps(wet))
+        log("cached OSM water and marsh", os.path.getsize(cache))
+    except Exception as ex:
+        log("cache write failed", ex)
     log("water/salt pond polygons", len(water), "area", round(unary_union(water).area, 5) if water else 0,
         "marsh", len(marsh), "tidal marsh kept out", len(tidal), "area", round(unary_union(tidal).area, 5) if tidal else 0,
         "total deg2", round(wet.area, 5))
