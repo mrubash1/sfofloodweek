@@ -156,6 +156,15 @@ html:not(.nolow) .mapw.gl .landp,html:not(.nolow) .mapw.gl .sfop{fill:none;strok
 .mb{position:absolute;left:12px;bottom:12px;display:flex;gap:8px}.mbtn{padding:0 14px;font-size:14px}.mbtn[aria-pressed=true]{background:var(--ink);color:var(--panel)}
 .pop{position:absolute;left:12px;bottom:62px;background:var(--chip);border:1px solid var(--line);border-radius:10px;padding:10px 12px;font-size:13px;width:min(280px,calc(100% - 24px));box-shadow:0 2px 10px rgba(0,0,0,.2);z-index:2}
 .pop[hidden]{display:none}.pop div{display:flex;align-items:center;gap:8px;margin:4px 0}.pop i{flex:none;width:14px;height:10px;border-radius:3px}
+.addr{flex:none;padding:10px 14px 9px;border-top:1px solid var(--line);background:var(--panel)}
+.addrr{display:flex;gap:8px;align-items:center}
+.addr input{flex:1 1 auto;min-width:0;height:40px;padding:0 12px;border:1px solid var(--line);border-radius:10px;background:var(--chip);color:var(--ink);font:inherit;font-size:16px}
+.addr input::placeholder{color:var(--mute)}
+.addrb{flex:none;height:40px;padding:0 16px;border:0;border-radius:10px;background:var(--ink);color:var(--panel);font-weight:600;font-size:15px;cursor:pointer}.addrb:disabled{opacity:.5;cursor:default}
+.addrx{flex:none;width:36px;height:40px;border:0;background:none;color:var(--mute);font-size:22px;line-height:1;cursor:pointer;padding:0}
+.addro{margin:8px 0 0;font-size:14px;line-height:1.45}.addro b{font-weight:700}
+.addra{margin:4px 0 0;font-size:11px;color:var(--mute)}
+.apin path{fill:var(--ink);stroke:var(--panel);stroke-width:2}.apin circle{fill:var(--panel)}
 .kshort{display:none}.attr{position:absolute;right:8px;bottom:3px;font-size:11px;color:var(--mute)}
 @media (prefers-reduced-motion:reduce){details.fold>summary::after,.kr,.shore,.bshore,.mk{transition:none}.ring{display:none}}
 /* narrow desktop / tablet */
@@ -280,6 +289,11 @@ html:not(.nolow) .mapw.gl .landp,html:not(.nolow) .mapw.gl .sfop{fill:none;strok
   <div class="attr">US Census, OSM, FAA</div>
 </section>
 <div class="maplg"><div class="lut lut2" id="lut2"></div><div class="lgd" id="lgd"></div></div>
+<form class="addr" id="addr" role="search" aria-label="Check an address" autocomplete="off">
+  <div class="addrr"><input id="addrq" type="text" enterkeyhint="search" placeholder="Check an address, e.g. 1 Ferry Building, SF" aria-label="Address to check"><button type="button" class="addrx" id="addrx" aria-label="Clear address" hidden>&times;</button><button type="submit" class="addrb" id="addrb">Find</button></div>
+  <p class="addro" id="addro" aria-live="polite" hidden></p>
+  <p class="addra">Search: OpenStreetMap Nominatim</p>
+</form>
 </div>
 
 </main>
@@ -381,7 +395,7 @@ function update(){
   document.getElementById('condh').textContent=`At ${lab(sel)}`;
   for(const tr of document.querySelectorAll('#tbl tbody tr'))tr.classList.toggle('on',Math.abs(+tr.dataset.t-sel)<1.5*H);
   
-  moveCursor();paintMap(c);
+  moveCursor();paintMap(c);addrRead();
 }
 
 /* table */
@@ -497,6 +511,7 @@ function drawMap(){
   for(const [n,a,b] of PLC){const [x,y]=S(...P(a,b));const r=ppu<0.2?6:13;o+=`<circle class="ring" cx="${x}" cy="${y}" r="${r}" stroke="${MC(cur)}"/><circle class="mk" cx="${x}" cy="${y}" r="${r}" fill="${MC(cur)}"><title>${n}</title></circle>`+(ppu<0.2?'':`<text class="mkt" x="${x}" y="${y+4.5}" text-anchor="middle">${n}</text>`)}
   const ppm=k/11.12,mi=[0.25,0.5,1,2,4].filter(v=>v*1609.34*ppm<=Math.min(150,W*.35)).pop()||0.25,bl=mi*1609.34*ppm,ph=innerWidth<760,sx=ph?14:W-bl-14,sy=ph?Hh-66:Hh-22;
   o+=`<path class="scale" d="M${sx} ${sy-6}V${sy}H${sx+bl}V${sy-6}"/><text class="scalet" x="${sx+bl/2}" y="${sy-8}" text-anchor="middle">${mi<1?(mi===0.5?'½':'¼'):mi} mi</text>`;
+  if(ADDR){const [x,y]=S(...P(ADDR.lat,ADDR.lon));if(x>-20&&x<W+20&&y>-10&&y<Hh+40)o+=`<g class="apin" transform="translate(${x.toFixed(1)} ${y.toFixed(1)})"><title>${esc(ADDR.name)}</title><path d="M0 0C-2-6-11-11-11-19a11 11 0 1 1 22 0C11-11 2-6 0 0Z"/><circle cy="-19" r="4.2"/></g>`}
   gO.innerHTML=o;msvg.classList.toggle('zoomed',view.k>1.3);paintMap(cur);
 }
 function paintMap(c){cur=c;const aOP=lvl(sel)-OPN,aSF=sfLvl(sel)+SFN,hOP=heat(aOP),hSF=heat(aSF),WZ=zlAll(sel);if(lowOn&&!GLR)lowPaint(WZ);if(GLR)GLR.draw();for(const e of gG.querySelectorAll('#bshore path')){const v=WZ[e.dataset.z];if(v!=null)e.style.stroke=heat(v)}{const fs=pctBelow(BAY&&BAY.stats&&BAY.stats.sfo,aOP),fo=pctBelow(BAY&&BAY.stats&&BAY.stats.oak,WZ.ala),pc=v=>Math.round(v*100);document.getElementById('rLow').textContent=fs==null?'Loading ground heights…':`SFO: ${pc(fs)}% of its ground sits below the water level right now${fo!=null?`. OAK: ${pc(fo)}%`:''}. The shoreline and seawalls are what keep it dry.`}const sh=gG.querySelector('#shore');if(sh){sh.style.stroke=hOP;sh.style.opacity=wallOn?.3:1}
@@ -534,7 +549,7 @@ Promise.all([fetch(DB+'data/bay.json').then(r=>r.json()),fetch(DB+'data/tides.js
   gG.querySelector('#bshore').innerHTML=Object.entries(b.shore||{}).map(([z,d])=>`<path class="shore2" data-z="${z}" d="${d}"/>`).join('');
   const tp=b.topo;if(GLR){const r={x:tp.x,y:tp.y,w:tp.w,h:tp.h};const ld=[GLR.load('topo_light',DB+tp.light,'rgba',r),GLR.load('topo_dark',DB+tp.dark,'rgba',r),...(tp.mask?[GLR.load('mask',DB+tp.mask.file,'l',{x:tp.mask.x,y:tp.mask.y,w:tp.mask.w,h:tp.mask.h})]:[]),...Object.entries(b.low.zones).map(([z,o])=>GLR.load('low_'+z,DB+o.file,'la',{x:o.x,y:o.y,w:o.w,h:o.h}))];for(const q of ld)q.then(()=>GLR.draw(),e=>console.warn('raster',e))}else{topoSrc();for(const k of ['x','y'])topoImg.setAttribute(k,tp[k]);topoImg.setAttribute('width',tp.w);topoImg.setAttribute('height',tp.h);
   lowG.innerHTML=GLR?'':Object.entries(b.low.zones).map(([z,o])=>`<image href="${DB+o.file}" x="${o.x}" y="${o.y}" width="${o.w}" height="${o.h}" preserveAspectRatio="none" filter="url(#fz_${z})"/>`).join('');}
-  bayReady=true;for(const btn of document.querySelectorAll('.vw button'))btn.disabled=false;for(const z in zKey)delete zKey[z];paintMap(cur);drawMap()
+  bayReady=true;for(const btn of document.querySelectorAll('.vw button'))btn.disabled=false;for(const z in zKey)delete zKey[z];paintMap(cur);drawMap();addrRead()
 }).catch(e=>{console.warn('bay data',e);document.getElementById('rLow').textContent='Ground heights did not load.'});
 if(/[?&]bench\b/.test(location.search)){const wait=ms=>new Promise(r=>setTimeout(r,ms));
   const frames=async(ms,fn)=>{const ts=[];let run=true;const loop=t=>{ts.push(t);if(run)requestAnimationFrame(loop)};requestAnimationFrame(loop);const a=performance.now();while(performance.now()-a<ms){if(fn)fn();await wait(16)}run=false;await wait(50);const d=[];for(let i=1;i<ts.length;i++)d.push(ts[i]-ts[i-1]);d.sort((x,y)=>x-y);return `${(d.reduce((x,y)=>x+y,0)/d.length).toFixed(1)} avg, ${d[Math.floor(d.length*.95)].toFixed(1)} p95`};
@@ -562,6 +577,58 @@ function fitNames(){for(const r of document.querySelectorAll('#krows .kr')){r.cl
 const ro3=new ResizeObserver(()=>{fitNames();lutUpdate(...LA)});ro3.observe(document.getElementById('krows'));for(const L of LUTS)ro3.observe(L);
 const ro1=new ResizeObserver(drawChart);ro1.observe(csvg);
 const ro2=new ResizeObserver(()=>{if(homed&&fitted)view=VIEW[vmode]();drawMap()});ro2.observe(msvg);
+/* address lookup: OpenStreetMap Nominatim, only on submit */
+var ADDR=null;
+function esc(t){return String(t).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[c])}
+const ZNM={sf:'the SF waterfront',op:'SFO',ala:'Oakland and Alameda',rich:'Richmond',rwc:'Redwood City',coy:'Alviso'};
+const ACACHE=new Map(),PXC={};let aLast=0,aBusy=false;
+const inBox=(lat,lon,[la0,la1,lo0,lo1])=>lat>=la0&&lat<=la1&&lon>=lo0&&lon<=lo1;
+const TABBOX=[['sfo',[37.578,37.668,-122.455,-122.31]],['oak',[37.694,37.748,-122.262,-122.186]],['full',[37.568,37.817,-122.522,-122.343]]];
+const MAPBOX=[37.40,37.96,-122.56,-121.90];
+function aImg(f){return PXC[f]||(PXC[f]=new Promise((ok,no)=>{const i=new Image();i.onload=()=>ok(i);i.onerror=no;i.src=DB+f}))}
+async function aPx(f,r,lat,lon){const img=await aImg(f),[x,y]=P(lat,lon),iw=img.naturalWidth,ih=img.naturalHeight,u=Math.floor((x-r.x)/r.w*iw),v=Math.floor((y-r.y)/r.h*ih);
+  if(u<0||v<0||u>=iw||v>=ih)return null;const c=document.createElement('canvas');c.width=c.height=1;const g=c.getContext('2d',{willReadFrequently:true});g.imageSmoothingEnabled=false;g.drawImage(img,u,v,1,1,0,0,1,1);return g.getImageData(0,0,1,1).data}
+function aZoneRule(lat,lon){const [o0,o1,a0,a1]=[-122.53,-122.30403,37.564,37.816];if(lon>=o0&&lon<=o1&&lat>=a0&&lat<=a1)return lat<37.712&&lon>-122.46?'op':'sf';if(lon<-122.40&&lat<37.78)return 'sf';
+  const st=BAY&&BAY.stations;if(!st)return 'sf';const [x,y]=P(lat,lon);let best='sf',bd=1e18;for(const z of ZONES){const s=st[z];if(!s)continue;const [sx,sy]=P(s.lat,s.lon),d=(sx-x)**2+(sy-y)**2;if(d<bd){bd=d;best=z}}return best}
+async function aGround(lat,lon){if(!BAY||!BAY.low)return {kind:'none',zone:aZoneRule(lat,lon)};
+  for(const [z,o] of Object.entries(BAY.low.zones)){if(!o.file)continue;const [x,y]=P(lat,lon);if(x<o.x||y<o.y||x>o.x+o.w||y>o.y+o.h)continue;
+    try{const d=await aPx(o.file,o,lat,lon);if(d&&d[3]>127){const c=Math.floor(d[0]*42/255);if(c<41)return {kind:'low',zone:z,c,g:c===0?3.75:4.125+0.25*(c-1)}}}catch(e){}}
+  const zone=aZoneRule(lat,lon),tp=BAY.topo;
+  if(tp&&tp.light){try{const d=await aPx(tp.light,tp,lat,lon);if(d&&d[3]>127)return {kind:'high',zone}}catch(e){}}
+  return {kind:'none',zone}}
+function aShort(r){const a=r.address||{},parts=[];if(r.name)parts.push(r.name);const st=[a.house_number,a.road].filter(Boolean).join(' ');if(st&&st!==r.name)parts.push(st);
+  const city=a.city||a.town||a.village||a.hamlet||a.suburb;if(city&&!parts.includes(city))parts.push(city);return parts.length?parts.slice(0,3).join(', '):String(r.display_name||'').split(',').slice(0,3).join(',')}
+function aMsg(t){const o=document.getElementById('addro');o.hidden=!t;o.textContent=t||''}
+function aFail(t){if(ADDR){ADDR=null;drawMap()}aMsg(t);document.getElementById('addrx').hidden=!document.getElementById('addrq').value}
+function addrRead(){if(!ADDR)return;const o=document.getElementById('addro');if(!o)return;const z=ADDR.zone,w=bayReady?zl(z,sel):null,G=ADDR.ground;
+  let t=`<b>${esc(ADDR.name)}</b>. `;
+  if(G.kind==='low')t+=G.c===0?'Ground here is under about 4 ft (NAVD88). ':`Ground here is about ${G.g.toFixed(1)} ft (NAVD88). `;
+  else if(G.kind==='high')t+='Ground here sits above about 14 ft (NAVD88). ';
+  else t+='No ground height for this exact spot; it may be over water. ';
+  if(w==null)t+='Bay levels are still loading.';
+  else{t+=`At ${lab(sel)} the bay near ${ZNM[z]||'here'} is forecast at ${w.toFixed(1)} ft`;
+    if(G.kind==='low'){const d=w-G.g;t+=d>0?`, so this spot sits about ${d.toFixed(1)} ft below the water level. The shoreline and seawalls are what keep it dry.`:`, so this spot sits about ${(-d).toFixed(1)} ft above it.`}
+    else if(G.kind==='high')t+=', well below this spot.';else t+='.'}
+  o.hidden=false;o.innerHTML=t}
+function aShow(r){const lat=+r.lat,lon=+r.lon;
+  if(!isFinite(lat)||!isFinite(lon)||!inBox(lat,lon,MAPBOX)){aFail('That address is outside this map, which covers the bay from Richmond to San Jose.');return}
+  const name=aShort(r);aMsg('Checking ground height...');
+  aGround(lat,lon).then(ground=>{ADDR={lat,lon,name,zone:ground.zone,ground};
+    const tab=(TABBOX.find(([,b])=>inBox(lat,lon,b))||['bay'])[0];vmode=tab;setV(tab);setSlug(tab);
+    const [x,y]=P(lat,lon),ph=innerWidth<760,k=HOME().k;fitted=false;view={cx:x,cy:ph?y-msvg.clientHeight*0.2/(base().s*k):y,k};drawMap();addrRead();document.getElementById('addrx').hidden=false;
+    if(ph)document.getElementById('addr').scrollIntoView({block:'end',behavior:'smooth'})})}
+document.getElementById('addr').addEventListener('submit',async e=>{e.preventDefault();const inp=document.getElementById('addrq'),q=inp.value.trim();if(!q||aBusy)return;
+  const key=q.toLowerCase();if(innerWidth<760)inp.blur();
+  if(ACACHE.has(key)){const r=ACACHE.get(key);r?aShow(r):aFail('No match on this map for that address. Try adding the city.');return}
+  const btn=document.getElementById('addrb');aBusy=true;btn.disabled=true;aMsg('Looking up...');
+  try{const wait=1100-(Date.now()-aLast);if(wait>0)await new Promise(r=>setTimeout(r,wait));aLast=Date.now();
+    const u='https://nominatim.openstreetmap.org/search?format=jsonv2&limit=1&addressdetails=1&countrycodes=us&accept-language=en&viewbox=-122.56,37.96,-121.90,37.40&bounded=1&q='+encodeURIComponent(q);
+    const res=await fetch(u,{headers:{Accept:'application/json'}});if(!res.ok)throw new Error(res.status);const js=await res.json(),r=js&&js[0]||null;ACACHE.set(key,r);
+    if(r)aShow(r);else aFail('No match on this map for that address. Try adding the city.')}
+  catch(err){aFail("Address search isn't reachable right now. Try again in a moment.")}
+  finally{aBusy=false;btn.disabled=false}});
+document.getElementById('addrx').addEventListener('click',()=>{ADDR=null;const inp=document.getElementById('addrq');inp.value='';aMsg('');document.getElementById('addrx').hidden=true;drawMap();inp.focus()});
+document.getElementById('addrq').addEventListener('input',e=>{document.getElementById('addrx').hidden=!e.target.value&&!ADDR});
 table();update();
 }
 </script>
