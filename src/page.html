@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="When and how high the water gets at SFO and along the SF shoreline during the Thanksgiving week 2026 king tides and storm. Unofficial estimate from NOAA tide predictions and the NWS forecast.">
+<meta property="og:title" content="SFO flood week">
+<meta property="og:description" content="Hour by hour water levels at SFO, Pier 14 and Mission Creek, with a ground-height map of what sits below the water.">
+<title>SFO Flood Week</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Semi+Condensed:wght@500;600;700&family=Public+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+/* VOICE: plain and urgent, a field tool for one flood week; facts first, sources a tap away
+   IDEA: an airport departures board for water: one pinned bar says when and how high, a timeline below, the map below that
+   PICTURE: the full-width tide timeline with its scrubber, then the peninsula's shoreline colored by water height
+   COLOUR and TYPE: bay blue and sand land, teal bay-level line, yellow-to-red heat scale, blue rain; Barlow Semi Condensed + Public Sans
+   LAYOUT: header; sticky control bar (time, scenario, three water levels, scale); timeline band; map with details column (stacked on phones) */
+:root{color-scheme:light dark;
+--bg:light-dark(#f6f7f4,#0e1618);--panel:light-dark(#ffffff,#121c1f);--ink:light-dark(#111c20,#e6eef0);--mute:light-dark(#56656b,#9aabb1);
+--line:light-dark(#dde3e2,#24343a);--bay:light-dark(#c9e2ec,#0c2833);--land:light-dark(#f1f1ea,#1a2529);--landline:light-dark(#bfc9c3,#2e4046);
+--sfo:light-dark(#e0e5df,#22333a);--rwy:light-dark(#3a464a,#b6c5ca);--teal:light-dark(#0f9b78,#2cc79d);--tab:light-dark(#6c7a80,#8fa0a6);
+--rain:light-dark(#3a68d8,#6f97ff);--c0:light-dark(#e3e8e7,#23323a);--c1:#f2d35b;--c2:#f0a03c;--c3:#d8432b;--c4:#7a1530;--chip:light-dark(#ffffff,#1b282c)}
+:root{--t0:light-dark(#e6eedb,#1d2c26);--t1:light-dark(#dce8cc,#21322a);--t2:light-dark(#d1e0be,#24372c);--t3:light-dark(#c6d8b1,#283c2e);--t4:light-dark(#cfd4a3,#323f2d);--t5:light-dark(#d8cc95,#3d422e);--t6:light-dark(#d6bb83,#44412f);--t7:light-dark(#c9a370,#4b4532);--t8:light-dark(#b78c61,#534a37);--t9:light-dark(#a07656,#5b4f3c)}
+:root[data-theme=light]{color-scheme:light}:root[data-theme=dark]{color-scheme:dark}
+*{box-sizing:border-box;min-width:0}
+html,body{margin:0}
+body{background:var(--bg);color:var(--ink);font:16px/1.5 "Public Sans",system-ui,sans-serif;overflow-x:clip}
+h1,h2,.tlabel,.tlt,.kv b{font-family:"Barlow Semi Condensed","Arial Narrow",sans-serif}
+a{color:inherit;text-underline-offset:3px}
+button{font:inherit;color:inherit}
+button:focus-visible,input:focus-visible,tr:focus-visible,summary:focus-visible{outline:3px solid var(--c2);outline-offset:2px}
+.pad{padding-inline:max(2vw,14px)}
+.ft{background:var(--panel);border-top:1px solid var(--line);padding-block:16px 26px;font-size:14.5px}.ft p{margin:0 0 6px;max-width:760px}.ft .note{font-size:13px;color:var(--mute)}
+/* header */
+.hd{background:var(--panel);padding-block:10px 8px}
+.hdi{display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:2px 20px}
+.ttl{display:flex;flex-wrap:wrap;align-items:baseline;gap:0 12px}
+h1{font-size:clamp(24px,2.4vw,30px);line-height:1.1;margin:0;font-weight:700}
+.sub{color:var(--mute);font-size:14px}
+.warn{margin:0;font-size:12px;font-style:italic;color:var(--mute)}.warn b{color:var(--ink)}
+/* sticky bar */
+.sbar{position:sticky;top:0;z-index:30;background:var(--panel);border-block:1px solid var(--line);box-shadow:0 3px 8px rgba(0,0,0,.06)}
+.sbi{display:grid;grid-template-columns:auto minmax(0,1fr) clamp(190px,18vw,270px);gap:8px 22px;align-items:center;padding-block:8px}
+.ctl{display:flex;align-items:center;gap:6px}
+.play{width:44px;height:44px;border-radius:50%;border:0;background:var(--ink);color:var(--panel);cursor:pointer;display:grid;place-items:center;flex:none}
+.skip{width:40px;height:40px;border-radius:50%;border:1.5px solid var(--line);background:var(--panel);cursor:pointer;display:grid;place-items:center;flex:none}
+.tlabel{font-size:24px;font-weight:700;white-space:nowrap;min-width:6.9em;text-align:center;font-variant-numeric:tabular-nums}
+.seg{display:flex;border:1.5px solid var(--line);border-radius:22px;overflow:hidden;flex:none;margin-left:6px}
+.seg button{min-height:40px;padding:0 14px;border:0;background:none;cursor:pointer;font-weight:600;font-size:15px;white-space:nowrap}
+.seg button[aria-pressed=true]{background:var(--ink);color:var(--panel)}
+.lv{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:4px 14px}
+.kr{display:flex;flex-direction:column;line-height:1.2;border-left:4px solid var(--c0);padding-left:9px;transition:border-color .2s}
+.kn{font-size:13px;color:var(--mute);white-space:nowrap;overflow:hidden}.kn .sn{display:none}.kr.short .ln{display:none}.kr.short .sn{display:inline}
+.kv{display:flex;align-items:baseline;gap:6px;white-space:nowrap;line-height:1.15}.kv b{font-size:22px;font-weight:700}.kf{color:var(--mute);white-space:nowrap}.kfo{color:var(--ink)}.kr.wrap .ksep{display:none}.kr.wrap .kf{display:block}.kr{gap:1px}
+.ko{color:var(--c3);font-weight:700;font-size:13px}
+.lut .lcap{font-size:11.5px;color:var(--mute)}
+.lbar{position:relative;margin-top:28px;margin-bottom:16px}
+.lbar .gr{height:10px;border-radius:3px}
+.lbar .tk{position:absolute;top:12px;transform:translateX(-50%);font-size:11px;color:var(--mute);white-space:nowrap}
+.mlab{position:absolute;font:700 11px "Public Sans",sans-serif;white-space:nowrap;color:var(--ink);line-height:13px}.ml1{top:-28px}.ml2{top:-15px}
+.mp{position:absolute;border-left:1.5px solid var(--ink);margin-left:-.75px}.mp1{top:-15px;height:25px}.mp2{top:-2px;height:12px}
+/* timeline */
+.tline{background:var(--panel);border-bottom:1px solid var(--line);padding-block:8px 6px}
+.tlh{display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:2px 16px}
+.tlt{font-size:19px;font-weight:700}
+.key{display:flex;flex-wrap:wrap;gap:2px 14px;font-size:13px;color:var(--mute)}
+.key i{display:inline-block;width:16px;height:3px;margin-right:5px;vertical-align:middle;border-radius:2px}
+input[type=range]{display:block;width:100%;margin:6px 0 0;accent-color:var(--ink);height:28px;cursor:pointer}
+.fig{position:relative;height:clamp(300px,42vh,440px)}.fig>svg{position:absolute;inset:0;width:100%;height:100%;touch-action:pan-y;-webkit-user-select:none;user-select:none}
+.ax{fill:var(--mute);font:12px "Public Sans",sans-serif}.axb{fill:var(--ink);font:600 12px "Public Sans",sans-serif}.axh{fill:var(--mute);font:11px "Public Sans",sans-serif}
+.thr{stroke:var(--c3);stroke-width:1}.thrl{fill:var(--ink);font:600 12px "Barlow Semi Condensed",sans-serif;paint-order:stroke;stroke:var(--panel);stroke-width:3px}
+.grid{stroke:var(--line)}
+/* main: map + details */
+.mainx{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);align-items:start}
+.mapcol{position:sticky;top:var(--sbh,90px);height:calc(100dvh - var(--sbh,90px) - var(--hoff,0px));min-height:460px;display:flex;flex-direction:column;border-left:1px solid var(--line);background:var(--panel)}
+.mapw{position:relative;flex:1 1 auto;min-height:0;background:var(--bay);overflow:hidden}
+.maplg{flex:none;display:flex;flex-wrap:wrap;gap:8px 20px;padding:8px 14px 9px;border-top:1px solid var(--line)}
+.lut2{display:none;flex:1 1 100%}
+.lgd{flex:1 1 auto;display:flex;flex-wrap:wrap;align-items:flex-start;gap:4px 22px;font-size:12.5px}.nolow .lgd{display:none}
+.lga{width:210px;flex:none}.lgt{font-size:11.5px;color:var(--mute);margin-bottom:3px}
+.tbar{display:flex;height:9px;border-radius:2px;overflow:hidden}.tbar i{flex:1}
+.tticks{position:relative;height:13px;font-size:10.5px;color:var(--mute)}.tticks span{position:absolute;top:1px;transform:translateX(-50%);white-space:nowrap}
+.lgr{display:flex;flex-wrap:wrap;gap:3px 14px;padding-top:15px}.lgr span{display:flex;align-items:center;gap:5px;white-space:nowrap}.lgr i{width:14px;height:11px;border-radius:2px;flex:none}
+.lgn2{flex-basis:100%;font-size:11.5px;color:var(--mute)}
+@media(min-width:760px){.nolow .maplg{display:none}}
+.side{background:var(--panel)}
+.blk{padding:14px 16px;border-bottom:1px solid var(--line)}
+.cond h2{font-size:20px;margin:0 0 6px}
+.read{display:grid;grid-template-columns:auto minmax(0,1fr);gap:4px 12px;margin:0;font-size:15px}
+.read dt{color:var(--mute);font-weight:600}.read dd{margin:0}.read [hidden]{display:none}
+.sw{display:inline-block;width:12px;height:12px;border-radius:2px;margin-right:6px;vertical-align:-1px}
+.read .num{font-weight:700}
+.blk p{margin:0 0 10px;font-size:15px}
+.note{font-size:13px;color:var(--mute)}
+table{width:100%;border-collapse:collapse;font-size:14px}
+th{text-align:right;color:var(--mute);font-weight:600;font-size:12px;padding:6px 5px;border-bottom:1.5px solid var(--ink)}
+td{text-align:right;padding:8px 5px;border-bottom:1px solid var(--line);white-space:nowrap;font-variant-numeric:tabular-nums}
+th:first-child,td:first-child{text-align:left}
+tbody tr{cursor:pointer}tbody tr:hover{background:var(--bg)}tr.on td{font-weight:700}
+.tw{overflow-x:auto}
+.lvl i{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:5px}
+#tbl th:nth-child(3),#tbl td:nth-child(3){display:none}
+ol.places{list-style:none;padding:0;margin:0}
+ol.places li{display:grid;grid-template-columns:30px minmax(0,1fr);gap:10px;margin-bottom:12px;font-size:15px}
+.pin{width:28px;height:28px;border-radius:50%;display:grid;place-items:center;color:#fff;font:700 14px "Public Sans",sans-serif;background:var(--tab)}
+ul{padding-left:18px;margin:0 0 6px}li{margin-bottom:5px}
+.src li{font-size:14px;color:var(--mute)}
+details.fold>summary{list-style:none;cursor:pointer;display:grid;grid-template-columns:minmax(0,1fr) 24px;column-gap:8px;min-height:44px;align-items:center}
+details.fold>summary::-webkit-details-marker{display:none}
+details.fold>summary::after{content:"";grid-column:2;grid-row:1/3;width:9px;height:9px;border-right:2px solid var(--mute);border-bottom:2px solid var(--mute);transform:rotate(45deg);justify-self:center;transition:transform .15s}
+details.fold[open]>summary::after{transform:rotate(-135deg)}
+details.fold>summary .st{font:700 18px/1.2 "Barlow Semi Condensed","Arial Narrow",sans-serif}
+details.fold>summary .sg{grid-column:1;font-size:13px;color:var(--mute)}
+details.fold[open]>summary{margin-bottom:10px}
+/* map layers */
+.mapw>svg{position:absolute;inset:0;width:100%;height:100%;cursor:grab;touch-action:pan-y;-webkit-user-select:none;user-select:none}
+.mapw>svg.zoomed{touch-action:none}
+.dim rect{fill:var(--panel);opacity:.35}
+.landp{fill:var(--land);stroke:var(--landline);stroke-width:1;vector-effect:non-scaling-stroke}
+.sfop{fill:var(--sfo);stroke:var(--landline);vector-effect:non-scaling-stroke}
+.rw{stroke:var(--rwy)}
+.hw{fill:none;stroke:var(--ink);opacity:.45;stroke-width:2.5;vector-effect:non-scaling-stroke;stroke-linecap:round}
+.bshore{fill:none;stroke-width:3;vector-effect:non-scaling-stroke;stroke-linecap:round;stroke-linejoin:round;transition:stroke .25s}
+.shore{fill:none;stroke-width:5;vector-effect:non-scaling-stroke;stroke-linecap:round;stroke-linejoin:round;transition:stroke .25s}
+.ml{fill:var(--mute);font:600 12px "Public Sans",sans-serif;paint-order:stroke;stroke:var(--land);stroke-width:3px}
+.mlw{fill:light-dark(#3d7b92,#7fbfd6);font:italic 600 14px "Public Sans",sans-serif}
+.mbig{fill:var(--mute);font:700 20px "Barlow Semi Condensed",sans-serif;opacity:.7}
+.shield{fill:#fff;stroke:#333;stroke-width:1.5}.shieldt{fill:#111;font:700 11px "Public Sans",sans-serif}
+.mk{stroke:#fff;stroke-width:2;transition:fill .25s}.mkt{fill:#fff;font:700 13px "Public Sans",sans-serif;pointer-events:none}
+.ring{fill:none;stroke-width:2;transform-box:fill-box;transform-origin:center;animation:ping 2.2s ease-out infinite}
+@keyframes ping{0%{transform:scale(1);opacity:.9}100%{transform:scale(2.4);opacity:0}}
+.gauge{fill:var(--ink);stroke:var(--land);stroke-width:2}
+.wd{stroke:var(--land);stroke-width:1.5}
+.scale{stroke:var(--ink);stroke-width:2;fill:none}.scalet{fill:var(--ink);font:600 12px "Public Sans",sans-serif;paint-order:stroke;stroke:var(--land);stroke-width:3px}
+.mbtn,.tools button{height:40px;border-radius:10px;border:1px solid var(--line);background:var(--chip);cursor:pointer;font-weight:600;box-shadow:0 1px 3px rgba(0,0,0,.15)}
+.tools{position:absolute;right:12px;top:12px;display:flex;flex-direction:column;gap:6px}.tools button{width:40px;font-size:20px}
+.vw{position:absolute;left:12px;top:12px;display:flex;border:1px solid var(--line);border-radius:20px;overflow:hidden;background:var(--chip);box-shadow:0 1px 3px rgba(0,0,0,.15)}
+.vw button{min-height:40px;padding:0 14px;border:0;background:none;cursor:pointer;font-weight:600;font-size:14px}.vw button[aria-pressed=true]{background:var(--ink);color:var(--panel)}
+.mb{position:absolute;left:12px;bottom:12px;display:flex;gap:8px}.mbtn{padding:0 14px;font-size:14px}.mbtn[aria-pressed=true]{background:var(--ink);color:var(--panel)}
+.pop{position:absolute;left:12px;bottom:62px;background:var(--chip);border:1px solid var(--line);border-radius:10px;padding:10px 12px;font-size:13px;width:min(280px,calc(100% - 24px));box-shadow:0 2px 10px rgba(0,0,0,.2);z-index:2}
+.pop[hidden]{display:none}.pop div{display:flex;align-items:center;gap:8px;margin:4px 0}.pop i{flex:none;width:14px;height:10px;border-radius:3px}
+.kshort{display:none}.attr{position:absolute;right:8px;bottom:3px;font-size:11px;color:var(--mute)}
+@media (prefers-reduced-motion:reduce){details.fold>summary::after,.kr,.shore,.bshore,.mk{transition:none}.ring{display:none}}
+/* narrow desktop / tablet */
+@media(max-width:1079px){.sbi{grid-template-columns:minmax(0,1fr) minmax(200px,300px);grid-template-areas:'c l' 'v v'}.ctl{grid-area:c}.lv{grid-area:v}.sbi .lut1{grid-area:l}}
+/* phones */
+@media(max-width:759px){
+ .hd{padding-block:8px 6px}h1{font-size:22px}.sub{font-size:12.5px}.warn{font-size:11.5px}
+ .sbi{grid-template-columns:minmax(0,1fr);gap:6px;padding-block:6px}
+ .sbi .lut1{display:none}.lut2{display:block}
+ .ctl{gap:5px}.play{width:40px;height:40px}.skip{width:34px;height:34px}.tlabel{font-size:19px;min-width:6.4em}
+ .seg{margin-left:auto}.seg button{padding:0 10px;font-size:14px;min-height:36px}
+ .lv{gap:2px 10px}.kn{font-size:12px}.kv b{font-size:18px}.kv{gap:4px}.ko{font-size:11.5px}
+ .fig{height:260px}.tlt{font-size:17px}
+ .mainx{display:flex;flex-direction:column;align-items:stretch}.leftc{display:contents}.tline{order:1}.mapcol{order:2;position:static;height:auto;min-height:0;border-left:0}.side{order:3}
+ .mapw{height:clamp(380px,66vh,600px);flex:none}.lgr{padding-top:4px}
+ .vw{top:auto;bottom:12px}.vw button{padding:0 11px}
+ .mb{left:auto;right:12px;gap:6px}.mbtn{padding:0 11px}
+ .pop{left:12px;bottom:62px}
+ .attr{bottom:56px}
+}
+@media(max-width:374px){.kfull{display:none}.kshort{display:inline!important}.tlabel{font-size:16px;min-width:0}.skip{width:30px;height:30px}.play{width:36px;height:36px}.ctl{gap:4px}.seg button{padding:0 8px;font-size:13px}}
+</style></head>
+<body>
+<header class="hd pad">
+  <div class="hdi">
+    <div class="ttl"><h1>SFO flood week</h1><span class="sub">Now through Thu Nov 26, forecast as of Mon Nov 23, 7 AM PT</span></div>
+    <p class="warn"><b>Unofficial estimate, not a flood warning.</b> A low reading doesn't mean a spot stays dry. <a href="https://forecast.weather.gov/showsigwx.php?warnzone=CAZ006&amp;warncounty=CAC075&amp;firewxzone=CAZ006&amp;local_place1=San+Francisco+CA&amp;product1=Coastal+Flood+Advisory&amp;lat=37.7801&amp;lon=-122.4202">NWS coastal flood warning</a></p>
+  </div>
+</header>
+<div class="sbar">
+  <div class="sbi pad">
+    <div class="ctl">
+      <button class="play" id="play" aria-label="Play through Thursday"><svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path id="playIcon" d="M4 2l10 6-10 6z" fill="currentColor"/></svg></button>
+      <button class="skip" id="back" aria-label="Back one hour"><svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M10.5 3L5.5 8l5 5" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+      <span class="tlabel" id="tlabel" aria-live="polite">Wed 11:30 am</span>
+      <button class="skip" id="fwd" aria-label="Forward one hour"><svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M5.5 3l5 5-5 5" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+      <div class="seg" role="group" aria-label="Scenario"><button id="likely" aria-pressed="true">Likely</button><button id="high" aria-pressed="false" title="High case: 0.3 ft above the likely forecast">High</button></div>
+    </div>
+    <div class="lv" id="krows"></div>
+    <div class="lut lut1" id="lut1"></div>
+  </div>
+</div>
+
+<main class="mainx">
+<div class="leftc">
+<section class="tline pad" aria-label="Week timeline">
+  <div class="tlh"><span class="tlt">Bay level at SFO, now through Thursday</span><div class="key"><span><i style="background:var(--teal)"></i>forecast</span><span><i style="background:var(--teal);opacity:.3;height:9px"></i>range</span><span><i style="background:var(--tab);height:1.5px"></i>tide table</span></div></div>
+  <input type="range" id="scrub" min="0" max="671" step="1" aria-label="Pick a time">
+  <div class="fig" id="chart"><svg role="img" aria-label="Week of bay level next to SFO with flood thresholds, rain, and 3-hour flood, drain and wind ratings"></svg></div>
+</section>
+<aside class="side">
+  <div class="blk cond"><h2 id="condh">At Wed 11:30 am</h2>
+    <dl class="read">
+      <dt>SFO</dt><dd id="rBay"></dd>
+      <dt>Rain</dt><dd id="rRain"></dd>
+      <dt>Wind</dt><dd id="rWind"></dd>
+      <dt>Ground</dt><dd id="rLow"></dd>
+      <dt id="eT" hidden>Edge</dt><dd id="rEdge" hidden></dd>
+    </dl>
+  </div>
+  <div class="blk" id="days"><details class="fold"><summary><span class="st">Daily high tides</span><span class="sg" id="dayg">Tap a day to jump to its peak</span></summary>
+    <div class="tw"><table id="tbl"><thead><tr><th>Day</th><th>High tide</th><th>Tide table</th><th>Expected</th><th>Level</th><th>SF gauge</th></tr></thead><tbody></tbody></table></div>
+    <p class="note" style="margin-top:8px">Tap a day to jump to its peak. Feet (NAVD88) at Oyster Point, next to SFO. SF gauge, when shown, is the NWS forecast for the official gauge, which peaks about 40 minutes earlier. Warning runs to Thursday 4 PM.</p></details>
+  </div>
+  <div class="blk" id="story"><details class="fold"><summary><span class="st">Tides lead, the storm slips between them</span><span class="sg">Peak Wed about 11:30 AM; rain and wind land between peaks</span></summary>
+    <p>In the Likely case, every daily high from Monday to Saturday reaches the minor flood level at SFO's shoreline, and Tuesday and Wednesday cross into moderate. The top is <b>Wednesday around 11:30 AM, about <span id="pkv">9.6</span> ft</b> at SFO's shoreline, roughly 40 minutes after the official San Francisco gauge peaks. NWS forecasts that gauge at 8.6 ft on its own scale (8.7 ft here), a hair under its record from January 1983.</p>
+    <p>The NWS meteorologist who warned SFO's emergency manager on Saturday puts the water at about 9.9 ft against SFO's shoreline, where some seawall sections are as low as 8 ft. Heights there may use a different reference than these, so read his number as a cross-check, not a wall-by-wall comparison.</p>
+    <p>NWS's hourly grid for SFO has about <b>0.55 in</b> of rain from Tuesday 3 PM to Wednesday morning, mostly Tuesday evening and overnight, with southerly gusts near 40 mph from Tuesday noon into the night. Both mostly land between Tuesday's and Wednesday's peaks. Wind-driven surge is the forecast's biggest unknown, which is what the High case covers.</p></details>
+  </div>
+  <div class="blk" id="places"><details class="fold"><summary><span class="st">Where SFO is exposed</span><span class="sg">A: SE corner by 28L · B: north runway ends · C: 101 south of SFO</span></summary>
+    <ol class="places">
+      <li><span class="pin" id="pinA">A</span><div><b>Southeast corner by Runway 28L.</b> The most exposed spot, per the NWS meteorologist, Dylan Flynn. He couldn't say whether water would reach runways or taxiways.</div></li>
+      <li><span class="pin" id="pinB">B</span><div><b>North ends of the runways.</b> Also low, by the same account.</div></li>
+      <li><span class="pin" id="pinC">C</span><div><b>Highway 101 south of SFO.</b> Similarly exposed, per a UC Davis researcher. Expect trouble around each late-morning peak.</div></li>
+    </ol>
+    <p class="note">Map markers take the bay's flood class at the selected time.</p>
+    <p>SFO says drainage is cleared, pump stations are in "top operating condition", and sandbags and portable barriers are in high-risk areas. UC Davis's Fraser Shilling rates the chance of SFO flooding as very low, but says no runway escapes if water tops the wall.</p></details>
+  </div>
+  <div class="blk" id="flying"><details class="fold"><summary><span class="st">If you're flying Tuesday to Thursday</span><span class="sg">Skip late mornings, leave early, BART if 101 floods</span></summary>
+    <ul>
+      <li>Avoid late-morning flights if you can, or get to SFO well before high tide.</li>
+      <li>Check your airline's app and flysfo.com before leaving.</li>
+      <li>Take BART if Highway 101 floods near the airport.</li>
+      <li>From the East Bay, Oakland's perimeter dike was raised to 13 ft, 17 ft in places.</li>
+      <li>San Francisco's mayor asks people to avoid travel unless essential from Monday afternoon through Wednesday.</li>
+    </ul></details>
+  </div>
+  <div class="blk" id="method"><details class="fold"><summary><span class="st">How the estimate works</span><span class="sg">NOAA tide table plus the NWS forecast; ground heights from USGS lidar</span></summary>
+    <p><b>Expected</b> is NOAA's tide table at Oyster Point plus however far NWS expects the San Francisco gauge to run above its own table that day: 1.1 to 1.8 ft Monday to Saturday, including up to 1.6 ft of surge. Sunday, past the NWS forecast, assumes 1.2 ft, about where El Niño has held the bay for a month. <b>Range</b> is 0.3 ft either side; <b>High case</b> adds 0.3 ft, the margin by which storm days beat the forecast surge last week, per the Oakland Flood Week analysis.</p>
+    <p>SFO flood levels: minor 8.5 ft, moderate 9.4 ft, major 10.7 ft. These are NOAA's San Francisco thresholds, carried over as height above Oyster Point's average high tide. Expected is shown with a range of 0.3 ft either side.</p>
+    <p>Rain and wind are NWS's gridded forecast for SFO, in 3-hour blocks. <b>Drains</b> turns orange when rain falls while the bay sits a foot or more above its average high tide, so outfalls can't empty, and red when that happens at minor flood level or higher. NWS notes high tide can arrive up to 90 minutes off the predicted time.</p>
+    <p><b>All heights</b> are in feet above NAVD88, a fixed survey reference. NOAA's tide tables count from each station's own low-water mark instead: at the San Francisco gauge the two are within 0.1 ft, but at Oyster Point the low-water mark sits about 0.6 ft lower, so this page reads about 0.6 ft below NOAA's SFO-area tide tables. Flood levels under the color bar: SFO's shoreline protection, 9.2 ft in a typical section of SFO's maintenance drawings; the Embarcadero promenade and roadway between the Ferry Building and Pier 14, 9.2 ft; China Basin Park on Mission Creek, 9.3 ft (Port of San Francisco flood risk profiles). The Port notes nuisance flooding and wave splash near Pier 14 already happen below that level.</p>
+    <p><b>Ground height</b> on the map shades all land by height above sea level (USGS 3DEP, cells about 90 m across). Near the water, blue marks ground within 2 ft of, or below, the water right now, from the same lidar averaged into cells about 30 m across and compared with the water at the nearest gauge: Oyster Point from Candlestick south, the SF gauge elsewhere. It's a bathtub view. It ignores seawalls, levees, pumps and drains, so blue ground inside the shoreline floods only if water gets over or through the edge, and a wall thinner than a cell won't show. Heights are feet above NAVD88; forecast water is converted the same way (at Oyster Point, low-water datum sits about 0.57 ft below NAVD88). SFO's own maintenance drawings put existing shoreline protection at 9.2 ft in a typical section, and 1 m lidar sampled along 53 lines across SFO's bay edge puts about 20 of those crests below Wednesday's likely peak. Lidar can miss a thin wall, so treat that as a place to watch, not a forecast that water gets in.</p>
+    <p class="note">This page is a snapshot and doesn't update itself. Live data: <a href="https://tidesandcurrents.noaa.gov/waterlevels.html?id=9414290">SF gauge water level</a>, <a href="https://sf-bay-flood-watch.plotly.app">Bay Flood Watch</a>.</p></details>
+  </div>
+  <div class="blk" id="sources" style="border-bottom:0"><details class="fold"><summary><span class="st">Sources</span><span class="sg">NWS, NOAA, SF Chronicle, NBC, OSM, Census, FAA</span></summary>
+    <ul class="src">
+      <li><a href="https://forecast.weather.gov/product.php?site=MTR&amp;issuedby=MTR&amp;product=AFD">NWS Bay Area forecast discussion</a>, Nov 23, 7:06 AM: tide forecasts, surge</li>
+      <li>NWS gridded forecast for SFO (rain, wind, gusts), updated Nov 23</li>
+      <li><a href="https://tidesandcurrents.noaa.gov/noaatidepredictions.html?id=9414392">NOAA tide predictions and datums, Oyster Point 9414392</a>; flood thresholds, San Francisco 9414290</li>
+      <li><a href="https://www.sfchronicle.com/travel/article/sfo-airport-flood-weather-22543280.php">SF Chronicle: SFO will flood this week</a>; <a href="https://www.nbcbayarea.com/news/local/flooding-sfo-oak-national-weather-service/4180385/">NBC Bay Area</a>; <a href="https://deeparrival.com/news/sfo-flood-risk-san-francisco-meters-free-november-23-25-2026/">Deep Arrival</a></li>
+      <li>Port of San Francisco Waterfront Resilience Program flood risk profiles: Ferry Building (Subarea 2-2), Mission Rock (Subarea 3-3)</li>
+      <li>Map: US Census TIGER shoreline and highways, OpenStreetMap airport outline; ground heights from USGS 3DEP lidar via the National Map elevation service (1 m samples along SFO's edge, about 30 m cells for the low-ground layer); SFO shoreline maintenance drawings (existing protection 9.2 ft NAVD88), FAA runway ends via <a href="https://www.airnav.com/airport/KSFO">AirNav</a></li>
+      <li>Approach and layout after the <a href="https://claude.ai/artifact/7udMTTZs1kN4kNBM3pfFgo">Oakland Flood Week</a> map shared on Reddit</li>
+    </ul></details>
+  </div>
+</aside>
+</div>
+<div class="mapcol">
+<section class="mapw" id="map" aria-label="Map of the SF peninsula shoreline">
+  <svg role="img" aria-label="Map of the SF peninsula shoreline colored by water height at the selected time"><g id="geo"></g><g id="ovl"></g></svg>
+  <div class="vw" role="group" aria-label="Map view"><button data-v="full" aria-pressed="true">Peninsula</button><button data-v="sfo" aria-pressed="false">SFO</button></div>
+  <div class="tools"><button id="zin" aria-label="Zoom in">+</button><button id="zout" aria-label="Zoom out">−</button><button id="zhome" aria-label="Show the whole peninsula">⌂</button></div>
+  <div class="mb"><button class="mbtn" id="keyb" aria-expanded="false"><span class="kfull">Map key</span><span class="kshort">Key</span></button><button class="mbtn" id="ovb" aria-pressed="true">Ground height</button></div>
+  <div class="pop" id="mkey" hidden>
+    <div style="display:block;color:var(--mute);margin-top:0">Shoreline color is the water height at the nearest gauge, on the same scale as the water-height bar: Oyster Point from Candlestick south, the SF gauge for the city and the Pacific side. SFO's edge is drawn thicker.</div>
+    <div><i style="background:var(--c3);border-radius:50%"></i>A, B, C: SFO's most exposed spots</div>
+    <div><i style="background:var(--c2);border-radius:50%"></i>Pier 14 and Mission Creek</div>
+    <div><i style="background:var(--ink);border-radius:50%"></i>NOAA tide station</div>
+    <div><i style="background:var(--ink);opacity:.45;height:3px"></i>Highway 101</div>
+  </div>
+  <div class="attr">US Census, OSM, FAA</div>
+</section>
+<div class="maplg"><div class="lut lut2" id="lut2"></div><div class="lgd" id="lgd"></div></div>
+</div>
+
+</main>
+<footer class="ft pad">
+  <p><b>Credit:</b> this page is a remix of <a href="https://claude.ai/artifact/7udMTTZs1kN4kNBM3pfFgo">Oakland Flood Week</a>, the flood map someone shared on Reddit that started it. If you're in Oakland or the East Bay, check it out.</p>
+  <p class="note">A snapshot of the NOAA and NWS forecasts as of Mon Nov 23, 7 AM PT. It doesn't update itself; check the NWS for anything newer.</p>
+</footer>
+<script>
+/*GEO*/
+/*DEM*/
+/*TOPO*/
+{
+const H=3600e3,T=(d,hm)=>Date.parse(`2026-11-${d}T${hm}:00-08:00`),mk=a=>a.map(([d,hm,h])=>({t:T(d,hm),h}));
+const OP=mk([[22,'23:15',5.72],[23,'04:07',2.501],[23,'10:06',8.26],[23,'17:18',-1.104],[24,'00:12',5.915],[24,'04:52',2.813],[24,'10:46',8.535],[24,'18:03',-1.485],[25,'01:07',6.026],[25,'05:39',3.038],[25,'11:30',8.646],[25,'18:52',-1.652],[26,'02:01',6.059],[26,'06:30',3.172],[26,'12:19',8.55],[26,'19:42',-1.607],[27,'02:55',6.054],[27,'07:26',3.225],[27,'13:12',8.225],[27,'20:35',-1.372],[28,'03:50',6.07],[28,'08:31',3.197],[28,'14:09',7.674],[28,'21:30',-0.987],[29,'04:44',6.164],[29,'09:49',3.048],[29,'15:13',6.948],[29,'22:27',-0.497],[30,'05:37',6.364]]);
+// NWS San Francisco gauge forecast vs that gauge's own tide table at the same high tide
+const SFE=mk([[22,'15:35',-0.539],[22,'22:34',4.651],[23,'03:07',2.501],[23,'09:25',6.716],[23,'16:18',-1.104],[23,'23:31',4.809],[24,'03:52',2.813],[24,'10:05',6.939],[24,'17:03',-1.485],[25,'00:26',4.899],[25,'04:39',3.038],[25,'10:49',7.029],[25,'17:52',-1.652],[26,'01:20',4.926],[26,'05:30',3.172],[26,'11:38',6.952],[26,'18:42',-1.607],[27,'02:14',4.922],[27,'06:26',3.225],[27,'12:31',6.687],[27,'19:35',-1.372],[28,'03:09',4.935],[28,'07:31',3.197],[28,'13:28',6.239],[28,'20:30',-0.987],[29,'04:03',5.011],[29,'08:49',3.048],[29,'14:32',5.649],[29,'21:27',-0.497],[30,'04:56',5.174]]);
+const NWS=[[23,'09:25',7.8,6.716],[24,'10:05',8.4,6.939],[25,'10:49',8.6,7.029],[26,'11:38',8.2,6.952],[27,'12:31',7.9,6.687],[28,'13:28',8.0,6.239]].map(([d,hm,f,tt])=>({t:T(d,hm),f,a:f-tt}));
+const AN=[...NWS.map(p=>({t:p.t,a:p.a})),{t:T(29,'14:32'),a:1.2}];
+const MHHW=7.18,THR=[9.05-0.5,9.05,9.98,11.25],HI=0.3,RG=0.3;
+const QPF=[0,0,0,0,0,0,0,0,0,0,0,0,0,2.3,3.4,3.2,3,1.4,0.5,0.2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0.1,0.1,0.2,0.3,0.2,0.1,0.1,0.1,0.6,0.8,0.8,0.9,0.8,0.8,0.7];
+const WND=[6,7,7,8,6,0,5,9,10,12,14,21,30,30,30,30,28,18,8,7,7,1,0,0,3,3,3,5,5,2,2,3,3,5,6,7,7,5,3,6,6,6,8,12,12,12,13,17,17,13,12,16,22,22,17,17];
+const GST=[6,7,8,9,8,3,5,10,12,16,20,30,39,39,39,39,38,28,12,8,8,5,5,3,3,5,5,6,6,5,6,7,7,7,9,12,12,7,7,12,12,12,14,21,23,23,21,31,31,24,22,28,36,36,29,28];
+const B0=T(23,'00:00'),t1=T(27,'00:00'),t0=Math.min(Math.max(Math.floor(Date.now()/36e5)*36e5,T(23,'12:00')),T(26,'12:00')),STEP=15*60e3;
+function tideE(ev,t){for(let i=0;i<ev.length-1;i++){const a=ev[i],b=ev[i+1];if(t>=a.t&&t<=b.t){const f=(t-a.t)/(b.t-a.t);return a.h+(b.h-a.h)*(1-Math.cos(Math.PI*f))/2}}return ev[ev.length-1].h}
+const tide=t=>tideE(OP,t);
+function anom(t){if(t<=AN[0].t)return AN[0].a;for(let i=0;i<AN.length-1;i++){const a=AN[i],b=AN[i+1];if(t<=b.t)return a.a+(b.a-a.a)*(t-a.t)/(b.t-a.t)}return AN[AN.length-1].a}
+let high=false,sel=T(25,'11:30');
+const lvl=t=>tide(t)+anom(t)+(high?HI:0);
+const cls=v=>v>=THR[3]?4:v>=THR[2]?3:v>=THR[1]?2:v>=THR[0]?1:0;
+const SFT=[7.21,7.71,8.64,9.91],sfLvl=t=>tideE(SFE,t)+anom(t)+(high?HI:0),clsSF=v=>v>=SFT[3]?4:v>=SFT[2]?3:v>=SFT[1]?2:v>=SFT[0]?1:0;
+const CN=['below flood level','within half a foot of minor','minor flooding','moderate flooding','major flooding'];
+const CV=i=>`var(--c${i})`,MC=i=>i?CV(i):'var(--tab)';
+const HS=[[6.0,[143,166,176]],[7.5,[242,211,91]],[8.5,[240,160,60]],[9.2,[216,67,43]],[10.2,[122,21,48]]],CBMAX=10.5,CBMIN=6.0,SFN=0.06;
+const KEYS=[['SFO shoreline','op',9.2,'SFO'],['Embarcadero, Pier 14','sf',9.2,'Pier 14'],['Mission Creek','sf',9.3,'Mission Creek']];
+const KPT=[['Pier 14',37.7929,-122.3891],['Mission Creek',37.7763,-122.3884]];
+const heat=a=>{if(a<=HS[0][0])return `rgb(${HS[0][1]})`;for(let i=1;i<HS.length;i++){if(a<=HS[i][0]){const f=(a-HS[i-1][0])/(HS[i][0]-HS[i-1][0]);return `rgb(${HS[i-1][1].map((c,j)=>Math.round(c+(HS[i][1][j]-c)*f))})`}}return `rgb(${HS[HS.length-1][1]})`};
+const PT='America/Los_Angeles';
+const fmt=new Intl.DateTimeFormat('en-US',{timeZone:PT,weekday:'short',hour:'numeric',minute:'2-digit'});
+const fWk=new Intl.DateTimeFormat('en-US',{timeZone:PT,weekday:'short'}),fDn=new Intl.DateTimeFormat('en-US',{timeZone:PT,day:'numeric'});
+const fDay={format:t=>fWk.format(t)+' '+fDn.format(t)};
+const fTime=new Intl.DateTimeFormat('en-US',{timeZone:PT,hour:'numeric',minute:'2-digit'});
+const lab=t=>fmt.format(t).replace(' AM',' am').replace(' PM',' pm');
+const tm=t=>fTime.format(t).replace(' AM',' am').replace(' PM',' pm');
+const blk=t=>Math.max(0,Math.min(55,Math.floor((t-B0)/(3*H))));
+function blocks(){const out=[];for(let b=0;b<56;b++){let m=-9;for(let t=B0+b*3*H;t<=B0+(b+1)*3*H;t+=10*60e3)m=Math.max(m,lvl(t));
+  const q=QPF[b],dr=q>=0.5&&m>=THR[1]?2:q>0.05&&m>=MHHW+1?1:q>=2?1:0,w=GST[b]>=35?2:GST[b]>=25?1:0;out.push({m,c:cls(m),dr,w})}return out}
+let B=blocks();
+// daily peaks
+const days=[];for(let d=23;d<=26;d++){const ev=OP.filter(e=>e.t>=T(d,'00:00')&&e.t<T(d+1,'00:00'));const pk=ev.reduce((a,e)=>e.h>a.h?e:a);if(pk.t>=t0)days.push(pk)}
+
+/* chart */
+const csvg=document.querySelector('#chart svg');let CG=null;
+function drawChart(){
+  const W=csvg.clientWidth,Hh=csvg.clientHeight;if(!W)return;
+  const m={l:46,r:8,t:8},rainH=24,rowH=11,gap=3,ch=Math.max(80,Hh-(8+6+24+6+3*14+40)),rows=['flood','drains','wind'];
+  let lo0=99,hi0=-99;for(let t=t0;t<=t1;t+=20*60e3){const a=tide(t),e=a+anom(t)+(high?HI:0);lo0=Math.min(lo0,a-OPN,e-RG-OPN);hi0=Math.max(hi0,e+RG-OPN)}
+  const yMin=Math.floor(lo0-0.2),yMax=Math.max(10.5,Math.ceil(hi0+0.3)),pw=W-m.l-m.r;
+  const X=t=>m.l+(t-t0)/(t1-t0)*pw,Y=v=>m.t+(yMax-(v-OPN))/(yMax-yMin)*ch;
+  const rT=m.t+ch+6,rowT=rT+rainH+6,rEnd=rowT+rows.length*(rowH+gap),axY=rEnd+14,hY=rEnd+12,dY=rEnd+28;
+  let up='',lo='',lk='',tb='';
+  for(let t=t0;t<=t1;t+=20*60e3){const a=tide(t),e=a+anom(t)+(high?HI:0),x=X(t).toFixed(1);
+    lk+=(lk?'L':'M')+x+' '+Y(e).toFixed(1);tb+=(tb?'L':'M')+x+' '+Y(a).toFixed(1);up+=(up?'L':'M')+x+' '+Y(e+RG).toFixed(1);lo='L'+x+' '+Y(e-RG).toFixed(1)+lo}
+  let g=`<defs><clipPath id="cc"><rect x="${m.l}" y="${m.t-2}" width="${pw}" height="${ch+2}"/></clipPath></defs>`;
+  for(let v=Math.ceil(yMin/2)*2;v<=yMax;v+=2)g+=`<line class="grid" x1="${m.l}" x2="${W-m.r}" y1="${Y(v+OPN)}" y2="${Y(v+OPN)}"/><text class="ax" x="${m.l-6}" y="${Y(v+OPN)+4}" text-anchor="end">${v} ft</text>`;
+  for(let d=24;d<=26;d++){const x=X(T(d,'00:00'));g+=`<line class="grid" x1="${x}" x2="${x}" y1="${m.t}" y2="${rEnd+3}"/>`}
+  g+=`<g clip-path="url(#cc)"><path d="${up}${lo}Z" fill="var(--teal)" opacity=".22"/><path d="${tb}" fill="none" stroke="var(--tab)" stroke-width="1.2"/><path d="${lk}" fill="none" stroke="var(--teal)" stroke-width="2.4"/></g>`;
+  g+=`<line class="thr" x1="${m.l}" x2="${W-m.r}" y1="${Y(THR[2])}" y2="${Y(THR[2])}"/><text class="thrl" x="${W-m.r-2}" y="${Y(THR[2])-4}" text-anchor="end">moderate ${(THR[2]-OPN).toFixed(1)}</text>`;
+  g+=`<line class="thr" x1="${m.l}" x2="${W-m.r}" y1="${Y(THR[1])}" y2="${Y(THR[1])}" opacity=".6"/><text class="thrl" x="${W-m.r-2}" y="${Y(THR[1])+13}" text-anchor="end">minor ${(THR[1]-OPN).toFixed(1)}</text>`;
+  g+=`<text class="ax" x="${m.l-6}" y="${rT+rainH-4}" text-anchor="end">rain</text><line class="grid" x1="${m.l}" x2="${W-m.r}" y1="${rT+rainH}" y2="${rT+rainH}"/>`;
+  const bx=b=>{const bs=B0+b*3*H,be=bs+3*H;if(be<=t0||bs>=t1)return null;const x0=X(Math.max(bs,t0)),x1=X(Math.min(be,t1));return [x0+0.5,Math.max(0.5,x1-x0-1)]};
+  QPF.forEach((q,b)=>{const r=bx(b);if(q>0&&r){const h=Math.max(1.5,Math.min(rainH,q/3.5*rainH));g+=`<rect x="${r[0].toFixed(1)}" y="${(rT+rainH-h).toFixed(1)}" width="${r[1].toFixed(1)}" height="${h.toFixed(1)}" fill="var(--rain)"/>`}});
+  rows.forEach((r,i)=>{const y=rowT+i*(rowH+gap);g+=`<text class="ax" x="${m.l-6}" y="${y+rowH-1}" text-anchor="end">${r}</text>`;
+    B.forEach((o,b)=>{const r=bx(b);if(!r)return;const c=i===0?CV(o.c):i===1?(o.dr?CV(o.dr+1):'var(--c0)'):(o.w?CV(o.w):'var(--c0)');g+=`<rect x="${r[0].toFixed(1)}" y="${y}" width="${r[1].toFixed(1)}" height="${rowH}" fill="${c}" rx="1"/>`})});
+  {const sp=pw*6*H/(t1-t0),hrs=sp<24?[0,12]:[0,6,12,18],nm=sp>=38?['12am','6am','12pm','6pm']:['12a','6a','12p','6p'];
+   for(let d=23;d<=26;d++)for(const h of hrs){const t=T(d,String(h).padStart(2,'0')+':00');if(t<=t0||t>=t1)continue;const x=X(t);
+    if(h)g+=`<line class="grid" x1="${x}" x2="${x}" y1="${m.t}" y2="${m.t+ch}" opacity=".45"/>`;g+=`<line x1="${x}" x2="${x}" y1="${rEnd}" y2="${rEnd+3}" stroke="var(--mute)"/>`;
+    if(x>m.l+10&&x<W-m.r-10)g+=`<text class="axh" x="${x}" y="${hY}" text-anchor="middle">${nm[h/6]}</text>`}}
+  for(let d=23;d<=26;d++){const ds=Math.max(T(d,'00:00'),t0),de=Math.min(T(d+1,'00:00'),t1);if(de-ds<4*H)continue;const tn=(ds+de)/2,w=X(de)-X(ds);g+=`<text class="axb" x="${X(tn)}" y="${dY}" text-anchor="middle">${w<70?fDay.format(tn).split(' ')[0]:fDay.format(tn)}</text>`}
+  const now=Date.now();if(now>t0+30*60e3&&now<t1)g+=`<line x1="${X(now)}" x2="${X(now)}" y1="${m.t}" y2="${axY-12}" stroke="var(--mute)" stroke-dasharray="2 3"/><text class="ax" x="${X(now)+3}" y="${m.t+10}">now</text>`;
+  g+=`<line id="cur" y1="${m.t}" y2="${axY-12}" stroke="var(--ink)" stroke-width="1.5"/><circle id="curd" r="4.5" fill="var(--teal)" stroke="var(--panel)" stroke-width="2"/>`;
+  csvg.innerHTML=g;CG={X,Y,m,pw,yMin,yMax};
+  const sc=document.getElementById('scrub');sc.style.marginLeft=(m.l-8)+'px';sc.style.width=`calc(100% - ${m.l-8+m.r-8}px)`;
+  moveCursor();
+}
+function moveCursor(){if(!CG)return;const x=CG.X(sel),v=lvl(sel);const c=csvg.querySelector('#cur'),d=csvg.querySelector('#curd');
+  c.setAttribute('x1',x);c.setAttribute('x2',x);d.setAttribute('cx',x);d.setAttribute('cy',CG.Y(Math.max(CG.yMin+OPN,Math.min(CG.yMax+OPN,v))));}
+function pick(e){if(!CG)return;const r=csvg.getBoundingClientRect();const f=(e.clientX-r.left-CG.m.l)/CG.pw;setSel(t0+Math.round(Math.max(0,Math.min(1,f))*(t1-t0-STEP)/STEP)*STEP)}
+let drag=false;csvg.addEventListener('pointerdown',e=>{drag=true;pick(e)});addEventListener('pointerup',()=>drag=false);csvg.addEventListener('pointermove',e=>{if(drag)pick(e)});
+
+/* readout */
+function setSel(t){sel=Math.max(t0,Math.min(t1-STEP,t));update()}
+function update(){
+  const v=lvl(sel),c=cls(v),b=blk(sel),o=B[b];
+  document.getElementById('tlabel').textContent=lab(sel);
+  document.getElementById('scrub').value=Math.round((sel-t0)/STEP);
+  document.getElementById('rBay').innerHTML=`<span class="sw" style="background:${CV(c)}"></span><span class="num">${(v-OPN).toFixed(1)} ft</span>, ${CN[c]} at the shoreline`;
+  const q=QPF[b];let rain=q===0?'Dry.':q<0.5?'Light.':q<2?'Steady.':`Moderate, about ${(q/25.4).toFixed(2)} in over these 3 hours.`;
+  if(o.dr===2)rain+=' Rain on a high bay: storm drains back up.';else if(o.dr===1)rain+=' Drains running slow against a high bay.';
+  document.getElementById('rRain').textContent=rain;
+  document.getElementById('rWind').textContent=`${WND[b]} mph, gusts to ${GST[b]} mph`;
+  document.getElementById('condh').textContent=`At ${lab(sel)}`;
+  for(const tr of document.querySelectorAll('#tbl tbody tr'))tr.classList.toggle('on',Math.abs(+tr.dataset.t-sel)<1.5*H);
+  
+  moveCursor();paintMap(c);
+}
+
+/* table */
+function table(){
+  document.querySelector('#tbl tbody').innerHTML=days.map(e=>{const a=anom(e.t)+(high?HI:0),v=e.h+a,c=cls(v),n=NWS.find(p=>fDay.format(p.t)===fDay.format(e.t));
+    return `<tr data-t="${e.t}" tabindex="0"><td>${fDay.format(e.t)}</td><td>${tm(e.t)}</td><td>${(e.h-OPN).toFixed(1)}</td><td><b>${(v-OPN).toFixed(1)}</b></td><td class="lvl"><i style="background:${CV(c)}"></i>${['None','Watch','Minor','Moderate','Major'][c]}</td><td>${n?(n.f+SFN).toFixed(1):''}</td></tr>`}).join('');
+  {const p=days.reduce((a,e)=>e.h+anom(e.t)>a.h+anom(a.t)?e:a),v=p.h+anom(p.t)+(high?HI:0);document.getElementById('dayg').textContent=`Peak ${fDay.format(p.t)}, ${tm(p.t)}: ${(v-OPN).toFixed(1)} ft, ${['no flooding','near minor','minor flooding','moderate flooding','major flooding'][cls(v)]}. Tap a day to jump to it`}
+  const pk=days.reduce((a,e)=>e.h+anom(e.t)>a.h+anom(a.t)?e:a);document.getElementById('pkv').textContent=(pk.h+anom(pk.t)-OPN).toFixed(1);
+}
+document.querySelector('#tbl tbody').addEventListener('click',e=>{const tr=e.target.closest('tr');if(tr)setSel(+tr.dataset.t)});
+document.querySelector('#tbl tbody').addEventListener('keydown',e=>{if(e.key==='Enter'){const tr=e.target.closest('tr');if(tr)setSel(+tr.dataset.t)}});
+document.getElementById('scrub').addEventListener('input',e=>setSel(t0+e.target.value*STEP));
+for(const id of ['likely','high'])document.getElementById(id).addEventListener('click',()=>{high=id==='high';
+  document.getElementById('likely').setAttribute('aria-pressed',!high);document.getElementById('high').setAttribute('aria-pressed',high);B=blocks();table();drawChart();update()});
+document.getElementById('back').addEventListener('click',()=>setSel(sel-H));document.getElementById('fwd').addEventListener('click',()=>setSel(sel+H));
+let timer=null;const icon=document.getElementById('playIcon');
+document.getElementById('play').addEventListener('click',()=>{if(timer){clearInterval(timer);timer=null;icon.setAttribute('d','M4 2l10 6-10 6z');return}
+  if(sel>=t1-2*STEP)sel=t0;icon.setAttribute('d','M3 2h3.5v12H3zM9.5 2H13v12H9.5z');
+  timer=setInterval(()=>{if(sel>=t1-STEP){clearInterval(timer);timer=null;icon.setAttribute('d','M4 2l10 6-10 6z');return}setSel(sel+STEP)},60)});
+
+/* map */
+const msvg=document.querySelector('#map svg'),gG=msvg.querySelector('#geo'),gO=msvg.querySelector('#ovl'),CO=Math.cos(37.61*Math.PI/180);
+const P=(lat,lon)=>[((lon+122.44)*1e4-GEO.X0)*CO,GEO.Y1-(lat-37.57)*1e4];
+const RW=[[[37.607898,-122.382928],[37.626481,-122.370609]],[[37.606330,-122.381041],[37.627342,-122.367111]],[[37.628739,-122.393392],[37.613534,-122.357141]],[[37.626291,-122.393106],[37.611712,-122.358349]]];
+gG.innerHTML=`<path class="landp" d="${GEO.land}"/><g class="dim"><rect x="-6000" y="-6000" width="${GEO.W+12000}" height="6000"/><rect x="-6000" y="${GEO.H}" width="${GEO.W+12000}" height="6000"/><rect x="-6000" y="0" width="6000" height="${GEO.H}"/><rect x="${GEO.W}" y="0" width="6000" height="${GEO.H}"/></g><path class="sfop" d="${GEO.sfo}"/><defs><clipPath id="landclip"><path d="${GEO.land}"/></clipPath></defs><image id="topog" clip-path="url(#landclip)" preserveAspectRatio="none"/><image id="lowg" clip-path="url(#landclip)" preserveAspectRatio="none"/>`+RW.map(([a,b])=>{const [x1,y1]=P(...a),[x2,y2]=P(...b);return `<line class="rw" x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke-width="5.5"/>`}).join('')+`<path class="hw" d="${GEO.h101}"/><path class="bshore" id="shOP" d="${GEO.shOP}"/><path class="bshore" id="shSF" d="${GEO.shSF}"/><path class="shore" id="shore" d="${GEO.shore}"/>`;
+const DW=597,DH=830,DC=new Uint8Array(DW*DH),ZN=new Uint8Array(DW*DH);
+{let i=0;for(const m of DEM.matchAll(/([A-Za-x])(\d*)/g)){const n=m[2]?+m[2]:1;DC.fill(m[1].charCodeAt(0)-65,i,i+n);i+=n}
+ for(let j=0;j<DH;j++){const lat=37.817-(j+.5)*0.249/DH;for(let i2=0;i2<DW;i2++){const lon=-122.522+(i2+.5)*0.179/DW;ZN[j*DW+i2]=lat<37.712&&lon>-122.46?1:0}}}
+const lowImg=gG.querySelector('#lowg');{const [x0,y0]=P(37.817,-122.522),[x1,y1]=P(37.568,-122.343);lowImg.setAttribute('x',x0);lowImg.setAttribute('y',y0);lowImg.setAttribute('width',x1-x0);lowImg.setAttribute('height',y1-y0)}
+const lowCv=document.createElement('canvas');lowCv.width=DW;lowCv.height=DH;const lowCx=lowCv.getContext('2d'),lowID=lowCx.createImageData(DW,DH),L32=new Uint32Array(lowID.data.buffer);
+const LOWC=[[30,88,205,200],[86,148,236,150],[150,190,242,110]],rgba=([r,g,b,a])=>((a<<24)|(b<<16)|(g<<8)|r)>>>0;
+let lowKey='',lowOn=true;
+const TW=199,TH=277,TC=new Uint8Array(TW*TH);{let i=0;for(const m of TOPO.matchAll(/([A-Z])(\d*)/g)){const n=m[2]?+m[2]:1;TC.fill(m[1].charCodeAt(0)-65,i,i+n);i+=n}}
+const topoImg=gG.querySelector('#topog');{const [x0,y0]=P(37.817,-122.522),[x1,y1]=P(37.568,-122.343);topoImg.setAttribute('x',x0);topoImg.setAttribute('y',y0);topoImg.setAttribute('width',x1-x0);topoImg.setAttribute('height',y1-y0)}
+function topoPaint(){const pr=document.createElement('i');document.body.appendChild(pr);const pal=new Uint32Array(10);for(let c=0;c<10;c++){pr.style.color=`var(--t${c})`;const m=getComputedStyle(pr).color.match(/\d+(\.\d+)?/g).map(Number);pal[c]=rgba([m[0],m[1],m[2],255])}pr.remove();
+  const cv=document.createElement('canvas');cv.width=TW;cv.height=TH;const cx=cv.getContext('2d'),id=cx.createImageData(TW,TH),u=new Uint32Array(id.data.buffer);for(let i=0;i<TW*TH;i++)u[i]=pal[TC[i]];cx.putImageData(id,0,0);topoImg.setAttribute('href',cv.toDataURL())}
+topoPaint();matchMedia('(prefers-color-scheme: dark)').addEventListener('change',topoPaint);new MutationObserver(topoPaint).observe(document.documentElement,{attributes:true,attributeFilter:['data-theme','class','style']});
+const SFOM=(()=>{const cv=document.createElement('canvas');cv.width=DW;cv.height=DH;const c=cv.getContext('2d'),[x0,y0]=P(37.817,-122.522),[x1,y1]=P(37.568,-122.343),sx=DW/(x1-x0),sy=DH/(y1-y0);c.setTransform(sx,0,0,sy,-x0*sx,-y0*sy);c.fill(new Path2D(GEO.sfo));const d=c.getImageData(0,0,DW,DH).data,m=[];for(let i=0;i<DW*DH;i++)if(d[i*4+3]>127)m.push(i);return m})();
+const sfoLow=w=>{let n=0;for(const i of SFOM){const c=DC[i];if(c<14&&6+0.5*c<=w)n++}return SFOM.length?n/SFOM.length:0};
+function lowPaint(wOP,wSF){const key=Math.round(wOP*10)+'_'+Math.round(wSF*10);if(key===lowKey)return;lowKey=key;
+  const pal=[wSF,wOP].map(w=>{const a=new Uint32Array(15);for(let c=0;c<14;c++){const d=(c?5.75+0.5*c:5.75)-w;a[c]=d<0?rgba(LOWC[0]):d<1?rgba(LOWC[1]):d<2?rgba(LOWC[2]):0}return a});
+  for(let i=0;i<DW*DH;i++)L32[i]=pal[ZN[i]][DC[i]];lowCx.putImageData(lowID,0,0);lowImg.setAttribute('href',lowCv.toDataURL())}
+const LBL=[['Terminals',37.6162,-122.3893,'ml'],['San Francisco Bay',37.626,-122.332,'mlw'],['Millbrae',37.598,-122.404,'ml'],['San Bruno',37.6345,-122.4095,'ml'],['South San Francisco',37.6545,-122.424,'ml'],['Burlingame',37.5845,-122.358,'ml'],['San Mateo',37.5685,-122.322,'ml'],['San Francisco',37.758,-122.445,'mbig'],['Embarcadero',37.7975,-122.4005,'ml'],['Mission Bay',37.7705,-122.398,'ml'],['Hunters Point',37.7265,-122.381,'ml'],['Candlestick',37.712,-122.393,'ml'],['Brisbane',37.683,-122.408,'ml'],['Daly City',37.69,-122.467,'ml'],['Pacifica',37.62,-122.48,'ml'],['Ocean Beach',37.755,-122.498,'ml'],['Pacific Ocean',37.70,-122.52,'mlw'],['Golden Gate',37.815,-122.478,'mlw']];
+const GAU=[['Oyster Pt gauge',37.6650,-122.3770],['Coyote Pt gauge',37.5893,-122.3255],['SF gauge',37.8063,-122.4659]];
+const PLC=[['A',37.6100,-122.3578],['B',37.6280,-122.3688],['C',37.6021,-122.3800]];
+const HOME=()=>{const W=msvg.clientWidth,Hh=msvg.clientHeight,c=Math.max(W/GEO.W,Hh/GEO.H);if(innerWidth>=760){const {s:sb}=base();return {cx:1225,cy:1930,k:0.58/sb}}const [x0,y0]=P(37.652,-122.43),[x1,y1]=P(37.585,-122.35);const top=16,bot=64;const f=Math.min((W-24)/(x1-x0),(Hh-top-bot)/(y1-y0));return {cx:(x0+x1)/2,cy:(y0+y1)/2-(top-bot)/2/f,k:f/c}};
+const FULL=()=>{const W=msvg.clientWidth,Hh=msvg.clientHeight,c=Math.max(W/GEO.W,Hh/GEO.H);const [x0,y0]=P(37.817,-122.522),[x1,y1]=P(37.568,-122.343);const ph=innerWidth<760;const top=ph?16:62,bot=ph?64:70;const f=Math.min((W-24)/(x1-x0),(Hh-top-bot)/(y1-y0));return {cx:(x0+x1)/2,cy:(y0+y1)/2-(top-bot)/2/f,k:f/c}};let view={cx:1225,cy:1930,k:0.95},cur=0,homed=false,wallOn=false;
+const OPN=0.57;/*CREST*/
+function base(){const W=msvg.clientWidth,Hh=msvg.clientHeight;return {W,Hh,s:Math.max(W/GEO.W,Hh/GEO.H)}}
+function S(x,y){const {W,Hh,s}=base();const k=s*view.k;return [(x-view.cx)*k+W/2,(y-view.cy)*k+Hh/2]}
+function drawMap(){
+  const {W,Hh,s}=base();if(!W)return;if(!homed){view=FULL();homed=true}const k=s*view.k;const vw=W/k/2,vh=Hh/k/2,cl=(v,a,b)=>Math.max(Math.min(a,b),Math.min(Math.max(a,b),v));view.cx=cl(view.cx,vw,GEO.W-vw);view.cy=cl(view.cy,vh,GEO.H-vh);
+  gG.setAttribute('transform',`translate(${W/2-view.cx*k} ${Hh/2-view.cy*k}) scale(${k})`);
+  let o='';const narrow=W<480;
+  const ppu=s*view.k;for(const [t,a,b,c] of LBL){if(c==='ml'&&ppu<0.2)continue;const [x,y]=S(...P(a,b));const hw=t.length*3.6+8;if(x-hw<4||x+hw>W-4||y<70||y>Hh-(innerWidth<760?92:40))continue;o+=`<text class="${c}" x="${x}" y="${y}" text-anchor="middle">${t}</text>`}
+  for(const [t,a,b] of GAU){const [gx,gy]=S(...P(a,b));if(gx<8||gx>W-8||gy<40||gy>Hh-30||(gx<130&&gy<70))continue;o+=`<circle class="gauge" cx="${gx}" cy="${gy}" r="5"><title>NOAA ${t.replace(' gauge','')} tide station</title></circle>`+(ppu<0.2?'':t==='SF gauge'?`<text class="ml" x="${gx+9}" y="${gy+15}">${t}</text>`:`<text class="ml" x="${gx}" y="${gy-10}" text-anchor="middle">${t}</text>`)}
+  const [hx,hy]=S(...P(37.6405,-122.4058));if(hy>60&&hy<Hh-40&&ppu>=0.2)o+=`<g transform="translate(${Math.max(24,Math.min(W-70,hx+16))} ${hy})"><path class="shield" d="M-12 -9h24v10q0 8-12 11q-12-3-12-11z"/><text class="shieldt" y="3" text-anchor="middle">101</text></g>`;
+  if(wallOn){const w=lvl(sel)-OPN;for(const [a,b,c] of CREST){const [x,y]=S(...P(a,b));const m=c-w;o+=`<circle class="wd" cx="${x}" cy="${y}" r="${Math.max(4,Math.min(7,view.k*5))}" fill="${m>=2?'#0f9b78':m>=1?'#e3c341':m>=0?'var(--c2)':'var(--c3)'}"><title>Edge about ${c.toFixed(1)} ft, water ${w.toFixed(1)} ft (NAVD88): margin ${m.toFixed(1)} ft</title></circle>`}}
+  for(const [n,a,b] of KPT){const [x,y]=S(...P(a,b));if(x<6||x>W-6||y<6||y>Hh-6)continue;o+=`<circle class="kpt" cx="${x}" cy="${y}" r="${ppu<0.2?5:7}" fill="${MC(0)}" stroke="#fff" stroke-width="2"><title>${n}</title></circle>`+(ppu<0.2?'':`<text class="ml" x="${x+11}" y="${y+4}">${n}</text>`)}
+  for(const [n,a,b] of PLC){const [x,y]=S(...P(a,b));const r=ppu<0.2?6:13;o+=`<circle class="ring" cx="${x}" cy="${y}" r="${r}" stroke="${MC(cur)}"/><circle class="mk" cx="${x}" cy="${y}" r="${r}" fill="${MC(cur)}"><title>${n}</title></circle>`+(ppu<0.2?'':`<text class="mkt" x="${x}" y="${y+4.5}" text-anchor="middle">${n}</text>`)}
+  const ppm=k/11.12,mi=[0.25,0.5,1,2,4].filter(v=>v*1609.34*ppm<=Math.min(150,W*.35)).pop()||0.25,bl=mi*1609.34*ppm,ph=innerWidth<760,sx=ph?14:W-bl-14,sy=ph?Hh-66:Hh-22;
+  o+=`<path class="scale" d="M${sx} ${sy-6}V${sy}H${sx+bl}V${sy-6}"/><text class="scalet" x="${sx+bl/2}" y="${sy-8}" text-anchor="middle">${mi<1?(mi===0.5?'½':'¼'):mi} mi</text>`;
+  gO.innerHTML=o;msvg.classList.toggle('zoomed',view.k>1.3);paintMap(cur);
+}
+function paintMap(c){cur=c;const aOP=lvl(sel)-OPN,aSF=sfLvl(sel)+SFN,hOP=heat(aOP),hSF=heat(aSF);if(lowOn)lowPaint(aOP,aSF);{const f=Math.round(sfoLow(aOP)*100);document.getElementById('rLow').textContent=f<1?`All of SFO's ground sits above the water right now.`:`${f}% of SFO's ground is lower than the water right now. The shoreline edge is what keeps it dry.`}const sh=gG.querySelector('#shore');if(sh){sh.style.stroke=hOP;sh.style.opacity=wallOn?.3:1}
+  const so=gG.querySelector('#shOP'),ss=gG.querySelector('#shSF');if(so)so.style.stroke=hOP;if(ss)ss.style.stroke=hSF;
+  levels(aOP,aSF);
+  for(const m of gO.querySelectorAll('.kpt'))m.setAttribute('fill',hSF);
+  for(const p of ['A','B','C']){const e=document.getElementById('pin'+p);if(e)e.style.background=hOP}
+  document.getElementById('eT').hidden=document.getElementById('rEdge').hidden=!wallOn;
+  if(wallOn){const w=lvl(sel)-OPN,n=CREST.filter(([a,b,h])=>h<w).length;document.getElementById('rEdge').textContent=`Water could spill over ${n} of ${CREST.length} sampled spots on SFO's shoreline now: their tops (lidar) sit below the ${w.toFixed(1)} ft water. Lowest top: ${Math.min(...CREST.map(c=>c[2])).toFixed(1)} ft.`;const ds=gO.querySelectorAll('.wd');CREST.forEach(([a,b,h],i)=>{const m=h-w;if(ds[i])ds[i].setAttribute('fill',m>=2?'#0f9b78':m>=1?'#e3c341':m>=0?'var(--c2)':'var(--c3)')})}
+  for(const m of gO.querySelectorAll('.mk'))m.setAttribute('fill',hOP);for(const m of gO.querySelectorAll('.ring')){m.setAttribute('stroke',hOP);m.style.display=c>=2?'':'none'}}
+let fitted=true,vmode='full';
+const fitView=()=>{if(fitted){view=vmode==='full'?FULL():HOME();drawMap()}};
+const zoom=f=>{fitted=false;view.k=Math.max(Math.min(0.5,FULL().k),Math.min(6,view.k*f));drawMap()};
+document.getElementById('zin').onclick=()=>zoom(1.5);document.getElementById('zout').onclick=()=>zoom(1/1.5);
+document.getElementById('zhome').onclick=()=>{fitted=true;vmode='full';view=FULL();drawMap();setV('full')};
+const setV=v=>{for(const b of document.querySelectorAll('.vw button'))b.setAttribute('aria-pressed',b.dataset.v===v)};
+for(const b of document.querySelectorAll('.vw button'))b.addEventListener('click',()=>{fitted=true;vmode=b.dataset.v;view=vmode==='full'?FULL():HOME();setV(b.dataset.v);drawMap()});
+let pan=null;
+msvg.addEventListener('pointerdown',e=>{if(e.pointerType==='touch'&&view.k<=1.3)return;pan={x:e.clientX,y:e.clientY,cx:view.cx,cy:view.cy};msvg.setPointerCapture(e.pointerId)});
+msvg.addEventListener('pointermove',e=>{if(!pan)return;fitted=false;const {s}=base(),k=s*view.k;view.cx=pan.cx-(e.clientX-pan.x)/k;view.cy=pan.cy-(e.clientY-pan.y)/k;drawMap()});
+msvg.addEventListener('pointerup',()=>pan=null);msvg.addEventListener('pointercancel',()=>pan=null);
+const ovb=document.getElementById('ovb');
+ovb.addEventListener('click',()=>{lowOn=!lowOn;ovb.setAttribute('aria-pressed',lowOn);lowImg.style.display=topoImg.style.display=lowOn?'':'none';document.documentElement.classList.toggle('nolow',!lowOn);lowKey='';paintMap(cur);fitView()});
+const kb=document.getElementById('keyb'),mkey=document.getElementById('mkey');
+kb.addEventListener('click',()=>{mkey.hidden=!mkey.hidden;kb.setAttribute('aria-expanded',!mkey.hidden)});
+const TED=[5,10,15,25,50,100,200,400,700];
+const LGH=`<div class="lga"><div class="lgt">Ground height above sea level</div><div class="tbar">${[...Array(10).keys()].map(c=>`<i style="background:var(--t${c})"></i>`).join('')}</div><div class="tticks">${[[2,'10'],[5,'50'],[7,'200'],[9,'700 ft']].map(([k,t])=>`<span style="left:${k*10}%">${t}</span>`).join('')}</div></div><div class="lgr"><span><i style="background:rgba(${LOWC[0].slice(0,3)},.8)"></i>below the water now</span><span><i style="background:rgba(${LOWC[1].slice(0,3)},.6)"></i>0 to 1 ft above</span><span><i style="background:rgba(${LOWC[2].slice(0,3)},.45)"></i>1 to 2 ft above</span></div><div class="lgn2">Blue ground stays dry unless water gets past the shoreline.</div>`;
+document.getElementById('lgd').innerHTML=LGH;
+requestAnimationFrame(()=>requestAnimationFrame(fitView));
+{const hd=document.querySelector('.hd'),setH=()=>document.documentElement.style.setProperty('--hoff',Math.max(0,Math.round(hd.getBoundingClientRect().bottom))+'px');addEventListener('scroll',setH,{passive:true});addEventListener('resize',setH);setH()}
+{const sb=document.querySelector('.sbar');const roS=new ResizeObserver(()=>document.documentElement.style.setProperty('--sbh',sb.offsetHeight+'px'));roS.observe(sb)}
+document.getElementById('scrub').max=Math.round((t1-t0)/STEP)-1;
+const LUTS=[...document.querySelectorAll('.lut')];
+for(const L of LUTS){const st=[];for(let v=CBMIN;v<=CBMAX+1e-9;v+=0.25)st.push(`${heat(v)} ${((v-CBMIN)/(CBMAX-CBMIN)*100).toFixed(1)}%`);
+  L.innerHTML=`<div class="lcap">Water height, ft (NAVD88)</div><div class="lbar"><div class="gr" style="background:linear-gradient(90deg,${st.join(',')})"></div>${[6,7,8,9,10].map(v=>`<span class="tk" style="left:${((v-CBMIN)/(CBMAX-CBMIN)*100).toFixed(1)}%">${v}${v===10?' ft':''}</span>`).join('')}<span class="mp mp1"></span><span class="mlab ml1"></span><span class="mp mp2"></span><span class="mlab ml2"></span></div>`}
+let LA=[0,0];
+function lutUpdate(aOP,aSF){LA=[aOP,aSF];for(const L of LUTS){const bar=L.querySelector('.lbar'),w=bar.clientWidth;if(!w)continue;
+  const put=(pc,lc,a,txt)=>{const x=Math.max(0,Math.min(1,(a-CBMIN)/(CBMAX-CBMIN)))*w,p=bar.querySelector(pc),l=bar.querySelector(lc);p.style.left=x+'px';l.textContent=txt;const lw=l.offsetWidth;l.style.left=Math.max(0,Math.min(w-lw,x-lw/2))+'px'};
+  put('.mp1','.ml1',aOP,`SFO ${aOP.toFixed(1)}`);put('.mp2','.ml2',aSF,`Pier 14 ${aSF.toFixed(1)}`)}}
+function levels(aOP,aSF){document.getElementById('krows').innerHTML=KEYS.map(([n,g,f,sn])=>{const w=g==='op'?aOP:aSF,d=w-f,st=d>=0.05?'over':d>-0.05?'at':'';return `<div class="kr" style="border-color:${heat(w)}" title="${n}: water ${w.toFixed(1)} ft, floods at ${f} ft (${Math.abs(d).toFixed(1)} ft ${d>=0?'over':'below'})"><span class="kn"><span class="ln">${n}</span><span class="sn">${sn}</span><span class="ksep"> · </span><span class="kf${st?' kfo':''}">floods at ${f}</span></span><span class="kv"><b>${w.toFixed(1)} ft</b>${st?`<span class="ko">${st==='over'?'flooding':'at edge'}</span>`:''}</span></div>`}).join('');fitNames();lutUpdate(aOP,aSF)}
+function fitNames(){for(const r of document.querySelectorAll('#krows .kr')){r.classList.remove('short','wrap');const k=r.querySelector('.kn'),ov=()=>k.scrollWidth>k.clientWidth+1;if(ov())r.classList.add('short');if(ov())r.classList.add('wrap')}}
+const ro3=new ResizeObserver(()=>{fitNames();lutUpdate(...LA)});ro3.observe(document.getElementById('krows'));for(const L of LUTS)ro3.observe(L);
+const ro1=new ResizeObserver(drawChart);ro1.observe(csvg);
+const ro2=new ResizeObserver(()=>{if(homed&&fitted)view=vmode==='full'?FULL():HOME();drawMap()});ro2.observe(msvg);
+table();update();
+}
+</script>
+</body>
+</html>
