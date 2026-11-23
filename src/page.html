@@ -93,6 +93,7 @@ input[type=range]{display:block;width:100%;margin:0;accent-color:var(--ink);heig
 .tticks{position:relative;height:13px;font-size:10.5px;color:var(--mute)}.tticks span{position:absolute;top:1px;transform:translateX(-50%);white-space:nowrap}
 .lgr{display:flex;flex-wrap:wrap;gap:3px 14px;padding-top:15px}.lgh{font-weight:600}.lgr span{display:flex;align-items:center;gap:5px;white-space:nowrap}.lgr i{width:14px;height:11px;border-radius:2px;flex:none}
 .lgn2{flex-basis:100%;font-size:11.5px;color:var(--mute)}
+.lgr i.hatch{background:repeating-linear-gradient(45deg,rgba(96,22,150,.95) 0 2px,rgba(96,22,150,.2) 2px 7px)}html:not(.hasgl) .lghat{display:none}
 @media(min-width:760px){.nolow .maplg{display:none}}
 .side{background:var(--panel)}
 .blk{padding:14px 16px;border-bottom:1px solid var(--line)}
@@ -164,6 +165,15 @@ html:not(.nolow) .mapw.gl .landp,html:not(.nolow) .mapw.gl .sfop{fill:none;strok
 .addrx{flex:none;width:36px;height:40px;border:0;background:none;color:var(--mute);font-size:22px;line-height:1;cursor:pointer;padding:0}
 .addro{margin:8px 0 0;font-size:14px;line-height:1.45}.addro b{font-weight:700}
 .addra{margin:4px 0 0;font-size:11px;color:var(--mute)}
+.addrl{display:flex;align-items:center;gap:6px;font-weight:700;font-size:14.5px;margin:0 0 7px}
+.addrl svg,.tools button svg{width:17px;height:17px;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round}.tools button svg{display:block;margin:auto}
+.addrw{position:relative;flex:1 1 auto;min-width:0}.addrw input{width:100%}
+.addr input:focus-visible{outline:2px solid var(--ink);outline-offset:1px}
+.addrs{position:absolute;left:0;right:0;top:calc(100% + 4px);z-index:40;margin:0;padding:4px 0;list-style:none;background:var(--panel);border:1px solid var(--line);border-radius:10px;box-shadow:0 6px 18px rgba(0,0,0,.2);max-height:min(264px,45vh);overflow:auto}
+.addrs.up{top:auto;bottom:calc(100% + 4px)}
+.addrs li{padding:8px 12px;cursor:pointer;line-height:1.3}.addrs li b{display:block;font-weight:600;font-size:15px}.addrs li span{display:block;font-size:12.5px;color:var(--mute)}
+.addrs li[aria-selected=true],.addrs li:hover{background:var(--chip)}
+@media(max-width:759px){.mapcol>.mapw{order:0}.mapcol>.addr{order:1;padding:12px 14px 10px;background:var(--chip);border-top:0;border-bottom:1px solid var(--line)}.mapcol>.maplg{order:2}.addr input{background:var(--panel);height:46px}.addrb{height:46px;padding:0 18px}.addrl{font-size:16px}}
 .apin path{fill:var(--ink);stroke:var(--panel);stroke-width:2}.apin circle{fill:var(--panel)}
 .kshort{display:none}.attr{position:absolute;right:8px;bottom:3px;font-size:11px;color:var(--mute)}
 @media (prefers-reduced-motion:reduce){details.fold>summary::after,.kr,.shore,.bshore,.mk{transition:none}.ring{display:none}}
@@ -267,7 +277,7 @@ html:not(.nolow) .mapw.gl .landp,html:not(.nolow) .mapw.gl .sfop{fill:none;strok
       <li><a href="https://tidesandcurrents.noaa.gov/noaatidepredictions.html?id=9414392">NOAA tide predictions and datums, Oyster Point 9414392</a>; flood thresholds, San Francisco 9414290; Bay Area shoreline levels from the nearest of <a href="https://tidesandcurrents.noaa.gov/noaatidepredictions.html?id=9414750">Alameda 9414750</a>, <a href="https://tidesandcurrents.noaa.gov/noaatidepredictions.html?id=9414863">Richmond 9414863</a>, <a href="https://tidesandcurrents.noaa.gov/noaatidepredictions.html?id=9414523">Redwood City 9414523</a> and <a href="https://tidesandcurrents.noaa.gov/noaatidepredictions.html?id=9414575">Coyote Creek 9414575</a>, each with the same storm surge added</li>
       <li><a href="https://www.sfchronicle.com/travel/article/sfo-airport-flood-weather-22543280.php">SF Chronicle: SFO will flood this week</a>; <a href="https://www.nbcbayarea.com/news/local/flooding-sfo-oak-national-weather-service/4180385/">NBC Bay Area</a>; <a href="https://deeparrival.com/news/sfo-flood-risk-san-francisco-meters-free-november-23-25-2026/">Deep Arrival</a></li>
       <li>Port of San Francisco Waterfront Resilience Program flood risk profiles: Ferry Building (Subarea 2-2), Mission Rock (Subarea 3-3)</li>
-      <li>Map: US Census TIGER land, water and highways for six Bay Area counties, OpenStreetMap airport outlines; ground heights from USGS 3DEP lidar via the National Map (1 m samples along SFO's edge, a 10 m grid averaged to about 30 m cells for the low-ground layer); SFO shoreline maintenance drawings (existing protection 9.2 ft NAVD88); OAK's perimeter dike from 3DEP lidar along its crest (median 13.2 ft NAVD88, lowest tenth under 10.8 ft, so 13 ft is a rough line, not a design height); FAA runway ends via AirNav (<a href="https://www.airnav.com/airport/KSFO">SFO</a>, <a href="https://www.airnav.com/airport/KOAK">OAK</a>)</li>
+      <li>Map: US Census TIGER land, water and highways for six Bay Area counties, OpenStreetMap airport outlines; ground heights from USGS 3DEP lidar via the National Map (1 m samples along SFO's edge, a 10 m grid averaged to about 30 m cells for the low-ground layer); SFO shoreline maintenance drawings (existing protection 9.2 ft NAVD88); OAK's South Field perimeter dike, which the Port of Oakland raised about 3 ft above a 10 ft still-water level (<a href="https://ceqanet.lci.ca.gov/2015092045/2">Airport Perimeter Dike project</a>), and 3DEP lidar along its crest (median 13.2 ft NAVD88, lowest tenth under 10.8 ft, so 13 ft is a rough line, not a design height); map stripes cover SFO and only OAK's South Field, since the North Field is outside that dike; salt ponds, other open water and tidal wetlands from OpenStreetMap are left out of the low-ground layer; FAA runway ends via AirNav (<a href="https://www.airnav.com/airport/KSFO">SFO</a>, <a href="https://www.airnav.com/airport/KOAK">OAK</a>)</li>
       <li>Approach and layout after the <a href="https://claude.ai/artifact/7udMTTZs1kN4kNBM3pfFgo">Oakland Flood Week</a> map shared on Reddit</li>
     </ul></details>
   </div>
@@ -277,7 +287,7 @@ html:not(.nolow) .mapw.gl .landp,html:not(.nolow) .mapw.gl .sfop{fill:none;strok
 <section class="mapw" id="map" aria-label="Map of the SF peninsula shoreline">
   <svg role="img" aria-label="Map of the SF peninsula shoreline colored by water height at the selected time"><g id="geo"></g><g id="ovl"></g></svg>
   <div class="vw" role="group" aria-label="Map view"><button data-v="sfo" aria-pressed="false">SFO</button><button data-v="full" aria-pressed="true">Peninsula</button><button data-v="oak" aria-pressed="false">OAK</button><button data-v="bay" aria-pressed="false">Bay Area</button></div>
-  <div class="tools"><button id="zin" aria-label="Zoom in">+</button><button id="zout" aria-label="Zoom out">−</button><button id="zhome" aria-label="Show the whole peninsula">⌂</button></div>
+  <div class="tools"><button id="zin" aria-label="Zoom in">+</button><button id="zout" aria-label="Zoom out">−</button><button id="zhome" aria-label="Show the whole peninsula">⌂</button><button id="zfind" aria-label="Check an address"><svg viewBox="0 0 20 20" aria-hidden="true"><circle cx="8.5" cy="8.5" r="5.5"/><path d="M12.6 12.6 17 17"/></svg></button></div>
   <div class="mb"><button class="mbtn" id="keyb" aria-expanded="false"><span class="kfull">Map key</span><span class="kshort">Key</span></button><button class="mbtn" id="ovb" aria-pressed="true">Ground height</button></div>
   <div class="pop" id="mkey" hidden>
     <div style="display:block;color:var(--mute);margin-top:0">Shoreline color is the water height at the nearest gauge, on the same scale as the water-height bar: Oyster Point from Candlestick to SFO, the SF gauge for the city and the Pacific side, and elsewhere the closest of Alameda, Richmond, Redwood City and Coyote Creek. SFO's edge is drawn thicker.</div>
@@ -290,9 +300,10 @@ html:not(.nolow) .mapw.gl .landp,html:not(.nolow) .mapw.gl .sfop{fill:none;strok
 </section>
 <div class="maplg"><div class="lut lut2" id="lut2"></div><div class="lgd" id="lgd"></div></div>
 <form class="addr" id="addr" role="search" aria-label="Check an address" autocomplete="off">
-  <div class="addrr"><input id="addrq" type="text" enterkeyhint="search" placeholder="Check an address, e.g. 1 Ferry Building, SF" aria-label="Address to check"><button type="button" class="addrx" id="addrx" aria-label="Clear address" hidden>&times;</button><button type="submit" class="addrb" id="addrb">Find</button></div>
+  <label class="addrl" for="addrq"><svg viewBox="0 0 20 20" aria-hidden="true"><circle cx="8.5" cy="8.5" r="5.5"/><path d="M12.6 12.6 17 17"/></svg>Check an address against this week's water</label>
+  <div class="addrr"><div class="addrw"><input id="addrq" type="text" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="addrs" enterkeyhint="search" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" placeholder="Street address or place, e.g. Ferry Building" aria-label="Address to check"><ul class="addrs" id="addrs" role="listbox" aria-label="Suggested places" hidden></ul></div><button type="button" class="addrx" id="addrx" aria-label="Clear address" hidden>&times;</button><button type="submit" class="addrb" id="addrb">Find</button></div>
   <p class="addro" id="addro" aria-live="polite" hidden></p>
-  <p class="addra">Search: OpenStreetMap Nominatim</p>
+  <p class="addra">Search: Photon by komoot and Nominatim, OpenStreetMap data</p>
 </form>
 </div>
 
@@ -433,6 +444,7 @@ ${ZONES.map(z=>`<filter id="fz_${z}" x="0" y="0" width="1" height="1" color-inte
 <path class="landp" d="${GEO.land}" transform="${OT}"/><path class="landp" id="bland" d=""/><path class="sfop" d="${GEO.sfo}" transform="${OT}"/><path class="oakp" id="oakp" d=""/>
 <image id="topog" preserveAspectRatio="none"/><g id="lowg"></g>`+[...RW,...ORW].map(([a,b])=>{const [x1,y1]=P(...a),[x2,y2]=P(...b);return `<line class="rw" x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke-width="5.5"/>`}).join('')+`<path class="hw" d="${GEO.h101}" transform="${OT}"/><path class="hw" id="broads" d=""/><path class="bshore" id="shOP" d="${GEO.shOP}" transform="${OT}"/><path class="bshore" id="shSF" d="${GEO.shSF}" transform="${OT}"/><path class="shore" id="shore" d="${GEO.shore}" transform="${OT}"/><g id="bshore"></g>`;
 const LOWC=[[246,138,196,175],[214,44,140,205],[96,22,150,230]];
+const WALLS={1:{name:"SFO's shoreline wall",crest:9.2,zone:'op'},2:{name:"OAK's South Field dike",crest:13.0,zone:'ala'}};
 let lowOn=true,BAY=null,EVZ={},NAVZ={},bayReady=false;
 const topoImg=gG.querySelector('#topog'),lowG=gG.querySelector('#lowg');
 const tv=a=>a.map(v=>(+v).toFixed(3)).join(' ');
@@ -454,17 +466,17 @@ const GLR=/[?&]nogl\b/.test(location.search)?null:(()=>{try{
   const dri=gl.getExtension('WEBGL_debug_renderer_info'),rend=dri?String(gl.getParameter(dri.UNMASKED_RENDERER_WEBGL)):'';if(/swiftshader|llvmpipe|software|basic render/i.test(rend))return null;
   const PR='#ifdef GL_FRAGMENT_PRECISION_HIGH\nprecision highp float;\n#else\nprecision mediump float;\n#endif\n',VS=PR+'attribute vec2 a;uniform vec4 r,m,mr;varying vec2 v,q;void main(){v=a;vec2 u=r.xy+a*r.zw;q=(u-mr.xy)/mr.zw;gl_Position=vec4(u.x*m.x+m.z,u.y*m.y+m.w,0.,1.);}';
   const FT=PR+'uniform sampler2D t,mk;uniform float hm;varying vec2 v,q;void main(){vec4 c=texture2D(t,v);float m=hm>.5?texture2D(mk,q).r:c.a;gl_FragColor=vec4(c.rgb*m,m);}';
-  const FL=PR+'uniform sampler2D t;uniform float w;uniform vec4 c0,c1,c2;varying vec2 v,q;void main(){vec4 s=texture2D(t,v);if(s.a<.5)discard;float c=floor(s.r*42.);if(c>40.5)discard;float g=c<.5?3.75:4.125+.25*(c-1.);float d=w-g;if(d<=0.)discard;vec4 k=d<1.?c0:d<2.?c1:c2;gl_FragColor=vec4(k.rgb*k.a,k.a);}';
+  const FL=PR+'uniform sampler2D t,pr;uniform float w,hp,cs,co,hd,hw;uniform vec4 c0,c1,c2;varying vec2 v,q;void main(){vec4 s=texture2D(t,v);if(s.a<.5)discard;float c=floor(s.r*42.);if(c>40.5)discard;float g=c<.5?3.75:4.125+.25*(c-1.);float d=w-g;if(d<=0.)discard;vec4 k=d<1.?c0:d<2.?c1:c2;if(hp>.5){float id=floor(texture2D(pr,q).r*3.+.5);float cr=id>1.5?co:id>.5?cs:-1e4;if(w<cr){float h=mod(gl_FragCoord.x+gl_FragCoord.y,hd);k.a*=h<hw?1.:.2;}}gl_FragColor=vec4(k.rgb*k.a,k.a);}';
   let P1,P2,buf,U1,U2,tex={},imgs={},lost=false;
   const mk=()=>{const sh=(t,src)=>{const o=gl.createShader(t);gl.shaderSource(o,src);gl.compileShader(o);if(!gl.getShaderParameter(o,gl.COMPILE_STATUS))throw new Error(gl.getShaderInfoLog(o));return o};
     const pr=f=>{const o=gl.createProgram();gl.attachShader(o,sh(gl.VERTEX_SHADER,VS));gl.attachShader(o,sh(gl.FRAGMENT_SHADER,f));gl.bindAttribLocation(o,0,'a');gl.linkProgram(o);if(!gl.getProgramParameter(o,gl.LINK_STATUS))throw new Error(gl.getProgramInfoLog(o));return o};
-    P1=pr(FT);P2=pr(FL);const u=(p,n)=>gl.getUniformLocation(p,n);U1={r:u(P1,'r'),m:u(P1,'m'),t:u(P1,'t'),mk:u(P1,'mk'),hm:u(P1,'hm'),mr:u(P1,'mr')};U2={r:u(P2,'r'),m:u(P2,'m'),mr:u(P2,'mr'),t:u(P2,'t'),w:u(P2,'w'),c0:u(P2,'c0'),c1:u(P2,'c1'),c2:u(P2,'c2')};
+    P1=pr(FT);P2=pr(FL);const u=(p,n)=>gl.getUniformLocation(p,n);U1={r:u(P1,'r'),m:u(P1,'m'),t:u(P1,'t'),mk:u(P1,'mk'),hm:u(P1,'hm'),mr:u(P1,'mr')};U2={r:u(P2,'r'),m:u(P2,'m'),mr:u(P2,'mr'),t:u(P2,'t'),w:u(P2,'w'),c0:u(P2,'c0'),c1:u(P2,'c1'),c2:u(P2,'c2'),pr:u(P2,'pr'),hp:u(P2,'hp'),cs:u(P2,'cs'),co:u(P2,'co'),hd:u(P2,'hd'),hw:u(P2,'hw')};
     buf=gl.createBuffer();gl.bindBuffer(gl.ARRAY_BUFFER,buf);gl.bufferData(gl.ARRAY_BUFFER,new Float32Array([0,0,1,0,0,1,0,1,1,0,1,1]),gl.STATIC_DRAW);gl.enableVertexAttribArray(0);gl.vertexAttribPointer(0,2,gl.FLOAT,false,0,0);
     gl.enable(gl.BLEND);gl.blendFunc(gl.ONE,gl.ONE_MINUS_SRC_ALPHA);tex={};for(const k in imgs)up(k)};
   const up=k=>{const o=imgs[k];if(!o||!o.img.complete||!o.img.naturalWidth)return;const t=gl.createTexture();gl.bindTexture(gl.TEXTURE_2D,t);
     gl.pixelStorei(gl.UNPACK_COLORSPACE_CONVERSION_WEBGL,gl.NONE);gl.pixelStorei(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL,false);
-    const f=o.fmt==='rgba'?gl.RGBA:o.fmt==='l'?gl.LUMINANCE:gl.LUMINANCE_ALPHA;gl.texImage2D(gl.TEXTURE_2D,0,f,f,gl.UNSIGNED_BYTE,o.img);
-    const flt=o.fmt==='la'?gl.NEAREST:gl.LINEAR;gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MIN_FILTER,flt);gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MAG_FILTER,flt);
+    const f=o.fmt==='rgba'?gl.RGBA:o.fmt==='l'||o.fmt==='n'?gl.LUMINANCE:gl.LUMINANCE_ALPHA;gl.texImage2D(gl.TEXTURE_2D,0,f,f,gl.UNSIGNED_BYTE,o.img);
+    const flt=o.fmt==='la'||o.fmt==='n'?gl.NEAREST:gl.LINEAR;gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MIN_FILTER,flt);gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MAG_FILTER,flt);
     gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_S,gl.CLAMP_TO_EDGE);gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_T,gl.CLAMP_TO_EDGE);tex[k]=t};
   mk();
   cv.addEventListener('webglcontextlost',e=>{e.preventDefault();lost=true});
@@ -480,10 +492,11 @@ const GLR=/[?&]nogl\b/.test(location.search)?null:(()=>{try{
       const mko=imgs.mask,hm=!!(tex.mask&&mko),mrr=hm?mko.rect:{x:0,y:0,w:1,h:1};
       if(tex[tk]&&vis(imgs[tk].rect)){gl.useProgram(P1);gl.uniform4fv(U1.m,m);gl.uniform4f(U1.mr,mrr.x,mrr.y,mrr.w,mrr.h);gl.uniform1f(U1.hm,hm?1:0);gl.uniform1i(U1.t,0);gl.uniform1i(U1.mk,1);gl.activeTexture(gl.TEXTURE1);gl.bindTexture(gl.TEXTURE_2D,hm?tex.mask:tex[tk]);gl.activeTexture(gl.TEXTURE0);const r=imgs[tk].rect;gl.uniform4f(U1.r,r.x,r.y,r.w,r.h);gl.bindTexture(gl.TEXTURE_2D,tex[tk]);gl.drawArrays(gl.TRIANGLES,0,6)}
       gl.activeTexture(gl.TEXTURE0);
-      gl.useProgram(P2);gl.uniform4fv(U2.m,m);gl.uniform4f(U2.mr,0,0,1,1);gl.uniform1i(U2.t,0);const C=c=>[c[0]/255,c[1]/255,c[2]/255,c[3]/255];gl.uniform4fv(U2.c0,C(LOWC[0]));gl.uniform4fv(U2.c1,C(LOWC[1]));gl.uniform4fv(U2.c2,C(LOWC[2]));
+      const pro=imgs.prot,hp=!!(tex.prot&&pro),prr=hp?pro.rect:{x:0,y:0,w:1,h:1},sc=cw/W;
+      gl.useProgram(P2);gl.uniform4fv(U2.m,m);gl.uniform4f(U2.mr,prr.x,prr.y,prr.w,prr.h);gl.uniform1i(U2.t,0);gl.uniform1i(U2.pr,1);gl.uniform1f(U2.hp,hp?1:0);gl.uniform1f(U2.cs,WALLS[1].crest);gl.uniform1f(U2.co,WALLS[2].crest);gl.uniform1f(U2.hd,Math.round(7*sc));gl.uniform1f(U2.hw,Math.max(1,Math.round(2*sc)));gl.activeTexture(gl.TEXTURE1);gl.bindTexture(gl.TEXTURE_2D,hp?tex.prot:null);gl.activeTexture(gl.TEXTURE0);const C=c=>[c[0]/255,c[1]/255,c[2]/255,c[3]/255];gl.uniform4fv(U2.c0,C(LOWC[0]));gl.uniform4fv(U2.c1,C(LOWC[1]));gl.uniform4fv(U2.c2,C(LOWC[2]));
       const WZ=zlAll(sel);for(const z of ZONES){const kz='low_'+z,w=WZ[z];if(w==null||!tex[kz])continue;const r=imgs[kz].rect;if(!vis(r))continue;gl.uniform1f(U2.w,w);gl.uniform4f(U2.r,r.x,r.y,r.w,r.h);gl.bindTexture(gl.TEXTURE_2D,tex[kz]);gl.drawArrays(gl.TRIANGLES,0,6)}}};
   return R}catch(e){console.warn('webgl off',e);return null}})();
-if(GLR){msvg.before(GLR.cv);msvg.parentNode.classList.add('gl')}
+if(GLR){msvg.before(GLR.cv);msvg.parentNode.classList.add('gl');document.documentElement.classList.add('hasgl')}
 const pctBelow=(st,w)=>{if(!st||!st.n||w==null)return null;let n=0;st.hist.forEach((h,c)=>{if(c<41&&(c===0?4:4+0.25*c)<=w)n+=h});return n/st.n};
 const parseT=s=>Date.parse(s.replace(' ','T')+':00-08:00');
 function zl(z,t){if(z==='op')return lvl(t)-OPN;if(z==='sf')return sfLvl(t)+SFN;const ev=EVZ[z];if(!ev)return null;return tideE(ev,t)+anom(t)+(high?HI:0)-NAVZ[z]}
@@ -540,14 +553,14 @@ ovb.addEventListener('click',()=>{lowOn=!lowOn;ovb.setAttribute('aria-pressed',l
 const kb=document.getElementById('keyb'),mkey=document.getElementById('mkey');
 kb.addEventListener('click',()=>{mkey.hidden=!mkey.hidden;kb.setAttribute('aria-expanded',!mkey.hidden)});
 const TED=[5,10,15,25,50,100,200,400,700];
-const LGH=`<div class="lga"><div class="lgt">Ground height above sea level</div><div class="tbar">${[...Array(10).keys()].map(c=>`<i style="background:var(--t${c})"></i>`).join('')}</div><div class="tticks">${[[2,'10'],[5,'50'],[7,'200'],[9,'700 ft']].map(([k,t])=>`<span style="left:${k*10}%">${t}</span>`).join('')}</div></div><div class="lgr"><span class="lgh">Below the water level now, by:</span><span><i style="background:rgba(${LOWC[0].slice(0,3)},.75)"></i>0 to 1 ft</span><span><i style="background:rgba(${LOWC[1].slice(0,3)},.85)"></i>1 to 2 ft</span><span><i style="background:rgba(${LOWC[2].slice(0,3)},.9)"></i>2+ ft</span></div><div class="lgn2">That is how deep it would flood if water got past the shoreline and seawalls, which are all that keep this ground dry.</div>`;
+const LGH=`<div class="lga"><div class="lgt">Ground height above sea level</div><div class="tbar">${[...Array(10).keys()].map(c=>`<i style="background:var(--t${c})"></i>`).join('')}</div><div class="tticks">${[[2,'10'],[5,'50'],[7,'200'],[9,'700 ft']].map(([k,t])=>`<span style="left:${k*10}%">${t}</span>`).join('')}</div></div><div class="lgr"><span class="lgh">Below the water level now, by:</span><span><i style="background:rgba(${LOWC[0].slice(0,3)},.75)"></i>0 to 1 ft</span><span><i style="background:rgba(${LOWC[1].slice(0,3)},.85)"></i>1 to 2 ft</span><span><i style="background:rgba(${LOWC[2].slice(0,3)},.9)"></i>2+ ft</span><span class="lghat"><i class="hatch"></i>Striped: behind a wall that is taller than the water</span></div><div class="lgn2">That is how deep it would flood if water got past the shoreline and seawalls, which are all that keep this ground dry. Stripes mark SFO (wall about 9.2 ft) and OAK's South Field (dike about 13 ft) while the water is below those walls.</div>`;
 document.getElementById('lgd').innerHTML=LGH;
 requestAnimationFrame(()=>requestAnimationFrame(fitView));
 Promise.all([fetch(DB+'data/bay.json').then(r=>r.json()),fetch(DB+'data/tides.json').then(r=>r.json())]).then(([b,t])=>{BAY=b;
   for(const z of ZONES){const st=t[z];if(!st)continue;EVZ[z]=st.hilo.map(([tt,h])=>({t:parseT(tt),h}));NAVZ[z]=st.navd_above_mllw??0}
   gG.querySelector('#bland').setAttribute('d',b.land);gG.querySelector('#bclip').setAttribute('d',b.land);gG.querySelector('#broads').setAttribute('d',b.roads||'');if(b.oak)gG.querySelector('#oakp').setAttribute('d',b.oak);
   gG.querySelector('#bshore').innerHTML=Object.entries(b.shore||{}).map(([z,d])=>`<path class="shore2" data-z="${z}" d="${d}"/>`).join('');
-  const tp=b.topo;if(GLR){const r={x:tp.x,y:tp.y,w:tp.w,h:tp.h};const ld=[GLR.load('topo_light',DB+tp.light,'rgba',r),GLR.load('topo_dark',DB+tp.dark,'rgba',r),...(tp.mask?[GLR.load('mask',DB+tp.mask.file,'l',{x:tp.mask.x,y:tp.mask.y,w:tp.mask.w,h:tp.mask.h})]:[]),...Object.entries(b.low.zones).map(([z,o])=>GLR.load('low_'+z,DB+o.file,'la',{x:o.x,y:o.y,w:o.w,h:o.h}))];for(const q of ld)q.then(()=>GLR.draw(),e=>console.warn('raster',e))}else{topoSrc();for(const k of ['x','y'])topoImg.setAttribute(k,tp[k]);topoImg.setAttribute('width',tp.w);topoImg.setAttribute('height',tp.h);
+  const tp=b.topo;if(GLR){const r={x:tp.x,y:tp.y,w:tp.w,h:tp.h};const ld=[GLR.load('topo_light',DB+tp.light,'rgba',r),GLR.load('topo_dark',DB+tp.dark,'rgba',r),...(tp.mask?[GLR.load('mask',DB+tp.mask.file,'l',{x:tp.mask.x,y:tp.mask.y,w:tp.mask.w,h:tp.mask.h})]:[]),...(b.protect?[GLR.load('prot',DB+b.protect.file,'n',{x:b.protect.x,y:b.protect.y,w:b.protect.w,h:b.protect.h})]:[]),...Object.entries(b.low.zones).map(([z,o])=>GLR.load('low_'+z,DB+o.file,'la',{x:o.x,y:o.y,w:o.w,h:o.h}))];for(const q of ld)q.then(()=>GLR.draw(),e=>console.warn('raster',e))}else{topoSrc();for(const k of ['x','y'])topoImg.setAttribute(k,tp[k]);topoImg.setAttribute('width',tp.w);topoImg.setAttribute('height',tp.h);
   lowG.innerHTML=GLR?'':Object.entries(b.low.zones).map(([z,o])=>`<image href="${DB+o.file}" x="${o.x}" y="${o.y}" width="${o.w}" height="${o.h}" preserveAspectRatio="none" filter="url(#fz_${z})"/>`).join('');}
   bayReady=true;for(const btn of document.querySelectorAll('.vw button'))btn.disabled=false;for(const z in zKey)delete zKey[z];paintMap(cur);drawMap();addrRead()
 }).catch(e=>{console.warn('bay data',e);document.getElementById('rLow').textContent='Ground heights did not load.'});
@@ -590,7 +603,9 @@ async function aPx(f,r,lat,lon){const img=await aImg(f),[x,y]=P(lat,lon),iw=img.
   if(u<0||v<0||u>=iw||v>=ih)return null;const c=document.createElement('canvas');c.width=c.height=1;const g=c.getContext('2d',{willReadFrequently:true});g.imageSmoothingEnabled=false;g.drawImage(img,u,v,1,1,0,0,1,1);return g.getImageData(0,0,1,1).data}
 function aZoneRule(lat,lon){const [o0,o1,a0,a1]=[-122.53,-122.30403,37.564,37.816];if(lon>=o0&&lon<=o1&&lat>=a0&&lat<=a1)return lat<37.712&&lon>-122.46?'op':'sf';if(lon<-122.40&&lat<37.78)return 'sf';
   const st=BAY&&BAY.stations;if(!st)return 'sf';const [x,y]=P(lat,lon);let best='sf',bd=1e18;for(const z of ZONES){const s=st[z];if(!s)continue;const [sx,sy]=P(s.lat,s.lon),d=(sx-x)**2+(sy-y)**2;if(d<bd){bd=d;best=z}}return best}
-async function aGround(lat,lon){if(!BAY||!BAY.low)return {kind:'none',zone:aZoneRule(lat,lon)};
+async function aWall(lat,lon){const pr=BAY&&BAY.protect;if(!pr)return 0;try{const d=await aPx(pr.file,pr,lat,lon);return d?Math.round(d[0]/85):0}catch(e){return 0}}
+async function aGround(lat,lon){const g=await aGround0(lat,lon),id=await aWall(lat,lon);g.wall=WALLS[id]?id:0;return g}
+async function aGround0(lat,lon){if(!BAY||!BAY.low)return {kind:'none',zone:aZoneRule(lat,lon)};
   for(const [z,o] of Object.entries(BAY.low.zones)){if(!o.file)continue;const [x,y]=P(lat,lon);if(x<o.x||y<o.y||x>o.x+o.w||y>o.y+o.h)continue;
     try{const d=await aPx(o.file,o,lat,lon);if(d&&d[3]>127){const c=Math.floor(d[0]*42/255);if(c<41)return {kind:'low',zone:z,c,g:c===0?3.75:4.125+0.25*(c-1)}}}catch(e){}}
   const zone=aZoneRule(lat,lon),tp=BAY.topo;
@@ -607,8 +622,9 @@ function addrRead(){if(!ADDR)return;const o=document.getElementById('addro');if(
   else t+='No reliable ground height for this exact spot (it may be a pier, a wharf or open water). ';
   if(w==null)t+='Bay levels are still loading.';
   else{t+=`At ${lab(sel)} the bay near ${ZNM[z]||'here'} is forecast at ${w.toFixed(1)} ft`;
-    if(G.kind==='low'&&G.c===0){const d=w-4;t+=d>0?`, so this spot sits more than ${d.toFixed(1)} ft below the water level. The shoreline and seawalls are what keep it dry.`:'.'}
-    else if(G.kind==='low'){const d=w-G.g;t+=d>0?`, so this spot sits about ${d.toFixed(1)} ft below the water level. The shoreline and seawalls are what keep it dry.`:`, so this spot sits about ${(-d).toFixed(1)} ft above it.`}
+    const WL=WALLS[G.wall],wtxt=WL&&G.kind==='low'?(w<WL.crest?` It is behind ${WL.name} (about ${WL.crest} ft), which is taller than that water.`:` It is behind ${WL.name} (about ${WL.crest} ft), and the forecast water is higher than that, so water could come over its lowest stretches.`):' The shoreline and seawalls are what keep it dry.';
+    if(G.kind==='low'&&G.c===0){const d=w-4;t+=d>0?`, so this spot sits more than ${d.toFixed(1)} ft below the water level.${wtxt}`:'.'}
+    else if(G.kind==='low'){const d=w-G.g;t+=d>0?`, so this spot sits about ${d.toFixed(1)} ft below the water level.${wtxt}`:`, so this spot sits about ${(-d).toFixed(1)} ft above it.`}
     else if(G.kind==='high')t+=', well below this spot.';else t+='.'}
   o.hidden=false;o.innerHTML=t}
 function aShow(r){const lat=+r.lat,lon=+r.lon;
@@ -619,6 +635,7 @@ function aShow(r){const lat=+r.lat,lon=+r.lon;
     const [x,y]=P(lat,lon),ph=innerWidth<760,k=HOME().k*(ph?1:1.6);fitted=false;view={cx:x,cy:ph?y-msvg.clientHeight*0.2/(base().s*k):y,k};drawMap();addrRead();document.getElementById('addrx').hidden=false;
     if(ph)document.getElementById('addr').scrollIntoView({block:'end',behavior:'smooth'})})}
 document.getElementById('addr').addEventListener('submit',async e=>{e.preventDefault();const inp=document.getElementById('addrq'),q=inp.value.trim();if(!q||aBusy)return;
+  clearTimeout(SUG.timer);if(SUG.items.length&&SUG.q===q){sPick(SUG.idx>=0?SUG.idx:0);return}if(SUG.ctl)SUG.ctl.abort();sClose();
   const key=q.toLowerCase();if(innerWidth<760)inp.blur();
   if(ACACHE.has(key)){const r=ACACHE.get(key);r?aShow(r):aFail('No match on this map for that address. Try adding the city.');return}
   const btn=document.getElementById('addrb');aBusy=true;btn.disabled=true;aMsg('Looking up...');
@@ -628,8 +645,37 @@ document.getElementById('addr').addEventListener('submit',async e=>{e.preventDef
     if(r)aShow(r);else aFail('No match on this map for that address. Try adding the city.')}
   catch(err){aFail("Address search isn't reachable right now. Try again in a moment.")}
   finally{aBusy=false;btn.disabled=false}});
-document.getElementById('addrx').addEventListener('click',()=>{ADDR=null;const inp=document.getElementById('addrq');inp.value='';aMsg('');document.getElementById('addrx').hidden=true;drawMap();inp.focus()});
+document.getElementById('addrx').addEventListener('click',()=>{ADDR=null;const inp=document.getElementById('addrq');inp.value='';aMsg('');if(typeof sClose==='function')sClose();document.getElementById('addrx').hidden=true;drawMap();inp.focus()});
 document.getElementById('addrq').addEventListener('input',e=>{document.getElementById('addrx').hidden=!e.target.value&&!ADDR});
+/* type-ahead: Photon (komoot), only while typing in the box, debounced, bounded to the map */
+const SUG={items:[],idx:-1,q:'',timer:0,ctl:null,cache:new Map()};
+const aIn=document.getElementById('addrq'),aUl=document.getElementById('addrs');
+function sClose(){aUl.hidden=true;aUl.innerHTML='';aIn.setAttribute('aria-expanded','false');aIn.removeAttribute('aria-activedescendant');SUG.items=[];SUG.idx=-1}
+function sLabel(f){const p=f.properties||{},street=p.street?[p.housenumber,p.street].filter(Boolean).join(' '):'',main=p.name||street||p.city||p.district||'',
+  sub=[p.name&&street&&street!==p.name?street:'',p.city||p.district||p.county||''].filter(x=>x&&x!==main).join(', ');return {main,sub}}
+function sMark(){[...aUl.children].forEach((li,i)=>li.setAttribute('aria-selected',i===SUG.idx));if(SUG.idx>=0){aIn.setAttribute('aria-activedescendant','addrs-'+SUG.idx);aUl.children[SUG.idx].scrollIntoView({block:'nearest'})}else aIn.removeAttribute('aria-activedescendant')}
+function sRender(q,items){SUG.q=q;SUG.items=items;SUG.idx=-1;if(!items.length||document.activeElement!==aIn){sClose();SUG.q=q;return}
+  aUl.innerHTML=items.map((f,i)=>{const {main,sub}=sLabel(f);return `<li role="option" id="addrs-${i}" aria-selected="false"><b>${esc(main)}</b>${sub?`<span>${esc(sub)}</span>`:''}</li>`}).join('');
+  const r=aIn.getBoundingClientRect();aUl.classList.toggle('up',innerWidth>=760&&innerHeight-r.bottom<240&&r.top>260);aUl.hidden=false;aIn.setAttribute('aria-expanded','true')}
+async function sFetch(q){const key=q.toLowerCase();if(SUG.cache.has(key)){sRender(q,SUG.cache.get(key));return}
+  if(SUG.ctl)SUG.ctl.abort();const ctl=SUG.ctl=new AbortController();
+  try{const u='https://photon.komoot.io/api/?limit=6&lang=en&bbox=-122.56,37.40,-121.90,37.96&lat=37.70&lon=-122.30&q='+encodeURIComponent(q);
+    const js=await (await fetch(u,{signal:ctl.signal})).json();
+    const items=(js.features||[]).filter(f=>{const c=f.geometry&&f.geometry.coordinates;return c&&inBox(c[1],c[0],MAPBOX)}).slice(0,innerWidth<760?4:5);
+    SUG.cache.set(key,items);if(aIn.value.trim()===q)sRender(q,items)}
+  catch(e){if(e.name!=='AbortError'&&aIn.value.trim()===q)sClose()}}
+function sPick(i){const f=SUG.items[i];if(!f)return;const [lon,lat]=f.geometry.coordinates,{main,sub}=sLabel(f),name=[main,sub].filter(Boolean).join(', ');
+  aIn.value=name;sClose();if(innerWidth<760)aIn.blur();document.getElementById('addrx').hidden=false;aShow({lat,lon,name})}
+aIn.addEventListener('input',()=>{clearTimeout(SUG.timer);const q=aIn.value.trim();if(q.length<3){if(SUG.ctl)SUG.ctl.abort();sClose();return}SUG.timer=setTimeout(()=>sFetch(q),280)});
+aIn.addEventListener('keydown',e=>{if(aUl.hidden)return;const n=SUG.items.length;
+  if(e.key==='ArrowDown'){e.preventDefault();SUG.idx=(SUG.idx+1)%n;sMark()}else if(e.key==='ArrowUp'){e.preventDefault();SUG.idx=SUG.idx<=0?n-1:SUG.idx-1;sMark()}
+  else if(e.key==='Escape'){e.preventDefault();sClose()}});
+aUl.addEventListener('mousedown',e=>e.preventDefault());
+aUl.addEventListener('click',e=>{const li=e.target.closest('li');if(li)sPick([...aUl.children].indexOf(li))});
+aIn.addEventListener('blur',()=>setTimeout(()=>{if(document.activeElement!==aIn)sClose()},150));
+aIn.addEventListener('focus',()=>{const q=aIn.value.trim();if(q.length>=3&&SUG.cache.has(q.toLowerCase()))sRender(q,SUG.cache.get(q.toLowerCase()));
+  if(innerWidth<760)setTimeout(()=>{const sb=document.querySelector('.sbar'),top=sb?sb.getBoundingClientRect().bottom:0,f=document.getElementById('addr').getBoundingClientRect();if(f.top<top+4||f.top>innerHeight*0.35)scrollBy({top:f.top-top-8,behavior:'smooth'})},280)});
+document.getElementById('zfind').addEventListener('click',()=>{const f=document.getElementById('addr');if(innerWidth>=760)f.scrollIntoView({block:'nearest'});aIn.focus({preventScroll:innerWidth<760})});
 table();update();
 }
 </script>
