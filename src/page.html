@@ -602,7 +602,7 @@ function aMsg(t){const o=document.getElementById('addro');o.hidden=!t;o.textCont
 function aFail(t){if(ADDR){ADDR=null;drawMap()}aMsg(t);document.getElementById('addrx').hidden=!document.getElementById('addrq').value}
 function addrRead(){if(!ADDR)return;const o=document.getElementById('addro');if(!o)return;const z=ADDR.zone,w=bayReady?zl(z,sel):null,G=ADDR.ground;
   let t=`<b>${esc(ADDR.name)}</b>. `;
-  if(G.kind==='low')t+=G.c===0?'Ground here is under about 4 ft (NAVD88). ':`Ground here is about ${G.g.toFixed(1)} ft (NAVD88). `;
+  if(G.kind==='low')t+=G.c===0?'Ground here is under about 4 ft (NAVD88). ':`Ground here is about ${G.g.toFixed(1)} ft (NAVD88, a 30 m average). `;
   else if(G.kind==='high')t+='Ground here sits above about 14 ft (NAVD88). ';
   else t+='No ground height for this exact spot; it may be over water. ';
   if(w==null)t+='Bay levels are still loading.';
@@ -615,7 +615,7 @@ function aShow(r){const lat=+r.lat,lon=+r.lon;
   const name=aShort(r);aMsg('Checking ground height...');
   aGround(lat,lon).then(ground=>{ADDR={lat,lon,name,zone:ground.zone,ground};
     const tab=(TABBOX.find(([,b])=>inBox(lat,lon,b))||['bay'])[0];vmode=tab;setV(tab);setSlug(tab);
-    const [x,y]=P(lat,lon),ph=innerWidth<760,k=HOME().k;fitted=false;view={cx:x,cy:ph?y-msvg.clientHeight*0.2/(base().s*k):y,k};drawMap();addrRead();document.getElementById('addrx').hidden=false;
+    const [x,y]=P(lat,lon),ph=innerWidth<760,k=HOME().k*(ph?1:1.6);fitted=false;view={cx:x,cy:ph?y-msvg.clientHeight*0.2/(base().s*k):y,k};drawMap();addrRead();document.getElementById('addrx').hidden=false;
     if(ph)document.getElementById('addr').scrollIntoView({block:'end',behavior:'smooth'})})}
 document.getElementById('addr').addEventListener('submit',async e=>{e.preventDefault();const inp=document.getElementById('addrq'),q=inp.value.trim();if(!q||aBusy)return;
   const key=q.toLowerCase();if(innerWidth<760)inp.blur();
