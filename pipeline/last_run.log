@@ -1,62 +1,76 @@
 [   0.0s] == stations and tides
-[   0.6s] 9414290 sf San Francisco 37.806305 -122.46589 navd -0.06 events 39
-[   1.1s] 9414392 op OYSTER POINT MARINA, SAN FRANCISCO BAY 37.665 -122.377 navd None events 39
-[   1.6s] 9414750 ala Alameda 37.771954 -122.30026 navd 0.23 events 39
-[   1.9s] 9414863 rich Richmond 37.9283 -122.4 navd -0.02 events 39
-[   2.3s] 9414523 rwc Redwood City 37.506813 -122.21191 navd 1.18 events 39
-[   2.8s] 9414575 coy Coyote Creek 37.465 -122.023 navd None events 38
-[   2.8s] navd estimate op 0.55 estimated from MSL and Alameda
-[   2.8s] navd estimate coy 1.65 estimated from MSL and Redwood City
-[   2.8s] == land and water
-[   4.8s] counties 0.36687271956531614
-[   4.9s] water 001 17
-[   5.1s] water 013 10
-[   5.2s] water 041 13
-[   5.4s] water 075 11
-[   5.6s] water 081 32
-[   5.7s] water 085 8
-[   6.3s] land area 0.2657811738957659 bay 0.07116506481029355
-[   6.7s] land path chars 19989
-[   6.7s] == ponds and tidal wetlands (OSM)
-[  57.9s] water/salt pond polygons 628 area 0.01209 marsh 220 tidal marsh kept out 95 area 0.00528 total deg2 0.01708
-[  57.9s] == shoreline
-[  58.0s] shore zones {'sf': 1586, 'rich': 3116, 'ala': 2787, 'rwc': 4684, 'coy': 2271}
-[  58.0s] == roads
-[  60.0s] roads chars 5680
-[  60.0s] == airports
-[  61.4s] oak (-122.2512932, 37.6992639, -122.1993876, 37.745433) sfo (-122.4027829, 37.6043598, -122.3551352, 37.6391914)
-[  61.4s] == low-ground raster
-[  61.7s] tile 0 0
-[  61.8s] tile 1 0
-[  62.0s] tile 2 0
-[  62.2s] tile 3 0
-[  62.4s] tile 0 1
-[  62.5s] tile 1 1
-[  62.6s] tile 2 1
-[  62.8s] tile 3 1
-[  63.0s] tile 0 2
-[  63.1s] tile 1 2
-[  63.3s] tile 2 2
-[  63.5s] tile 3 2
-[  63.6s] tile 0 3
-[  63.7s] tile 1 3
-[  63.9s] tile 2 3
-[  64.0s] tile 3 3
-[  64.6s] low cells removed as pond or wetland 159155
-[  64.8s] low sf 853 1659 91821
-[  64.8s] low op 385 493 29375
-[  64.9s] low ala 789 699 77158
-[  64.9s] low rich 845 335 45052
-[  65.1s] low rwc 818 791 137725
-[  65.2s] low coy 776 758 145721
-[  65.3s] == topo raster
-[  66.1s] land mask 2200 1867 49028
-[  66.1s] topo 733 622 51215
-[  66.1s] == airport stats
-[  66.1s] sfo cells 9218
-[  66.1s] oak cells 11205
-[  66.1s] == oak dike crest
-[  67.1s] oak crest {'n': 525, 'min': 8.1, 'p10': 10.8, 'median': 13.2}
-[  67.1s] == protected areas
-[  67.2s] protect {'sfo': 1, 'oak_south': 2} 9233 6166 5460
-[  67.2s] done; bay.json bytes 43385 errors []
+[   1.0s] 9414290 sf San Francisco 37.806305 -122.46589 navd -0.06 events 39
+[   1.7s] 9414392 op OYSTER POINT MARINA, SAN FRANCISCO BAY 37.665 -122.377 navd None events 39
+[   2.4s] 9414750 ala Alameda 37.771954 -122.30026 navd 0.23 events 39
+[   3.0s] 9414863 rich Richmond 37.9283 -122.4 navd -0.02 events 39
+[   3.6s] 9414523 rwc Redwood City 37.506813 -122.21191 navd 1.18 events 39
+[   4.2s] 9414575 coy Coyote Creek 37.465 -122.023 navd None events 38
+[   4.2s] navd estimate op 0.55 estimated from MSL and Alameda
+[   4.2s] navd estimate coy 1.65 estimated from MSL and Redwood City
+[   4.2s] == land and water
+[   6.9s] counties 0.36687271956531614
+[   7.0s] water 001 17
+[   7.5s] water 013 10
+[   7.8s] water 041 13
+[   7.9s] water 075 11
+[   8.1s] water 081 32
+[   8.2s] water 085 8
+[   9.1s] land area 0.2657811738957659 bay 0.07116506481029355
+[   9.7s] land path chars 19989
+[   9.7s] == ponds and tidal wetlands (OSM)
+[  10.4s] retry 1 https://overpass-api.de/api/interpreter 502 Server Error: Bad Gateway for url: https://overpass-api.de/api/interpreter?data=%5Bout%3Ajson%5D%5Btimeout%3A180%5D%3B%28way%5B%22landuse%22%3D%22salt_pond%22%5D%2837.3999%2C-122.56%2C37.96%2C-121.9%29%3Brelation%5B%22landuse%22%3D%22salt_pond%22%5D%2837.3999%2C-122.56%2C37.96%2C-121.9%29%3Bway%5B%22natural%22%3D%22water%22%5D%2837.3999%2C-122.56%2C37.96%2C-121.9%29%3Brelation%5B%22natural%22%3D%22water%22%5D%2837.3999%2C-122.56%2C37.96%2C-121.9%29%3Bway%5B%22natural%22%3D%22wetland%22%5D%2837.3999%2C-122.56%2C37.96%2C-121.9%29%3Brelation%5B%22natural%22%3D%22wetland%22%5D%2837.3999%2C-122.56%2C37.96%2C-121.9%29%3B%29%3Bout+geom%3B
+[  14.8s] retry 2 https://overpass-api.de/api/interpreter 502 Server Error: Bad Gateway for url: https://overpass-api.de/api/interpreter?data=%5Bout%3Ajson%5D%5Btimeout%3A180%5D%3B%28way%5B%22landuse%22%3D%22salt_pond%22%5D%2837.3999%2C-122.56%2C37.96%2C-121.9%29%3Brelation%5B%22landuse%22%3D%22salt_pond%22%5D%2837.3999%2C-122.56%2C37.96%2C-121.9%29%3Bway%5B%22natural%22%3D%22water%22%5D%2837.3999%2C-122.56%2C37.96%2C-121.9%29%3Brelation%5B%22natural%22%3D%22water%22%5D%2837.3999%2C-122.56%2C37.96%2C-121.9%29%3Bway%5B%22natural%22%3D%22wetland%22%5D%2837.3999%2C-122.56%2C37.96%2C-121.9%29%3Brelation%5B%22natural%22%3D%22wetland%22%5D%2837.3999%2C-122.56%2C37.96%2C-121.9%29%3B%29%3Bout+geom%3B
+[  22.8s] overpass fail https://overpass-api.de/api/interpreter failed https://overpass-api.de/api/interpreter
+[ 160.2s] retry 1 https://overpass.kumi.systems/api/interpreter 504 Server Error: Gateway Timeout for url: https://overpass.kumi.systems/api/interpreter?data=%5Bout%3Ajson%5D%5Btimeout%3A180%5D%3B%28way%5B%22landuse%22%3D%22salt_pond%22%5D%2837.3999%2C-122.56%2C37.96%2C-121.9%29%3Brelation%5B%22landuse%22%3D%22salt_pond%22%5D%2837.3999%2C-122.56%2C37.96%2C-121.9%29%3Bway%5B%22natural%22%3D%22water%22%5D%2837.3999%2C-122.56%2C37.96%2C-121.9%29%3Brelation%5B%22natural%22%3D%22water%22%5D%2837.3999%2C-122.56%2C37.96%2C-121.9%29%3Bway%5B%22natural%22%3D%22wetland%22%5D%2837.3999%2C-122.56%2C37.96%2C-121.9%29%3Brelation%5B%22natural%22%3D%22wetland%22%5D%2837.3999%2C-122.56%2C37.96%2C-121.9%29%3B%29%3Bout+geom%3B
+[ 404.5s] retry 2 https://overpass.kumi.systems/api/interpreter HTTPSConnectionPool(host='overpass.kumi.systems', port=443): Read timed out. (read timeout=240)
+[ 412.5s] overpass fail https://overpass.kumi.systems/api/interpreter failed https://overpass.kumi.systems/api/interpreter
+[ 413.9s] retry 1 https://maps.mail.ru/osm/tools/overpass/api/interpreter 504 Server Error: Gateway Time-out for url: https://maps.mail.ru/osm/tools/overpass/api/interpreter?data=%5Bout%3Ajson%5D%5Btimeout%3A180%5D%3B%28way%5B%22landuse%22%3D%22salt_pond%22%5D%2837.3999%2C-122.56%2C37.96%2C-121.9%29%3Brelation%5B%22landuse%22%3D%22salt_pond%22%5D%2837.3999%2C-122.56%2C37.96%2C-121.9%29%3Bway%5B%22natural%22%3D%22water%22%5D%2837.3999%2C-122.56%2C37.96%2C-121.9%29%3Brelation%5B%22natural%22%3D%22water%22%5D%2837.3999%2C-122.56%2C37.96%2C-121.9%29%3Bway%5B%22natural%22%3D%22wetland%22%5D%2837.3999%2C-122.56%2C37.96%2C-121.9%29%3Brelation%5B%22natural%22%3D%22wetland%22%5D%2837.3999%2C-122.56%2C37.96%2C-121.9%29%3B%29%3Bout+geom%3B
+[ 419.0s] retry 2 https://maps.mail.ru/osm/tools/overpass/api/interpreter 504 Server Error: Gateway Time-out for url: https://maps.mail.ru/osm/tools/overpass/api/interpreter?data=%5Bout%3Ajson%5D%5Btimeout%3A180%5D%3B%28way%5B%22landuse%22%3D%22salt_pond%22%5D%2837.3999%2C-122.56%2C37.96%2C-121.9%29%3Brelation%5B%22landuse%22%3D%22salt_pond%22%5D%2837.3999%2C-122.56%2C37.96%2C-121.9%29%3Bway%5B%22natural%22%3D%22water%22%5D%2837.3999%2C-122.56%2C37.96%2C-121.9%29%3Brelation%5B%22natural%22%3D%22water%22%5D%2837.3999%2C-122.56%2C37.96%2C-121.9%29%3Bway%5B%22natural%22%3D%22wetland%22%5D%2837.3999%2C-122.56%2C37.96%2C-121.9%29%3Brelation%5B%22natural%22%3D%22wetland%22%5D%2837.3999%2C-122.56%2C37.96%2C-121.9%29%3B%29%3Bout+geom%3B
+[ 427.0s] overpass fail https://maps.mail.ru/osm/tools/overpass/api/interpreter failed https://maps.mail.ru/osm/tools/overpass/api/interpreter
+Traceback (most recent call last):
+  File "/home/runner/work/sfofloodweek/sfofloodweek/pipeline/build_data.py", line 68, in run
+    return fn(*a, **k)
+           ^^^^^^^^^^^
+  File "/home/runner/work/sfofloodweek/sfofloodweek/pipeline/build_data.py", line 351, in wetlands
+    raise RuntimeError("all Overpass endpoints failed")
+RuntimeError: all Overpass endpoints failed
+[ 427.0s] == shoreline
+[ 427.3s] shore zones {'sf': 1586, 'rich': 3116, 'ala': 2787, 'rwc': 4684, 'coy': 2271}
+[ 427.3s] == roads
+[ 430.7s] roads chars 5680
+[ 430.7s] == airports
+[ 433.1s] oak (-122.2512932, 37.6992639, -122.1993876, 37.745433) sfo (-122.4027829, 37.6043598, -122.3551352, 37.6391914)
+[ 433.1s] == low-ground raster
+[ 433.4s] tile 0 0
+[ 433.6s] tile 1 0
+[ 433.7s] tile 2 0
+[ 433.8s] tile 3 0
+[ 434.0s] tile 0 1
+[ 434.1s] tile 1 1
+[ 434.2s] tile 2 1
+[ 434.4s] tile 3 1
+[ 434.5s] tile 0 2
+[ 434.6s] tile 1 2
+[ 434.7s] tile 2 2
+[ 434.9s] tile 3 2
+[ 435.0s] tile 0 3
+[ 435.1s] tile 1 3
+[ 435.2s] tile 2 3
+[ 435.4s] tile 3 3
+[ 436.7s] low sf 853 1659 91725
+[ 436.7s] low op 390 493 29290
+[ 436.8s] low ala 789 699 76857
+[ 436.9s] low rich 845 335 44904
+[ 437.2s] low rwc 818 791 136669
+[ 437.4s] low coy 776 758 143062
+[ 437.4s] == topo raster
+[ 438.6s] land mask 2200 1867 32328
+[ 438.6s] topo 733 622 51215
+[ 438.6s] == airport stats
+[ 438.6s] sfo cells 9233
+[ 438.6s] oak cells 11375
+[ 438.6s] == oak dike crest
+[ 440.1s] oak crest {'n': 392, 'min': 10.2, 'p10': 11.5, 'median': 13.9, 'p90': 15.3, 'part': 'south field'}
+[ 440.1s] == protected areas
+[ 440.1s] protect {'sfo': 1, 'oak_south': 2} 9233 6166 5460
+[ 440.1s] done; bay.json bytes 43486 errors ['ponds and tidal wetlands (OSM): all Overpass endpoints failed']
