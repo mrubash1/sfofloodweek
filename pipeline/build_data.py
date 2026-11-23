@@ -541,6 +541,7 @@ def oak_crest():
     if oak is None or fine is None:
         return
     fc = CELL / 3
+    oak = make_valid(oak.intersection(OAK_SOUTH))
     ring = oak.exterior if oak.geom_type == "Polygon" else max(oak.geoms, key=lambda p: p.area).exterior
     near = bay.buffer(0.0015) if bay is not None else None
     crest = []
@@ -557,8 +558,14 @@ def oak_crest():
     if crest:
         a = np.array(crest)
         OUTPUT["oak_crest_ft"] = {"n": len(a), "min": round(float(a.min()), 1), "p10": round(float(np.percentile(a, 10)), 1),
-                                  "median": round(float(np.median(a)), 1)}
+                                  "median": round(float(np.median(a)), 1),
+                                  "p90": round(float(np.percentile(a, 90)), 1), "part": "south field"}
         log("oak crest", OUTPUT["oak_crest_ft"])
+
+
+# Half-plane south of a line between OAK's fields: runway 12/30 and the terminal fall south of it,
+# runways 10/28 and 15/33 north of it. Only the South Field sits behind the perimeter dike.
+OAK_SOUTH = Polygon([(-122.32, 37.7525), (-122.15, 37.6994), (-122.15, 37.60), (-122.32, 37.60)])
 
 
 @step("protected areas")
@@ -567,7 +574,7 @@ def protect():
     img = np.zeros((NY, NX), dtype=np.uint8)
     # OAK: only the South Field sits behind the perimeter dike; split the airport outline along a
     # line between the fields (north of runway 12/30 and the terminal, south of runways 10/28 and 15/33).
-    south = Polygon([(-122.32, 37.7525), (-122.15, 37.6994), (-122.15, 37.60), (-122.32, 37.60)])
+    south = OAK_SOUTH
     ids = {}
     if sfo is not None:
         img[poly_mask(sfo)] = 85
