@@ -1,62 +1,62 @@
 [   0.0s] == stations and tides
-[   0.4s] 9414290 sf San Francisco 37.806305 -122.46589 navd -0.06 events 39
-[   0.5s] 9414392 op OYSTER POINT MARINA, SAN FRANCISCO BAY 37.665 -122.377 navd None events 39
-[   0.7s] 9414750 ala Alameda 37.771954 -122.30026 navd 0.23 events 39
-[   0.9s] 9414863 rich Richmond 37.9283 -122.4 navd -0.02 events 39
-[   1.0s] 9414523 rwc Redwood City 37.506813 -122.21191 navd 1.18 events 39
-[   1.3s] 9414575 coy Coyote Creek 37.465 -122.023 navd None events 38
-[   1.3s] navd estimate op 0.55 estimated from MSL and Alameda
-[   1.3s] navd estimate coy 1.65 estimated from MSL and Redwood City
-[   1.3s] == land and water
-[   4.1s] counties 0.36687271956531614
-[   4.2s] water 001 17
-[   4.3s] water 013 10
-[   4.4s] water 041 13
-[   4.4s] water 075 11
-[   4.5s] water 081 32
-[   4.6s] water 085 8
-[   5.5s] land area 0.2657811738957659 bay 0.07116506481029355
-[   6.0s] land path chars 19989
-[   6.0s] == ponds and tidal wetlands (OSM)
-[  51.8s] wet polygons 848 area deg2 0.01929
-[  51.8s] == shoreline
-[  52.0s] shore zones {'sf': 1586, 'rich': 3116, 'ala': 2787, 'rwc': 4684, 'coy': 2271}
-[  52.0s] == roads
-[  55.6s] roads chars 5680
-[  55.6s] == airports
-[  57.9s] oak (-122.2512932, 37.6992639, -122.1993876, 37.745433) sfo (-122.4027829, 37.6043598, -122.3551352, 37.6391914)
-[  57.9s] == low-ground raster
-[  58.2s] tile 0 0
-[  58.3s] tile 1 0
-[  58.3s] tile 2 0
-[  58.4s] tile 3 0
-[  58.4s] tile 0 1
-[  58.5s] tile 1 1
-[  58.5s] tile 2 1
-[  58.6s] tile 3 1
-[  58.7s] tile 0 2
-[  58.7s] tile 1 2
-[  58.8s] tile 2 2
-[  59.0s] tile 3 2
-[  59.0s] tile 0 3
-[  59.1s] tile 1 3
-[  59.1s] tile 2 3
-[  59.2s] tile 3 3
-[  60.3s] low cells removed as pond or wetland 184160
-[  60.5s] low sf 853 1659 91847
-[  60.5s] low op 385 493 29375
-[  60.7s] low ala 789 699 77229
-[  60.8s] low rich 845 335 45046
-[  61.0s] low rwc 818 791 137965
-[  61.3s] low coy 776 758 145805
-[  61.3s] == topo raster
-[  62.6s] land mask 2200 1867 51301
-[  62.6s] topo 733 622 51215
-[  62.6s] == airport stats
-[  62.6s] sfo cells 9233
-[  62.6s] oak cells 11375
-[  62.6s] == oak dike crest
-[  64.6s] oak crest {'n': 525, 'min': 8.1, 'p10': 10.8, 'median': 13.2}
-[  64.6s] == protected areas
-[  64.6s] protect {'sfo': 1, 'oak_south': 2} 9233 6166 5460
-[  64.6s] done; bay.json bytes 43385 errors []
+[   0.9s] 9414290 sf San Francisco 37.806305 -122.46589 navd -0.06 events 39
+[   1.5s] 9414392 op OYSTER POINT MARINA, SAN FRANCISCO BAY 37.665 -122.377 navd None events 39
+[   2.2s] 9414750 ala Alameda 37.771954 -122.30026 navd 0.23 events 39
+[   2.9s] 9414863 rich Richmond 37.9283 -122.4 navd -0.02 events 39
+[   3.5s] 9414523 rwc Redwood City 37.506813 -122.21191 navd 1.18 events 39
+[   4.3s] 9414575 coy Coyote Creek 37.465 -122.023 navd None events 38
+[   4.3s] navd estimate op 0.55 estimated from MSL and Alameda
+[   4.3s] navd estimate coy 1.65 estimated from MSL and Redwood City
+[   4.3s] == land and water
+[   6.9s] counties 0.36687271956531614
+[   7.0s] water 001 17
+[   7.2s] water 013 10
+[   7.6s] water 041 13
+[   7.7s] water 075 11
+[   7.8s] water 081 32
+[   8.4s] water 085 8
+[   9.2s] land area 0.2657811738957659 bay 0.07116506481029355
+[   9.8s] land path chars 19989
+[   9.8s] == ponds and tidal wetlands (OSM)
+[  55.4s] wet polygons 848 area deg2 0.01929
+[  55.5s] == shoreline
+[  55.7s] shore zones {'sf': 1586, 'rich': 3116, 'ala': 2787, 'rwc': 4684, 'coy': 2271}
+[  55.7s] == roads
+[  58.9s] roads chars 5680
+[  58.9s] == airports
+[  61.3s] oak (-122.2512932, 37.6992639, -122.1993876, 37.745433) sfo (-122.4027829, 37.6043598, -122.3551352, 37.6391914)
+[  61.3s] == low-ground raster
+[  64.3s] tile 0 0
+[  65.2s] tile 1 0
+[  65.9s] tile 2 0
+[  67.1s] tile 3 0
+[  68.0s] tile 0 1
+[  68.8s] tile 1 1
+[  70.1s] tile 2 1
+[  72.3s] tile 3 1
+[  73.0s] tile 0 2
+[  73.6s] tile 1 2
+[  74.7s] tile 2 2
+[  75.3s] tile 3 2
+[  76.4s] tile 0 3
+[  77.1s] tile 1 3
+[  78.3s] tile 2 3
+[  80.3s] tile 3 3
+[  81.4s] low cells removed as pond or wetland 184160
+[  81.6s] low sf 853 1659 91847
+[  81.7s] low op 385 493 29375
+[  81.8s] low ala 789 699 77229
+[  81.9s] low rich 845 335 45046
+[  82.2s] low rwc 818 791 137965
+[  82.4s] low coy 776 758 145805
+[  82.4s] == topo raster
+[  83.7s] land mask 2200 1867 51301
+[  83.7s] topo 733 622 51215
+[  83.7s] == airport stats
+[  83.7s] sfo cells 9218
+[  83.7s] oak cells 9141
+[  83.7s] == oak dike crest
+[  85.6s] oak crest {'n': 525, 'min': 8.1, 'p10': 10.8, 'median': 13.2}
+[  85.6s] == protected areas
+[  85.7s] protect {'sfo': 1, 'oak_south': 2} 9233 6166 5460
+[  85.7s] done; bay.json bytes 43382 errors []
