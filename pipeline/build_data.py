@@ -147,12 +147,14 @@ def stations_and_tides():
         meta = get(f"https://api.tidesandcurrents.noaa.gov/mdapi/prod/webapi/stations/{sid}.json").json()
         st = meta["stations"][0]
         lat, lon = st["lat"], st["lng"]
-        navd = None
+        navd = msl = None
         try:
             d = get(f"https://api.tidesandcurrents.noaa.gov/mdapi/prod/webapi/stations/{sid}/datums.json?units=english").json()
             vals = {x["name"]: x["value"] for x in d.get("datums", [])}
             if "NAVD88" in vals and "MLLW" in vals:
                 navd = round(vals["NAVD88"] - vals["MLLW"], 3)   # NAVD88 height above MLLW
+            if "MSL" in vals and "MLLW" in vals:
+                msl = round(vals["MSL"] - vals["MLLW"], 3)
         except Exception as e:
             log("datums", sid, e)
         p = get("https://api.tidesandcurrents.noaa.gov/api/prod/datagetter", params=dict(
@@ -160,8 +162,18 @@ def stations_and_tides():
             end_date="20261130", time_zone="lst_ldt", units="english", format="json",
             application="sfofloodweek")).json()
         hilo = [[x["t"], float(x["v"]), x["type"]] for x in p.get("predictions", [])]
-        tides[nm] = {"id": sid, "name": st["name"], "lat": lat, "lon": lon, "navd_above_mllw": navd, "hilo": hilo}
+        tides[nm] = {"id": sid, "name": st["name"], "lat": lat, "lon": lon, "navd_above_mllw": navd, "msl_above_mllw": msl, "hilo": hilo}
         log(sid, nm, st["name"], lat, lon, "navd", navd, "events", len(hilo))
+    # Stations without a NAVD88 tie: carry the MSL-to-NAVD88 gap over from the nearest tied station
+    for nm, v in tides.items():
+        if v["navd_above_mllw"] is None and v["msl_above_mllw"] is not None:
+            refs = [(((v["lon"] - r["lon"]) * CO) ** 2 + (v["lat"] - r["lat"]) ** 2, r) for k, r in tides.items()
+                    if r["navd_above_mllw"] is not None and r["msl_above_mllw"] is not None]
+            if refs:
+                r = min(refs, key=lambda x: x[0])[1]
+                v["navd_above_mllw"] = round(v["msl_above_mllw"] - (r["msl_above_mllw"] - r["navd_above_mllw"]), 3)
+                v["navd_note"] = f"estimated from MSL and {r['name']}"
+                log("navd estimate", nm, v["navd_above_mllw"], v["navd_note"])
     json.dump(tides, open(f"{OUT}/tides.json", "w"), indent=1)
     G["stations"] = {k: (v["lon"], v["lat"]) for k, v in tides.items()}
     OUTPUT["stations"] = {k: {"lon": v["lon"], "lat": v["lat"], "name": v["name"], "id": v["id"]} for k, v in tides.items()}
@@ -271,7 +283,8 @@ def roads():
         g = g.intersection(BBOX).difference(OLDBOX)
         if not g.is_empty:
             keep.append(g)
-    u = to_px(unary_union(keep)).simplify(3)
+    u = to_px(unary_union(keep)).simplify(8)
+    u = MultiLineString([l for l in getattr(u, "geoms", [u]) if l.geom_type == "LineString" and l.length > 60])
     OUTPUT["roads"] = path_of(u, False)
     log("roads chars", len(OUTPUT["roads"]))
 
