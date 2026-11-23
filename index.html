@@ -123,6 +123,7 @@ details.fold>summary::after{content:"";grid-column:2;grid-row:1/3;width:9px;heig
 details.fold[open]>summary::after{transform:rotate(-135deg)}
 details.fold>summary .st{font:700 18px/1.2 "Barlow Semi Condensed","Arial Narrow",sans-serif}
 details.fold>summary .sg{grid-column:1;font-size:13px;color:var(--mute)}
+.res h3{font-size:15px;font-weight:700;margin:14px 0 4px}.res h3:first-child{margin-top:8px}.res ul{margin:0;padding-left:18px}.res li{margin:4px 0;font-size:14.5px;line-height:1.45}.resn{font-size:13px;color:var(--mute);margin:12px 0 2px}.nw{white-space:nowrap}
 details.fold[open]>summary{margin-bottom:10px}
 /* map layers */
 .mapw>svg{position:absolute;inset:0;width:100%;height:100%;cursor:grab;touch-action:pan-y;-webkit-user-select:none;user-select:none}
@@ -237,6 +238,38 @@ html:not(.nolow) .mapw.gl .landp,html:not(.nolow) .mapw.gl .sfop{fill:none;strok
       <dt id="eT" hidden>Edge</dt><dd id="rEdge" hidden></dd>
     </dl>
   </div>
+  <div class="blk" id="help"><details class="fold"><summary><span class="st">Official flood alerts and local help</span><span class="sg">NWS warnings, live tide gauges, alert sign-ups, sandbags, roads and airports</span></summary>
+    <div class="res">
+      <h3>Forecasts and live water levels</h3>
+      <ul>
+        <li><a href="https://www.weather.gov/mtr/">NWS Bay Area</a>: coastal flood advisories and warnings. This is the official word on flooding.</li>
+        <li><a href="https://tidesandcurrents.noaa.gov/inundationdb/">NOAA Coastal Inundation Dashboard</a>: live and forecast water levels against flood thresholds</li>
+        <li>Live tide gauges: <a href="https://tidesandcurrents.noaa.gov/waterlevels.html?id=9414290">San Francisco</a>, <a href="https://tidesandcurrents.noaa.gov/waterlevels.html?id=9414750">Alameda</a>, <a href="https://tidesandcurrents.noaa.gov/waterlevels.html?id=9414863">Richmond</a>, <a href="https://tidesandcurrents.noaa.gov/waterlevels.html?id=9414523">Redwood City</a>, <a href="https://tidesandcurrents.noaa.gov/waterlevels.html?id=9414575">Coyote Creek</a></li>
+        <li><a href="https://coastal.ca.gov/kingtides/gallery.html">California King Tides Project</a>: photos of past king tides, and a place to share yours</li>
+      </ul>
+      <h3>Emergency alerts, by county</h3>
+      <ul>
+        <li>San Francisco: <a href="https://www.sf.gov/alertsf">AlertSF</a>, or text your ZIP code to <a class="nw" href="sms:888777">888-777</a></li>
+        <li>Alameda County (Oakland, Alameda, Hayward, Fremont): <a href="https://www.acalert.org/">AC Alert</a></li>
+        <li>San Mateo County (SFO and the Peninsula): <a href="https://www.smcalert.info/">SMC Alert</a></li>
+        <li>Santa Clara County (San Jose, Alviso): <a href="https://www.alertscc.com/">AlertSCC</a></li>
+        <li>Contra Costa County (Richmond): <a href="https://cwsalerts.com/">Community Warning System</a></li>
+        <li>Anywhere else in the Bay: <a href="https://alertthebay.org/">Alert the Bay</a> links to every county's system</li>
+      </ul>
+      <h3>Sandbags and reporting flooding</h3>
+      <ul>
+        <li>San Francisco: <a href="https://sfpublicworks.org/sandbags">up to 10 free sandbags</a> at the Public Works yard, 2323 Cesar Chavez St (enter at Kansas and Marin), Mon to Sat 8 am to 2 pm. Report street flooding to 311.</li>
+        <li>Oakland: <a href="https://www.oaklandca.gov/elnino">up to 10 free sandbags and 20 ft of plastic sheeting</a> at 7101 Edgewater Dr. Report flooding to OAK 311: dial 311 or <a class="nw" href="tel:+15106155566">510-615-5566</a>.</li>
+        <li>San Mateo County: <a href="https://www.smcgov.org/publicworks/sandbags">sandbag sites by city</a>. County roads emergency line: <a class="nw" href="tel:+16503634100">650-363-4100</a>.</li>
+        <li>Santa Clara County: <a href="https://www.valleywater.org/floodready/sandbags">Valley Water free filled sandbags</a>. Hotline: <a class="nw" href="tel:+14086303300">408-630-3300</a>.</li>
+      </ul>
+      <h3>Roads and airports</h3>
+      <ul>
+        <li><a href="https://quickmap.dot.ca.gov/">Caltrans QuickMap</a> and <a href="https://511.org/">511</a>: highway closures and traffic</li>
+        <li>FAA airport status: <a href="https://www.fly.faa.gov/flyfaa/flyfaaindex.jsp?ARPT=SFO">SFO</a>, <a href="https://www.fly.faa.gov/flyfaa/flyfaaindex.jsp?ARPT=OAK">OAK</a>. Check your airline for your own flight.</li>
+      </ul>
+      <p class="resn">Never walk or drive through floodwater. In an emergency, call 911. Hours and limits change, so check each link before you go.</p>
+    </div></details></div>
   <div class="blk" id="days"><details class="fold"><summary><span class="st">Daily high tides</span><span class="sg" id="dayg">Tap a day to jump to its peak</span></summary>
     <div class="tw"><table id="tbl"><thead><tr><th>Day</th><th>High tide</th><th>Tide table</th><th>Expected</th><th>Level</th><th>SF gauge</th></tr></thead><tbody></tbody></table></div>
     <p class="note" style="margin-top:8px">Tap a day to jump to its peak. Feet (NAVD88) at Oyster Point, next to SFO. SF gauge, when shown, is the NWS forecast for the official gauge, which peaks about 40 minutes earlier. Warning runs to Thursday 4 PM.</p></details>
