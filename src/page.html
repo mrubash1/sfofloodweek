@@ -279,7 +279,7 @@ html:not(.nolow) .mapw.gl .landp,html:not(.nolow) .mapw.gl .sfop{fill:none;strok
       <li><a href="https://tidesandcurrents.noaa.gov/noaatidepredictions.html?id=9414392">NOAA tide predictions and datums, Oyster Point 9414392</a>; flood thresholds, San Francisco 9414290; Bay Area shoreline levels from the nearest of <a href="https://tidesandcurrents.noaa.gov/noaatidepredictions.html?id=9414750">Alameda 9414750</a>, <a href="https://tidesandcurrents.noaa.gov/noaatidepredictions.html?id=9414863">Richmond 9414863</a>, <a href="https://tidesandcurrents.noaa.gov/noaatidepredictions.html?id=9414523">Redwood City 9414523</a> and <a href="https://tidesandcurrents.noaa.gov/noaatidepredictions.html?id=9414575">Coyote Creek 9414575</a>, each with the same storm surge added</li>
       <li><a href="https://www.sfchronicle.com/travel/article/sfo-airport-flood-weather-22543280.php">SF Chronicle: SFO will flood this week</a>; <a href="https://www.nbcbayarea.com/news/local/flooding-sfo-oak-national-weather-service/4180385/">NBC Bay Area</a>; <a href="https://deeparrival.com/news/sfo-flood-risk-san-francisco-meters-free-november-23-25-2026/">Deep Arrival</a></li>
       <li>Port of San Francisco Waterfront Resilience Program flood risk profiles: Ferry Building (Subarea 2-2), Mission Rock (Subarea 3-3)</li>
-      <li>Map: US Census TIGER land, water and highways for six Bay Area counties, OpenStreetMap airport outlines; ground heights from USGS 3DEP lidar via the National Map (1 m samples along SFO's edge, a 10 m grid averaged to about 30 m cells for the low-ground layer); SFO shoreline maintenance drawings (existing protection 9.2 ft NAVD88); OAK's South Field perimeter dike, which the Port of Oakland's plan raises about 3 ft above a 10 ft still-water level (<a href="https://files.ceqanet.lci.ca.gov/229482-2/attachment/s3VmZ2xwi0G_RGaHYYnKKTBuYBW8NQxYr4CDepSSNCpTIllehvWNw8dlDrWqQr2JZCdnwkA8NX1pDbfs0">2024 environmental filing</a>, section 2.1; <a href="https://www.portofoakland.com/oak-airport-completes-phase-1-of-its-30-million-flood-hazard-protection-project">Phase 1</a> finished in 2022), and 3DEP lidar along that dike's crest (median 13.9 ft NAVD88, lowest tenth under 11.5 ft, so 13 ft is a rough line, not a design height); map stripes cover SFO and only OAK's South Field, since the North Field is outside that dike; salt ponds, other open water and tidal wetlands from OpenStreetMap are left out of the low-ground layer; FAA runway ends via AirNav (<a href="https://www.airnav.com/airport/KSFO">SFO</a>, <a href="https://www.airnav.com/airport/KOAK">OAK</a>)</li>
+      <li>Map: US Census TIGER land, water and highways for six Bay Area counties, OpenStreetMap airport outlines; ground heights from USGS 3DEP lidar via the National Map (1 m samples along SFO's edge, a 10 m grid averaged to about 30 m cells for the low-ground layer); SFO shoreline maintenance drawings (existing protection 9.2 ft NAVD88); OAK's South Field perimeter dike, which the Port of Oakland's plan raises about 3 ft above a 10 ft still-water level (<a href="https://files.ceqanet.lci.ca.gov/229482-2/attachment/s3VmZ2xwi0G_RGaHYYnKKTBuYBW8NQxYr4CDepSSNCpTIllehvWNw8dlDrWqQr2JZCdnwkA8NX1pDbfs0">2024 environmental filing</a>, section 2.3.1, datum not stated; <a href="https://www.portofoakland.com/oak-airport-completes-phase-1-of-its-30-million-flood-hazard-protection-project">Phase 1</a> is done), and 3DEP lidar along that dike's crest (median 13.9 ft NAVD88, lowest tenth under 11.5 ft, so 13 ft is a rough line, not a design height); map stripes cover SFO and only OAK's South Field, since the North Field is outside that dike; salt ponds, other open water and tidal wetlands from OpenStreetMap are left out of the low-ground layer; FAA runway ends via AirNav (<a href="https://www.airnav.com/airport/KSFO">SFO</a>, <a href="https://www.airnav.com/airport/KOAK">OAK</a>)</li>
       <li>Approach and layout after the <a href="https://claude.ai/artifact/7udMTTZs1kN4kNBM3pfFgo">Oakland Flood Week</a> map shared on Reddit</li>
     </ul></details>
   </div>
@@ -643,7 +643,7 @@ function sCached(q){const v=SUG.cache.get(q.toLowerCase());return v&&v.length?v:
 document.getElementById('addr').addEventListener('submit',async e=>{e.preventDefault();const inp=document.getElementById('addrq'),q=inp.value.trim();if(!q)return;
   clearTimeout(SUG.timer);
   if(SUG.idx>=0&&SUG.items.length&&SUG.q===q){sPick(SUG.idx);return}
-  const sc=sCached(q);if(sc){SUG.items=sc;sPick(0);return}
+  const sc=SUG.dismissed===q?null:sCached(q);if(sc){SUG.items=sc;sPick(0);return}
   if(aBusy)return;
   if(SUG.ctl)SUG.ctl.abort();sClose();
   const key=q.toLowerCase();if(innerWidth<760)inp.blur();const tok=++aReq;
@@ -660,7 +660,7 @@ function aCancel(){aReq++;aShowSeq++;if(aNom)aNom.abort()}
 document.getElementById('addrx').addEventListener('click',()=>{aCancel();ADDR=null;const inp=document.getElementById('addrq');inp.value='';aMsg('');sClose();document.getElementById('addrx').hidden=true;drawMap();inp.focus()});
 document.getElementById('addrq').addEventListener('input',e=>{document.getElementById('addrx').hidden=!e.target.value&&!ADDR});
 /* type-ahead: Photon (komoot), only while typing in the box, debounced, bounded to the map */
-const SUG={items:[],idx:-1,q:'',timer:0,ctl:null,cache:new Map()};
+const SUG={items:[],idx:-1,q:'',timer:0,ctl:null,cache:new Map(),dismissed:''};
 const aIn=document.getElementById('addrq'),aUl=document.getElementById('addrs'),aSt=document.getElementById('addrst');
 function sClose(){clearTimeout(SUG.timer);aUl.hidden=true;aUl.innerHTML='';aIn.setAttribute('aria-expanded','false');aIn.removeAttribute('aria-activedescendant');SUG.items=[];SUG.idx=-1;aSt.textContent=''}
 function sLabel(f){const p=f.properties||{},street=p.street?[p.housenumber,p.street].filter(Boolean).join(' '):'',main=p.name||street||p.city||p.district||'',
@@ -680,10 +680,11 @@ async function sFetch(q){const key=q.toLowerCase();if(SUG.cache.has(key)){if(aIn
   catch(e){if(e.name!=='AbortError'&&aIn.value.trim()===q)sClose()}}
 function sPick(i){const f=SUG.items[i];if(!f)return;aCancel();const [lon,lat]=f.geometry.coordinates,{main,sub}=sLabel(f),name=[main,sub].filter(Boolean).join(', ');
   aIn.value=name;sClose();if(SUG.ctl)SUG.ctl.abort();if(innerWidth<760)aIn.blur();document.getElementById('addrx').hidden=false;aShow({lat,lon,name})}
-aIn.addEventListener('input',()=>{clearTimeout(SUG.timer);const q=aIn.value.trim();if(q.length<3){if(SUG.ctl)SUG.ctl.abort();sClose();return}SUG.timer=setTimeout(()=>sFetch(q),280)});
+aIn.addEventListener('input',()=>{clearTimeout(SUG.timer);SUG.dismissed='';const q=aIn.value.trim();if(q.length<3){if(SUG.ctl)SUG.ctl.abort();sClose();return}SUG.timer=setTimeout(()=>sFetch(q),280)});
 aIn.addEventListener('keydown',e=>{if(aUl.hidden)return;const n=SUG.items.length;if(!n)return;
   if(e.key==='ArrowDown'){e.preventDefault();SUG.idx=(SUG.idx+1)%n;sMark()}else if(e.key==='ArrowUp'){e.preventDefault();SUG.idx=SUG.idx<=0?n-1:SUG.idx-1;sMark()}
-  else if(e.key==='Escape'){e.preventDefault();sClose()}});
+  else if(e.key==='Enter'&&SUG.idx>=0){e.preventDefault();sPick(SUG.idx)}
+  else if(e.key==='Escape'){e.preventDefault();SUG.dismissed=aIn.value.trim();sClose()}});
 aUl.addEventListener('mousedown',e=>e.preventDefault());
 aUl.addEventListener('click',e=>{const li=e.target.closest('li');if(li)sPick([...aUl.children].indexOf(li))});
 aIn.addEventListener('blur',()=>setTimeout(()=>{if(document.activeElement!==aIn)sClose()},150));
