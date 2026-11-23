@@ -336,7 +336,7 @@ html:not(.nolow) .mapw.gl .landp,html:not(.nolow) .mapw.gl .sfop{fill:none;strok
 <div class="maplg"><div class="lut lut2" id="lut2"></div><div class="lgd" id="lgd"></div></div>
 <form class="addr" id="addr" role="search" aria-label="Check an address" autocomplete="off">
   <label class="addrl" for="addrq"><svg viewBox="0 0 20 20" aria-hidden="true"><circle cx="8.5" cy="8.5" r="5.5"/><path d="M12.6 12.6 17 17"/></svg>Check an address against this week's water</label>
-  <div class="addrr"><div class="addrw"><input id="addrq" type="text" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="addrs" enterkeyhint="search" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" placeholder="Street address or place, e.g. Ferry Building"><ul class="addrs" id="addrs" role="listbox" aria-label="Suggested places" hidden></ul></div><button type="button" class="addrx" id="addrx" aria-label="Clear address" hidden>&times;</button><button type="submit" class="addrb" id="addrb">Find</button></div>
+  <div class="addrr"><div class="addrw"><input id="addrq" type="text" maxlength="200" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="addrs" enterkeyhint="search" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" placeholder="Street address or place, e.g. Ferry Building"><ul class="addrs" id="addrs" role="listbox" aria-label="Suggested places" hidden></ul></div><button type="button" class="addrx" id="addrx" aria-label="Clear address" hidden>&times;</button><button type="submit" class="addrb" id="addrb">Find</button></div>
   <span class="vh" id="addrst" aria-live="polite"></span>
   <p class="addro" id="addro" aria-live="polite" hidden></p>
   <p class="addra">Search: Photon by komoot and Nominatim, OpenStreetMap data</p>
@@ -468,7 +468,7 @@ const msvg=document.querySelector('#map svg'),gG=msvg.querySelector('#geo'),gO=m
 const BL0=-122.56,BT=37.96,BW=0.66e4*CO,BH=5601,OX=300*CO,OY=1440,OT=`translate(${OX} ${OY})`;
 const P=(lat,lon)=>[(lon-BL0)*1e4*CO,(BT-lat)*1e4];
 const SLUG={sfo:'sfo',full:'peninsula',oak:'oak',bay:'bay-area'},UNSLUG=Object.fromEntries(Object.entries(SLUG).map(([k,v])=>[v,k])),PATHMODE=/(^|\.)sfofloodweek\.com$|\.vercel\.app$/.test(location.hostname),DB=PATHMODE?'/':'';
-function slugNow(){const h=location.hash.slice(1);if(UNSLUG[h])return UNSLUG[h];if(PATHMODE){const q=location.pathname.replace(/^\/+|\/+$/g,'');if(UNSLUG[q])return UNSLUG[q]}return 'sfo'}
+function slugNow(){const own=k=>Object.prototype.hasOwnProperty.call(UNSLUG,k),h=location.hash.slice(1);if(own(h))return UNSLUG[h];if(PATHMODE){const q=location.pathname.replace(/^\/+|\/+$/g,'');if(own(q))return UNSLUG[q]}return 'sfo'}
 function setSlug(v){const sl=SLUG[v]||'sfo';try{if(PATHMODE)history.replaceState(null,'',(v==='sfo'?'/':'/'+sl)+location.search);else if(location.hash.slice(1)!==sl)history.replaceState(null,'','#'+sl)}catch(e){}}
 const VM0=slugNow();
 const ZONES=['sf','op','ala','rich','rwc','coy'];
