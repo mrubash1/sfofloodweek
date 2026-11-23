@@ -283,8 +283,9 @@ def roads():
         g = g.intersection(BBOX).difference(OLDBOX)
         if not g.is_empty:
             keep.append(g)
-    u = to_px(unary_union(keep)).simplify(8)
-    u = MultiLineString([l for l in getattr(u, "geoms", [u]) if l.geom_type == "LineString" and l.length > 60])
+    u = linemerge(unary_union(keep))
+    u = to_px(u).simplify(6)
+    u = MultiLineString([l for l in getattr(u, "geoms", [u]) if l.geom_type == "LineString" and l.length > 25])
     OUTPUT["roads"] = path_of(u, False)
     log("roads chars", len(OUTPUT["roads"]))
 
@@ -325,17 +326,21 @@ def export(bbox, w, h, interp):
 
 @step("topo raster")
 def topo():
-    cell = 0.0009
-    w, h = round((LON1 - LON0) / cell), round((LAT1 - LAT0) / cell)
-    a = export((LON0, LAT0, LON1, LAT1), w, h, "RSP_BilinearInterpolation")
+    fine = G["fine"]
+    B = 9
+    h, w = fine.shape[0] // B, fine.shape[1] // B
+    f = fine[: h * B, : w * B]
+    ok = (f > -9000) & (np.abs(f) >= 0.02)
+    v = np.where(ok, f, 0).reshape(h, B, w, B).sum(axis=(1, 3))
+    n = ok.reshape(h, B, w, B).sum(axis=(1, 3))
+    a = np.where(n > 0, v / np.maximum(n, 1), 0)
     ft = a * 3.28084
     ed = np.array([5, 10, 15, 25, 50, 100, 200, 400, 700])
     c = np.searchsorted(ed, ft, side="right")
-    c[a < -9000] = 0
     g = np.round((c + 0.5) * 255 / 10).astype(np.uint8)
     Image.fromarray(g, "L").save(f"{OUT}/topo.png", optimize=True)
     x0, y0 = pxy(LON0, LAT1)
-    x1, y1 = pxy(LON1, LAT0)
+    x1, y1 = pxy(LON0 + w * B * CELL / 3, LAT1 - h * B * CELL / 3)
     OUTPUT["topo"] = {"file": "data/topo.png", "x": x0, "y": y0, "w": x1 - x0, "h": y1 - y0, "classes": 10}
     log("topo", w, h, os.path.getsize(f"{OUT}/topo.png"))
 
@@ -463,9 +468,10 @@ def main():
         shoreline()
     roads()
     airports()
-    topo()
     if G.get("stations"):
         low()
+    if G.get("fine") is not None:
+        topo()
     airport_stats()
     oak_crest()
     OUTPUT["built"] = time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())
