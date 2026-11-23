@@ -594,7 +594,7 @@ async function aGround(lat,lon){if(!BAY||!BAY.low)return {kind:'none',zone:aZone
   for(const [z,o] of Object.entries(BAY.low.zones)){if(!o.file)continue;const [x,y]=P(lat,lon);if(x<o.x||y<o.y||x>o.x+o.w||y>o.y+o.h)continue;
     try{const d=await aPx(o.file,o,lat,lon);if(d&&d[3]>127){const c=Math.floor(d[0]*42/255);if(c<41)return {kind:'low',zone:z,c,g:c===0?3.75:4.125+0.25*(c-1)}}}catch(e){}}
   const zone=aZoneRule(lat,lon),tp=BAY.topo;
-  if(tp&&tp.light){try{const d=await aPx(tp.light,tp,lat,lon);if(d&&d[3]>127)return {kind:'high',zone}}catch(e){}}
+  if(tp&&tp.light){try{const d=await aPx(tp.light,tp,lat,lon);if(d&&d[3]>127){const PL=['e6eedb','dce8cc','d1e0be','c6d8b1','cfd4a3','d8cc95','d6bb83','c9a370','b78c61','a07656'].map(h=>[0,2,4].map(i=>parseInt(h.substr(i,2),16)));let k=0,bd=1e9;PL.forEach((c,j)=>{const e=(c[0]-d[0])**2+(c[1]-d[1])**2+(c[2]-d[2])**2;if(e<bd){bd=e;k=j}});return {kind:k>=3?'high':'none',zone}}}catch(e){}}
   return {kind:'none',zone}}
 function aShort(r){const a=r.address||{},parts=[];if(r.name)parts.push(r.name);const st=a.road?[a.house_number,a.road].filter(Boolean).join(' '):'';if(st&&st!==r.name)parts.push(st);
   const city=a.city||a.town||a.village||a.hamlet||a.suburb;if(city&&!parts.includes(city))parts.push(city);return parts.length?parts.slice(0,3).join(', '):String(r.display_name||'').split(',').slice(0,3).join(',')}
@@ -604,7 +604,7 @@ function addrRead(){if(!ADDR)return;const o=document.getElementById('addro');if(
   let t=`<b>${esc(ADDR.name)}</b>. `;
   if(G.kind==='low')t+=G.c===0?'Ground here is under about 4 ft (NAVD88). ':`Ground here is about ${G.g.toFixed(1)} ft (NAVD88, a 30 m average). `;
   else if(G.kind==='high')t+='Ground here sits above about 14 ft (NAVD88). ';
-  else t+='No ground height for this exact spot; it may be over water. ';
+  else t+='No reliable ground height for this exact spot (it may be a pier, a wharf or open water). ';
   if(w==null)t+='Bay levels are still loading.';
   else{t+=`At ${lab(sel)} the bay near ${ZNM[z]||'here'} is forecast at ${w.toFixed(1)} ft`;
     if(G.kind==='low'&&G.c===0){const d=w-4;t+=d>0?`, so this spot sits more than ${d.toFixed(1)} ft below the water level. The shoreline and seawalls are what keep it dry.`:'.'}
