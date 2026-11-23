@@ -434,7 +434,7 @@ function lowPaint(W){for(const z of ZONES){const w=W[z];if(w==null)continue;cons
   const fs=f.querySelectorAll('feFuncR,feFuncG,feFuncB,feFuncA');fs[0].setAttribute('tableValues',tv(R));fs[1].setAttribute('tableValues',tv(Gc));fs[2].setAttribute('tableValues',tv(Bc));fs[3].setAttribute('tableValues',tv(A))}}
 const GLR=/[?&]nogl\b/.test(location.search)?null:(()=>{try{
   const cv=document.createElement('canvas');cv.className='glr';cv.setAttribute('aria-hidden','true');
-  const gl=cv.getContext('webgl',{alpha:true,premultipliedAlpha:true,antialias:false,depth:false,stencil:false});if(!gl)return null;
+  const gl=cv.getContext('webgl',{alpha:true,premultipliedAlpha:true,antialias:false,depth:false,stencil:false,failIfMajorPerformanceCaveat:true});if(!gl)return null;
   const VS='attribute vec2 a;uniform vec4 r,m;varying vec2 v;void main(){v=a;vec2 u=r.xy+a*r.zw;gl_Position=vec4(u.x*m.x+m.z,u.y*m.y+m.w,0.,1.);}';
   const FT='precision mediump float;uniform sampler2D t;varying vec2 v;void main(){gl_FragColor=texture2D(t,v);}';
   const FL='precision mediump float;uniform sampler2D t;uniform float w;uniform vec4 c0,c1,c2;varying vec2 v;void main(){vec4 s=texture2D(t,v);if(s.a<.5)discard;float c=floor(s.r*42.);if(c>40.5)discard;float g=c<.5?3.75:4.125+.25*(c-1.);float d=w-g;if(d<=0.)discard;vec4 k=d<1.?c0:d<2.?c1:c2;gl_FragColor=vec4(k.rgb*k.a,k.a);}';
