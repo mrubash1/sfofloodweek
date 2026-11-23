@@ -1,0 +1,24 @@
+{
+  "name": "sfofloodweek",
+  "version": "1.0.0",
+  "description": "Static page served at https://sfofloodweek.com: hour by hour bay level at SFO, Pier 14 and Mission Creek for the Thanksgiving week 2026 king tides and storm, with a ground-height map.",
+  "main": "index.html",
+  "scripts": {
+    "build": "python3 build.py",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mrubash1/sfofloodweek.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/mrubash1/sfofloodweek/issues"
+  },
+  "homepage": "https://github.com/mrubash1/sfofloodweek#readme",
+  "dependencies": {
+    "@vercel/analytics": "^2.0.1"
+  }
+}
