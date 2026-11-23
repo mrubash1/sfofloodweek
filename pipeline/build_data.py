@@ -303,9 +303,11 @@ OVERPASS = ["https://overpass-api.de/api/interpreter", "https://overpass.kumi.sy
             "https://maps.mail.ru/osm/tools/overpass/api/interpreter"]
 
 
-def _osm_polys(elements):
+def _osm_polys(elements, keep=lambda tags: True):
     out = []
     for e in elements:
+        if not keep(e.get("tags") or {}):
+            continue
         try:
             if e["type"] == "way" and e.get("geometry"):
                 c = [(p["lon"], p["lat"]) for p in e["geometry"]]
@@ -347,10 +349,20 @@ def wetlands():
             log("overpass fail", url, ex)
     if data is None:
         raise RuntimeError("all Overpass endpoints failed")
-    polys = _osm_polys(data.get("elements", []))
-    wet = unary_union(polys).intersection(BBOX)
+    els = data.get("elements", [])
+    # Open water and salt ponds are always water. Marsh is only dropped when it is tidal, i.e. it
+    # touches open bay water; diked wetlands behind levees (like the OAK infield) stay as ground.
+    water = _osm_polys(els, lambda t: t.get("natural") == "water" or t.get("landuse") == "salt_pond"
+                       or (t.get("natural") == "wetland" and t.get("wetland") == "tidalflat"))
+    marsh = _osm_polys(els, lambda t: t.get("natural") == "wetland" and t.get("wetland") != "tidalflat")
+    bay = G.get("bay_ll")
+    near = bay.buffer(0.0002) if bay is not None else None
+    tidal = [g for g in marsh if near is not None and g.intersects(near)]
+    wet = unary_union(water + tidal).intersection(BBOX)
     G["wet_ll"] = wet
-    log("wet polygons", len(polys), "area deg2", round(wet.area, 5))
+    log("water/salt pond polygons", len(water), "area", round(unary_union(water).area, 5) if water else 0,
+        "marsh", len(marsh), "tidal marsh kept out", len(tidal), "area", round(unary_union(tidal).area, 5) if tidal else 0,
+        "total deg2", round(wet.area, 5))
 
 
 @step("airports")
