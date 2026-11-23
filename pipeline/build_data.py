@@ -333,21 +333,45 @@ def _osm_polys(elements, keep=lambda tags: True):
 
 @step("ponds and tidal wetlands (OSM)")
 def wetlands():
-    bb = f"{LAT0},{LON0},{LAT1},{LON1}"
-    q = (f'[out:json][timeout:180];('
-         f'way["landuse"="salt_pond"]({bb});relation["landuse"="salt_pond"]({bb});'
-         f'way["natural"="water"]({bb});relation["natural"="water"]({bb});'
-         f'way["natural"="wetland"]({bb});relation["natural"="wetland"]({bb});'
-         f');out geom;')
-    data = None
     cache = os.path.join(os.path.dirname(os.path.abspath(__file__)), "cache", "osm_wet.wkb.gz")
-    for url in OVERPASS:
-        try:
-            r = get(url, params={"data": q}, timeout=240, tries=2)
-            data = r.json()
+    data = {"elements": []}
+    seen = set()
+    nt = 3
+    for a in range(nt):
+        for b in range(nt):
+            la0, la1 = LAT0 + (LAT1 - LAT0) * a / nt, LAT0 + (LAT1 - LAT0) * (a + 1) / nt
+            lo0, lo1 = LON0 + (LON1 - LON0) * b / nt, LON0 + (LON1 - LON0) * (b + 1) / nt
+            bb = f"{la0},{lo0},{la1},{lo1}"
+            q = (f'[out:json][timeout:120];('
+                 f'way["landuse"="salt_pond"]({bb});relation["landuse"="salt_pond"]({bb});'
+                 f'way["natural"="water"]({bb});relation["natural"="water"]({bb});'
+                 f'way["natural"="wetland"]({bb});relation["natural"="wetland"]({bb});'
+                 f');out geom;')
+            got = None
+            for url in OVERPASS:
+                for attempt in range(2):
+                    try:
+                        r = requests.post(url, data={"data": q}, headers=UA, timeout=150)
+                        r.raise_for_status()
+                        got = r.json()
+                        break
+                    except Exception as ex:
+                        log("overpass tile", a, b, url, "attempt", attempt, str(ex)[:80])
+                        time.sleep(5)
+                if got is not None:
+                    break
+            if got is None:
+                data = None
+                break
+            for e in got.get("elements", []):
+                k = (e["type"], e["id"])
+                if k not in seen:
+                    seen.add(k)
+                    data["elements"].append(e)
+            log("overpass tile", a, b, len(got.get("elements", [])))
+            time.sleep(2)
+        if data is None:
             break
-        except Exception as ex:
-            log("overpass fail", url, ex)
     if data is None:
         if os.path.exists(cache):
             import gzip
@@ -611,6 +635,11 @@ def main():
     stations_and_tides()
     land_and_water()
     wetlands()
+    if G.get("wet_ll") is None:
+        # Without the pond and marsh mask the rasters would show salt ponds as flooded ground again,
+        # so keep the last good rasters rather than overwrite them.
+        log("stopping: no pond/marsh mask, keeping previous rasters; errors", OUTPUT["errors"])
+        sys.exit(1)
     if G.get("bay_ll") is not None and G.get("stations"):
         shoreline()
     roads()
