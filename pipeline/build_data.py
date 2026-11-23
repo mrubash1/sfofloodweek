@@ -337,11 +337,20 @@ def topo():
     ft = a * 3.28084
     ed = np.array([5, 10, 15, 25, 50, 100, 200, 400, 700])
     c = np.searchsorted(ed, ft, side="right")
+    land = poly_mask(G["land_ll"], w, h, B * CELL / 3)
+    PAL = {"light": ["e6eedb", "dce8cc", "d1e0be", "c6d8b1", "cfd4a3", "d8cc95", "d6bb83", "c9a370", "b78c61", "a07656"],
+           "dark": ["1d2c26", "21322a", "24372c", "283c2e", "323f2d", "3d422e", "44412f", "4b4532", "534a37", "5b4f3c"]}
+    for th, pal in PAL.items():
+        lut = np.array([[int(x[i:i + 2], 16) for i in (0, 2, 4)] for x in pal], dtype=np.uint8)
+        rgba = np.zeros((h, w, 4), dtype=np.uint8)
+        rgba[..., :3] = lut[np.clip(c, 0, 9)]
+        rgba[..., 3] = np.where(land, 255, 0)
+        Image.fromarray(rgba, "RGBA").save(f"{OUT}/topo_{th}.png", optimize=True)
     g = np.round((c + 0.5) * 255 / 10).astype(np.uint8)
     Image.fromarray(g, "L").save(f"{OUT}/topo.png", optimize=True)
     x0, y0 = pxy(LON0, LAT1)
     x1, y1 = pxy(LON0 + w * B * CELL / 3, LAT1 - h * B * CELL / 3)
-    OUTPUT["topo"] = {"file": "data/topo.png", "x": x0, "y": y0, "w": x1 - x0, "h": y1 - y0, "classes": 10}
+    OUTPUT["topo"] = {"file": "data/topo.png", "light": "data/topo_light.png", "dark": "data/topo_dark.png", "x": x0, "y": y0, "w": x1 - x0, "h": y1 - y0, "classes": 10}
     log("topo", w, h, os.path.getsize(f"{OUT}/topo.png"))
 
 
@@ -388,10 +397,12 @@ def low():
     inold = (LON >= OLD[0]) & (LON <= OLD[1]) & (LAT >= OLD[2]) & (LAT <= OLD[3])
     zid[inold] = np.where((LAT[inold] < 37.712) & (LON[inold] > -122.46), op, sf)
     G["zid"], G["znames"] = zid, names
+    landm = poly_mask(G["land_ll"])
+    G["landm"] = landm
     gray = np.round((c.astype(np.float32) + 0.5) * 255 / 42).astype(np.uint8)
     OUTPUT["low"] = {"classes": 42, "lo": 4, "step": 0.25, "cell": CELL, "zones": {}}
     for k, nm in enumerate(names):
-        m = (zid == k) & (c < 41)
+        m = (zid == k) & (c < 41) & landm
         if not m.any():
             continue
         rows, cols = np.where(m)
@@ -408,16 +419,22 @@ def low():
         log("low", nm, c1 - c0, r1 - r0, os.path.getsize(fn))
 
 
-def poly_mask(g):
-    img = Image.new("L", (NX, NY), 0)
+def poly_mask(g, nx=None, ny=None, cell=None):
+    nx, ny, cell = nx or NX, ny or NY, cell or CELL
+    img = Image.new("L", (nx, ny), 0)
     dr = ImageDraw.Draw(img)
+    polys = []
     for p in getattr(g, "geoms", [g]):
+        polys += list(getattr(p, "geoms", [p]))
+    for p in polys:
         if p.geom_type != "Polygon":
             continue
-        ext = [((x - LON0) / CELL, (LAT1 - y) / CELL) for x, y in p.exterior.coords]
-        dr.polygon(ext, fill=255)
+        dr.polygon([((x - LON0) / cell, (LAT1 - y) / cell) for x, y in p.exterior.coords], fill=255)
+    for p in polys:
+        if p.geom_type != "Polygon":
+            continue
         for i in p.interiors:
-            dr.polygon([((x - LON0) / CELL, (LAT1 - y) / CELL) for x, y in i.coords], fill=0)
+            dr.polygon([((x - LON0) / cell, (LAT1 - y) / cell) for x, y in i.coords], fill=0)
     return np.array(img) > 0
 
 
