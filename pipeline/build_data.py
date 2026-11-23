@@ -18,7 +18,7 @@ import shapefile
 from PIL import Image, ImageDraw
 from shapely import make_valid
 from shapely.geometry import LineString, MultiLineString, MultiPolygon, Point, Polygon, box, shape
-from shapely.ops import linemerge, transform, unary_union
+from shapely.ops import linemerge, polygonize, transform, unary_union
 
 OUT = "data"
 os.makedirs(OUT, exist_ok=True)
@@ -299,6 +299,60 @@ def nominatim(q):
     return None
 
 
+OVERPASS = ["https://overpass-api.de/api/interpreter", "https://overpass.kumi.systems/api/interpreter",
+            "https://maps.mail.ru/osm/tools/overpass/api/interpreter"]
+
+
+def _osm_polys(elements):
+    out = []
+    for e in elements:
+        try:
+            if e["type"] == "way" and e.get("geometry"):
+                c = [(p["lon"], p["lat"]) for p in e["geometry"]]
+                if len(c) >= 4 and c[0] == c[-1]:
+                    out.append(make_valid(Polygon(c)))
+            elif e["type"] == "relation":
+                outer, inner = [], []
+                for m in e.get("members", []):
+                    if m.get("type") != "way" or not m.get("geometry"):
+                        continue
+                    ln = LineString([(p["lon"], p["lat"]) for p in m["geometry"]])
+                    (inner if m.get("role") == "inner" else outer).append(ln)
+                if not outer:
+                    continue
+                po = unary_union(list(polygonize(linemerge(outer))))
+                if inner:
+                    po = po.difference(unary_union(list(polygonize(linemerge(inner)))))
+                out.append(make_valid(po))
+        except Exception as ex:
+            log("osm poly skip", e.get("id"), ex)
+    return [g for g in out if not g.is_empty and g.area > 2e-7]
+
+
+@step("ponds and tidal wetlands (OSM)")
+def wetlands():
+    bb = f"{LAT0},{LON0},{LAT1},{LON1}"
+    q = (f'[out:json][timeout:180];('
+         f'way["landuse"="salt_pond"]({bb});relation["landuse"="salt_pond"]({bb});'
+         f'way["natural"="water"]({bb});relation["natural"="water"]({bb});'
+         f'way["natural"="wetland"]({bb});relation["natural"="wetland"]({bb});'
+         f');out geom;')
+    data = None
+    for url in OVERPASS:
+        try:
+            r = get(url, params={"data": q}, timeout=240, tries=2)
+            data = r.json()
+            break
+        except Exception as ex:
+            log("overpass fail", url, ex)
+    if data is None:
+        raise RuntimeError("all Overpass endpoints failed")
+    polys = _osm_polys(data.get("elements", []))
+    wet = unary_union(polys).intersection(BBOX)
+    G["wet_ll"] = wet
+    log("wet polygons", len(polys), "area deg2", round(wet.area, 5))
+
+
 @step("airports")
 def airports():
     oak = nominatim("Oakland San Francisco Bay Airport") or nominatim("Oakland International Airport")
@@ -338,6 +392,8 @@ def topo():
     ed = np.array([5, 10, 15, 25, 50, 100, 200, 400, 700])
     c = np.searchsorted(ed, ft, side="right")
     land = poly_mask(G["land_ll"], w, h, B * CELL / 3)
+    if G.get("wet_ll") is not None and not G["wet_ll"].is_empty:
+        land = land & ~poly_mask(G["wet_ll"], w, h, B * CELL / 3)
     PAL = {"light": ["e6eedb", "dce8cc", "d1e0be", "c6d8b1", "cfd4a3", "d8cc95", "d6bb83", "c9a370", "b78c61", "a07656"],
            "dark": ["1d2c26", "21322a", "24372c", "283c2e", "323f2d", "3d422e", "44412f", "4b4532", "534a37", "5b4f3c"]}
     for th, pal in PAL.items():
@@ -405,6 +461,12 @@ def low():
     zid[inold] = np.where((LAT[inold] < 37.712) & (LON[inold] > -122.46), op, sf)
     G["zid"], G["znames"] = zid, names
     landm = poly_mask(G["land_ll"])
+    wpoly = G.get("wet_ll")
+    if wpoly is not None and not wpoly.is_empty:
+        wm = poly_mask(wpoly)
+        log("low cells removed as pond or wetland", int((landm & wm & (c < 41)).sum()))
+        landm = landm & ~wm
+        G["wetm"] = wm
     G["landm"] = landm
     gray = np.round((c.astype(np.float32) + 0.5) * 255 / 42).astype(np.uint8)
     OUTPUT["low"] = {"classes": 42, "lo": 4, "step": 0.25, "cell": CELL, "zones": {}}
@@ -485,9 +547,33 @@ def oak_crest():
         log("oak crest", OUTPUT["oak_crest_ft"])
 
 
+@step("protected areas")
+def protect():
+    sfo, oak = G.get("sfo"), G.get("oak")
+    img = np.zeros((NY, NX), dtype=np.uint8)
+    # OAK: only the South Field sits behind the perimeter dike; split the airport outline along a
+    # line between the fields (north of runway 12/30 and the terminal, south of runways 10/28 and 15/33).
+    south = Polygon([(-122.32, 37.7525), (-122.15, 37.6994), (-122.15, 37.60), (-122.32, 37.60)])
+    ids = {}
+    if sfo is not None:
+        img[poly_mask(sfo)] = 85
+        ids["sfo"] = 1
+    if oak is not None:
+        sf = make_valid(oak.intersection(south))
+        img[poly_mask(sf)] = 170
+        ids["oak_south"] = 2
+        OUTPUT["oak_south"] = path_of(polys_only(to_px(sf).simplify(2)))
+    Image.fromarray(img, "L").save(f"{OUT}/protect.png", optimize=True)
+    x0, y0 = pxy(LON0, LAT1)
+    x1, y1 = pxy(LON0 + NX * CELL, LAT1 - NY * CELL)
+    OUTPUT["protect"] = {"file": "data/protect.png", "x": x0, "y": y0, "w": x1 - x0, "h": y1 - y0, "ids": ids}
+    log("protect", ids, int((img == 85).sum()), int((img == 170).sum()), os.path.getsize(f"{OUT}/protect.png"))
+
+
 def main():
     stations_and_tides()
     land_and_water()
+    wetlands()
     if G.get("bay_ll") is not None and G.get("stations"):
         shoreline()
     roads()
@@ -498,6 +584,7 @@ def main():
         topo()
     airport_stats()
     oak_crest()
+    protect()
     OUTPUT["built"] = time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())
     json.dump(OUTPUT, open(f"{OUT}/bay.json", "w"))
     log("done; bay.json bytes", os.path.getsize(f"{OUT}/bay.json"), "errors", OUTPUT["errors"])
