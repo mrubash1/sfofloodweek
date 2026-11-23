@@ -351,6 +351,13 @@ def topo():
     x0, y0 = pxy(LON0, LAT1)
     x1, y1 = pxy(LON0 + w * B * CELL / 3, LAT1 - h * B * CELL / 3)
     OUTPUT["topo"] = {"file": "data/topo.png", "light": "data/topo_light.png", "dark": "data/topo_dark.png", "x": x0, "y": y0, "w": x1 - x0, "h": y1 - y0, "classes": 10}
+    lm = G.get("landm")
+    if lm is None:
+        lm = poly_mask(G["land_ll"])
+    Image.fromarray(np.where(lm, 255, 0).astype(np.uint8), "L").save(f"{OUT}/land_mask.png", optimize=True)
+    mx1, my1 = pxy(LON0 + NX * CELL, LAT1 - NY * CELL)
+    OUTPUT["topo"]["mask"] = {"file": "data/land_mask.png", "x": x0, "y": y0, "w": mx1 - x0, "h": my1 - y0}
+    log("land mask", NX, NY, os.path.getsize(f"{OUT}/land_mask.png"))
     log("topo", w, h, os.path.getsize(f"{OUT}/topo.png"))
 
 
