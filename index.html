@@ -661,7 +661,7 @@ async function sFetch(q){const key=q.toLowerCase();if(SUG.cache.has(key)){sRende
   if(SUG.ctl)SUG.ctl.abort();const ctl=SUG.ctl=new AbortController();
   try{const u='https://photon.komoot.io/api/?limit=6&lang=en&bbox=-122.56,37.40,-121.90,37.96&lat=37.70&lon=-122.30&q='+encodeURIComponent(q);
     const js=await (await fetch(u,{signal:ctl.signal})).json();
-    const items=(js.features||[]).filter(f=>{const c=f.geometry&&f.geometry.coordinates;return c&&inBox(c[1],c[0],MAPBOX)}).slice(0,innerWidth<760?4:5);
+    const seen=new Set(),items=(js.features||[]).filter(f=>{const c=f.geometry&&f.geometry.coordinates;if(!c||!inBox(c[1],c[0],MAPBOX))return false;const l=sLabel(f),k=(l.main+'|'+l.sub).toLowerCase();if(!l.main||seen.has(k))return false;seen.add(k);return true}).slice(0,innerWidth<760?4:5);
     SUG.cache.set(key,items);if(aIn.value.trim()===q)sRender(q,items)}
   catch(e){if(e.name!=='AbortError'&&aIn.value.trim()===q)sClose()}}
 function sPick(i){const f=SUG.items[i];if(!f)return;const [lon,lat]=f.geometry.coordinates,{main,sub}=sLabel(f),name=[main,sub].filter(Boolean).join(', ');
