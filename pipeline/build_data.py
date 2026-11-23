@@ -515,6 +515,8 @@ def airport_stats():
         if g is None or "cls" not in G:
             continue
         m = poly_mask(g)
+        if "wetm" in G:
+            m = m & ~G["wetm"]
         h = np.bincount(G["cls"][m], minlength=42)
         st[nm] = {"hist": h.tolist(), "n": int(m.sum())}
         log(nm, "cells", int(m.sum()))
