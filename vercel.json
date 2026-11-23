@@ -1,5 +1,8 @@
 {
   "cleanUrls": true,
+  "rewrites": [
+    { "source": "/(sfo|peninsula|oak|bay-area)", "destination": "/index.html" }
+  ],
   "headers": [
     { "source": "/(.*)", "headers": [{ "key": "Cache-Control", "value": "public, max-age=300, must-revalidate" }] }
   ]
