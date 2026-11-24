@@ -705,7 +705,8 @@ function aShow(r){const lat=+r.lat,lon=+r.lon;
     const tab=(TABBOX.find(([,b])=>inBox(lat,lon,b))||['bay'])[0];vmode=tab;setV(tab);setSlug(tab);
     const [x,y]=P(lat,lon),ph=innerWidth<760,k=HOME().k*(ph?1:1.6);fitted=false;view={cx:x,cy:ph?y-msvg.clientHeight*0.2/(base().s*k):y,k};drawMap();addrRead();document.getElementById('addrx').hidden=false;
     if(ph)document.getElementById('addr').scrollIntoView({block:'end',behavior:'smooth'})})}
-let aReq=0,aNom=null;
+/* free public geocoders: stop for this page view once Nominatim says 403/429, or after 30 lookups; cached answers keep working */
+let aReq=0,aNom=null,aOff=false,aSent=0;const AMAX=30,ABUSY='Address search is unavailable right now because the free lookup service is busy. Use the map above, or check NWS and the live tide gauges under Official flood alerts and local help.';
 function sCached(q){const v=SUG.cache.get(q.toLowerCase());return v&&v.length?v:null}
 document.getElementById('addr').addEventListener('submit',async e=>{e.preventDefault();const inp=document.getElementById('addrq'),q=inp.value.trim();if(!q)return;
   clearTimeout(SUG.timer);
@@ -715,10 +716,11 @@ document.getElementById('addr').addEventListener('submit',async e=>{e.preventDef
   if(SUG.ctl)SUG.ctl.abort();sClose();
   const key=q.toLowerCase();if(innerWidth<760)inp.blur();const tok=++aReq;
   if(ACACHE.has(key)){const r=ACACHE.get(key);r?aShow(r):aFail('No match on this map for that address. Try adding the city.');return}
+  if(aOff||aSent>=AMAX){aFail(ABUSY);return}
   const btn=document.getElementById('addrb'),ctl=aNom=new AbortController();let tOut=false;const tmr=setTimeout(()=>{tOut=true;ctl.abort()},12000);aBusy=true;btn.disabled=true;aMsg('Looking up...');
-  try{const wait=1100-(Date.now()-aLast);if(wait>0)await new Promise(r=>setTimeout(r,wait));if(tok!==aReq)return;aLast=Date.now();
+  try{const wait=1100-(Date.now()-aLast);if(wait>0)await new Promise(r=>setTimeout(r,wait));if(tok!==aReq)return;aLast=Date.now();aSent++;
     const u='https://nominatim.openstreetmap.org/search?format=jsonv2&limit=1&addressdetails=1&countrycodes=us&accept-language=en&viewbox=-122.56,37.96,-121.90,37.40&bounded=1&q='+encodeURIComponent(q);
-    const res=await fetch(u,{headers:{Accept:'application/json'},signal:ctl.signal});if(!res.ok)throw new Error(res.status);const js=await res.json(),r=js&&js[0]||null;ACACHE.set(key,r);
+    const res=await fetch(u,{headers:{Accept:'application/json'},signal:ctl.signal});if(res.status===403||res.status===429){aOff=true;if(tok===aReq)aFail(ABUSY);return}if(!res.ok)throw new Error(res.status);const js=await res.json(),r=js&&js[0]||null;ACACHE.set(key,r);
     if(tok!==aReq)return;
     if(r)aShow(r);else aFail('No match on this map for that address. Try adding the city.')}
   catch(err){if((err.name!=='AbortError'||tOut)&&tok===aReq)aFail("Address search isn't reachable right now. Try again in a moment.")}
@@ -726,8 +728,9 @@ document.getElementById('addr').addEventListener('submit',async e=>{e.preventDef
 function aCancel(){aReq++;aShowSeq++;if(aNom)aNom.abort()}
 document.getElementById('addrx').addEventListener('click',()=>{aCancel();ADDR=null;const inp=document.getElementById('addrq');inp.value='';aMsg('');sClose();document.getElementById('addrx').hidden=true;drawMap();inp.focus()});
 document.getElementById('addrq').addEventListener('input',e=>{document.getElementById('addrx').hidden=!e.target.value&&!ADDR});
-/* type-ahead: Photon (komoot), only while typing in the box, debounced, bounded to the map */
-const SUG={items:[],idx:-1,q:'',timer:0,ctl:null,cache:new Map(),dismissed:''};
+/* type-ahead: Photon (komoot), only while typing in the box, debounced, bounded to the map;
+   switches off for this page view after 25 requests or on a 403/429 (cached answers still show) */
+const SUG={items:[],idx:-1,q:'',timer:0,ctl:null,cache:new Map(),dismissed:'',sent:0,off:false};
 const aIn=document.getElementById('addrq'),aUl=document.getElementById('addrs'),aSt=document.getElementById('addrst');
 function sClose(){clearTimeout(SUG.timer);aUl.hidden=true;aUl.innerHTML='';aIn.setAttribute('aria-expanded','false');aIn.removeAttribute('aria-activedescendant');SUG.items=[];SUG.idx=-1;aSt.textContent=''}
 function sLabel(f){const p=f.properties||{},street=p.street?[p.housenumber,p.street].filter(Boolean).join(' '):'',main=p.name||street||p.city||p.district||'',
@@ -739,15 +742,16 @@ function sRender(q,all){const items=all.slice(0,innerWidth<760?4:5);if(!items.le
   const r=aIn.getBoundingClientRect();aUl.classList.toggle('up',innerWidth>=760&&innerHeight-r.bottom<240&&r.top>260);aUl.hidden=false;aIn.setAttribute('aria-expanded','true');
   aSt.textContent=`${items.length} suggestion${items.length>1?'s':''}, use the arrow keys to choose`}
 async function sFetch(q){const key=q.toLowerCase();if(SUG.cache.has(key)){if(aIn.value.trim()===q)sRender(q,SUG.cache.get(key));return}
+  if(SUG.off){if(aIn.value.trim()===q)sClose();return}if(++SUG.sent>=25)SUG.off=true;
   if(SUG.ctl)SUG.ctl.abort();const ctl=SUG.ctl=new AbortController();
   try{const u='https://photon.komoot.io/api/?limit=7&lang=en&bbox=-122.56,37.40,-121.90,37.96&lat=37.70&lon=-122.30&q='+encodeURIComponent(q);
-    const res=await fetch(u,{signal:ctl.signal});if(!res.ok)throw new Error(res.status);const js=await res.json();
+    const res=await fetch(u,{signal:ctl.signal});if(res.status===403||res.status===429)SUG.off=true;if(!res.ok)throw new Error(res.status);const js=await res.json();
     const seen=new Set(),items=(js.features||[]).filter(f=>{const c=f.geometry&&f.geometry.coordinates;if(!c||!inBox(c[1],c[0],MAPBOX))return false;const l=sLabel(f),k=(l.main+'|'+l.sub).toLowerCase();if(!l.main||seen.has(k))return false;seen.add(k);return true}).slice(0,5);
     SUG.cache.set(key,items);if(aIn.value.trim()===q)sRender(q,items)}
   catch(e){if(e.name!=='AbortError'&&aIn.value.trim()===q)sClose()}}
 function sPick(i){const f=SUG.items[i];if(!f)return;aCancel();const [lon,lat]=f.geometry.coordinates,{main,sub}=sLabel(f),name=[main,sub].filter(Boolean).join(', ');
   aIn.value=name;sClose();if(SUG.ctl)SUG.ctl.abort();if(innerWidth<760)aIn.blur();document.getElementById('addrx').hidden=false;aShow({lat,lon,name})}
-aIn.addEventListener('input',()=>{clearTimeout(SUG.timer);SUG.dismissed='';const q=aIn.value.trim();if(q.length<3){if(SUG.ctl)SUG.ctl.abort();sClose();return}SUG.timer=setTimeout(()=>sFetch(q),280)});
+aIn.addEventListener('input',()=>{clearTimeout(SUG.timer);SUG.dismissed='';const q=aIn.value.trim();if(q.length<4||SUG.off&&!SUG.cache.has(q.toLowerCase())){if(SUG.ctl)SUG.ctl.abort();sClose();return}SUG.timer=setTimeout(()=>sFetch(q),600)});
 aIn.addEventListener('keydown',e=>{if(aUl.hidden)return;const n=SUG.items.length;if(!n)return;
   if(e.key==='ArrowDown'){e.preventDefault();SUG.idx=(SUG.idx+1)%n;sMark()}else if(e.key==='ArrowUp'){e.preventDefault();SUG.idx=SUG.idx<=0?n-1:SUG.idx-1;sMark()}
   else if(e.key==='Enter'&&SUG.idx>=0){e.preventDefault();sPick(SUG.idx)}
@@ -756,7 +760,7 @@ aUl.addEventListener('mousedown',e=>e.preventDefault());
 aUl.addEventListener('click',e=>{const li=e.target.closest('li');if(li)sPick([...aUl.children].indexOf(li))});
 aIn.addEventListener('blur',()=>setTimeout(()=>{if(document.activeElement!==aIn)sClose()},150));
 function aToForm(){const sb=document.querySelector('.sbar'),top=sb?sb.getBoundingClientRect().bottom:0,f=document.getElementById('addr').getBoundingClientRect(),d=f.top-top-8;if(Math.abs(d)>24)scrollBy({top:d,behavior:'auto'})}
-aIn.addEventListener('focus',()=>{const q=aIn.value.trim();if(q.length>=3&&SUG.cache.has(q.toLowerCase()))sRender(q,SUG.cache.get(q.toLowerCase()));
+aIn.addEventListener('focus',()=>{const q=aIn.value.trim();if(q.length>=4&&SUG.cache.has(q.toLowerCase()))sRender(q,SUG.cache.get(q.toLowerCase()));
   if(innerWidth<760){setTimeout(aToForm,280);setTimeout(aToForm,700)}});
 document.getElementById('zfind').addEventListener('click',()=>{const f=document.getElementById('addr');if(innerWidth>=760)f.scrollIntoView({block:'nearest'});aIn.focus({preventScroll:innerWidth<760})});
 table();setSel(pickSel(sel));
