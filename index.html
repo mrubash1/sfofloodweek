@@ -437,7 +437,7 @@ let drag=false;csvg.addEventListener('pointerdown',e=>{drag=true;pick(e)});addEv
 /* readout */
 function setSel(t){sel=Math.max(t0,Math.min(t1-STEP,t));update()}
 // keep t if it is in range and not yet past; else the next daily peak still ahead, else the present, else (all past) the last peak
-function pickSel(t){const now=Date.now(),ok=t>=t0&&t<=t1-STEP;if(ok&&t>=now)return t;const n=days.find(e=>e.t>=now&&e.t<=t1-STEP);if(n)return n.t;if(now>=t0&&now<=t1-STEP)return Math.ceil(now/STEP)*STEP;return ok?t:days.length?days[days.length-1].t:t}
+function pickSel(t){const now=Date.now(),ok=t>=t0&&t<=t1-STEP;if(ok&&t>=now)return t;const q=x=>Math.round(x/STEP)*STEP,n=days.find(e=>e.t>=now&&e.t<=t1-STEP);if(n)return q(n.t);if(now>=t0&&now<=t1-STEP)return Math.ceil(now/STEP)*STEP;return ok?t:days.length?q(days[days.length-1].t):t}
 function update(){
   const v=lvl(sel),c=cls(v),b=blk(sel),o=B[b];
   document.getElementById('tlabel').textContent=lab(sel);
