@@ -226,7 +226,7 @@ html:not(.nolow) .mapw.gl .landp,html:not(.nolow) .mapw.gl .sfop{fill:none;strok
 <main class="mainx">
 <div class="leftc">
 <section class="tline pad" aria-label="Week timeline">
-  <div class="tlh"><span class="tlt" id="tlt">Bay level at SFO, now through Thursday</span><div class="key"><span><i style="background:var(--teal)"></i>forecast</span><span><i style="background:var(--teal);opacity:.3;height:9px"></i>range</span><span><i style="background:var(--tab);height:1.5px"></i>tide table</span></div><div class="seg segr" role="group" aria-label="Time range"><button id="r3" aria-pressed="true">3 days</button><button id="r7" aria-pressed="false" title="Loads the 7-day forecast">7 days</button></div></div>
+  <div class="tlh"><span class="tlt" id="tlt">Bay level at SFO, now through Thursday</span><div class="key"><span><i style="background:var(--teal)"></i>forecast</span><span><i style="background:var(--teal);opacity:.3;height:9px"></i>range</span><span><i style="background:var(--tab);height:1.5px"></i>tide table</span></div><div class="seg segr" role="group" aria-label="Time range"><button id="r3" aria-pressed="true">3 days</button><button id="r7" aria-pressed="false" title="Loads the 7-day forecast">7 days</button></div><p id="rngMsg" role="status" hidden style="grid-column:1/-1;margin:2px 0 0;font-size:13px;color:var(--ink)"></p></div>
   <div class="fig" id="chart"><svg role="img" aria-label="Week of bay level next to SFO with flood thresholds, rain, and 3-hour flood, drain and wind ratings"></svg></div>
 </section>
 <aside class="side">
@@ -470,11 +470,15 @@ function useWeek(w){OP.splice(0,OP.length,...mk(w.op));SFE.splice(0,SFE.length,.
   NWS.splice(0,NWS.length,...nwsP(w.nws));AN.splice(0,AN.length,...NWS.map(p=>({t:p.t,a:p.a})),...w.tail.map(([d,hm,a])=>({t:T(d,hm),a})));
   QPF.splice(0,QPF.length,...w.qpf);WND.splice(0,WND.length,...w.wnd);GST.splice(0,GST.length,...w.gst);WEEK=w;WEEK_END=Date.parse(w.end);weekTides()}
 let rngBusy=false;
+// fetch JSON; a non-2xx answer or no answer within DTO ms counts as a failure (no AbortSignal.timeout: older Safari lacks it)
+const DTO=20000;function getJSON(u){const c=typeof AbortController==='function'?new AbortController():null;let tm;
+  return Promise.race([fetch(u,c?{signal:c.signal}:{}).then(r=>{if(!r.ok)throw new Error(r.status);return r.json()}),new Promise((_,no)=>{tm=setTimeout(()=>{if(c)c.abort();no(new Error('timeout'))},DTO)})]).finally(()=>clearTimeout(tm))}
 async function setRange(n){if(rngBusy||n===RANGE)return;
   if(n===7&&!WEEK){rngBusy=true;const b7=document.getElementById('r7');b7.setAttribute('aria-busy','true');
-    try{const r=await fetch(DB+'data/week.json');if(!r.ok)throw new Error(r.status);useWeek(await r.json())}
-    catch(e){b7.title="Couldn't load the 7-day forecast. Try again.";rngBusy=false;b7.removeAttribute('aria-busy');return}
-    rngBusy=false;b7.removeAttribute('aria-busy')}
+    const rm=document.getElementById('rngMsg');
+    try{useWeek(await getJSON(DB+'data/week.json'))}
+    catch(e){console.warn('week data',e);b7.title="Couldn't load the 7-day forecast. Try again.";rm.textContent='The 7-day forecast did not load, so this shows the 3-day forecast only. Try 7 days again, or check NWS.';rm.hidden=false;rngBusy=false;b7.removeAttribute('aria-busy');return}
+    rm.hidden=true;rngBusy=false;b7.removeAttribute('aria-busy')}
   RANGE=n;t1=n===7?Math.min(t0+7*24*H,WEEK_END):T1_3;
   document.getElementById('r3').setAttribute('aria-pressed',n===3);document.getElementById('r7').setAttribute('aria-pressed',n===7);
   const last=t1-1;document.getElementById('rngTo').textContent=fLong.format(last).replace(',','');
@@ -508,7 +512,7 @@ ${ZONES.map(z=>`<filter id="fz_${z}" x="0" y="0" width="1" height="1" color-inte
 <image id="topog" preserveAspectRatio="none"/><g id="lowg"></g>`+[...RW,...ORW].map(([a,b])=>{const [x1,y1]=P(...a),[x2,y2]=P(...b);return `<line class="rw" x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke-width="5.5"/>`}).join('')+`<path class="hw" d="${GEO.h101}" transform="${OT}"/><path class="hw" id="broads" d=""/><path class="bshore" id="shOP" d="${GEO.shOP}" transform="${OT}"/><path class="bshore" id="shSF" d="${GEO.shSF}" transform="${OT}"/><path class="shore" id="shore" d="${GEO.shore}" transform="${OT}"/><g id="bshore"></g>`;
 const LOWC=[[246,138,196,175],[214,44,140,205],[96,22,150,230]];
 const WALLS={1:{name:"SFO's shoreline wall",crest:9.2,zone:'op'},2:{name:"OAK's South Field dike",crest:13.0,zone:'ala'}};
-let lowOn=true,BAY=null,EVZ={},NAVZ={},bayReady=false;
+let lowOn=true,BAY=null,EVZ={},NAVZ={},bayReady=false,bayFail=false;const lowFail=new Set(),GFAIL='Ground heights did not load. Reload the page, or check NWS for official flood information.';
 const topoImg=gG.querySelector('#topog'),lowG=gG.querySelector('#lowg');
 const tv=a=>a.map(v=>(+v).toFixed(3)).join(' ');
 const themeNow=()=>{const dt=document.documentElement.dataset.theme;return dt==='dark'||dt==='light'?dt:matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light'};
@@ -590,7 +594,7 @@ function drawMap(){
   if(ADDR){const [x,y]=S(...P(ADDR.lat,ADDR.lon));if(x>-20&&x<W+20&&y>-10&&y<Hh+40)o+=`<g class="apin" transform="translate(${x.toFixed(1)} ${y.toFixed(1)})"><title>${esc(ADDR.name)}</title><path d="M0 0C-2-6-11-11-11-19a11 11 0 1 1 22 0C11-11 2-6 0 0Z"/><circle cy="-19" r="4.2"/></g>`}
   gO.innerHTML=o;msvg.classList.toggle('zoomed',view.k>1.3);paintMap(cur);
 }
-function paintMap(c){cur=c;const aOP=lvl(sel)-OPN,aSF=sfLvl(sel)+SFN,hOP=heat(aOP),hSF=heat(aSF),WZ=zlAll(sel);if(lowOn&&!GLR)lowPaint(WZ);if(GLR)GLR.draw();for(const e of gG.querySelectorAll('#bshore path')){const v=WZ[e.dataset.z];if(v!=null)e.style.stroke=heat(v)}{const fs=pctBelow(BAY&&BAY.stats&&BAY.stats.sfo,aOP),fo=pctBelow(BAY&&BAY.stats&&BAY.stats.oak,WZ.ala),pc=v=>Math.round(v*100);document.getElementById('rLow').textContent=fs==null?'Loading ground heights…':`SFO: ${pc(fs)}% of its ground sits below the water level at ${lab(sel)}${fo!=null?`. OAK: ${pc(fo)}%`:''}. The shoreline and seawalls are what keep it dry.`}const sh=gG.querySelector('#shore');if(sh){sh.style.stroke=hOP;sh.style.opacity=wallOn?.3:1}
+function paintMap(c){cur=c;const aOP=lvl(sel)-OPN,aSF=sfLvl(sel)+SFN,hOP=heat(aOP),hSF=heat(aSF),WZ=zlAll(sel);if(lowOn&&!GLR)lowPaint(WZ);if(GLR)GLR.draw();for(const e of gG.querySelectorAll('#bshore path')){const v=WZ[e.dataset.z];if(v!=null)e.style.stroke=heat(v)}{const fs=pctBelow(BAY&&BAY.stats&&BAY.stats.sfo,aOP),fo=pctBelow(BAY&&BAY.stats&&BAY.stats.oak,WZ.ala),pc=v=>Math.round(v*100);const part=bayReady&&(lowFail.size||ZONES.some(z=>WZ[z]==null))?' Part of the low-ground map did not load, so some low ground is not shown.':'';document.getElementById('rLow').textContent=bayFail?GFAIL:fs==null?(bayReady?'Ground share not available.'+part:'Loading ground heights…'):`SFO: ${pc(fs)}% of its ground sits below the water level at ${lab(sel)}${fo!=null?`. OAK: ${pc(fo)}%`:''}. The shoreline and seawalls are what keep it dry.${part}`}const sh=gG.querySelector('#shore');if(sh){sh.style.stroke=hOP;sh.style.opacity=wallOn?.3:1}
   const so=gG.querySelector('#shOP'),ss=gG.querySelector('#shSF');if(so)so.style.stroke=hOP;if(ss)ss.style.stroke=hSF;
   levels(WZ);
   for(const m of gO.querySelectorAll('.kpt'))m.setAttribute('fill',hSF);
@@ -619,16 +623,16 @@ const TED=[5,10,15,25,50,100,200,400,700];
 const LGH=`<div class="lga"><div class="lgt">Ground height above sea level</div><div class="tbar">${[...Array(10).keys()].map(c=>`<i style="background:var(--t${c})"></i>`).join('')}</div><div class="tticks">${[[2,'10'],[5,'50'],[7,'200'],[9,'700 ft']].map(([k,t])=>`<span style="left:${k*10}%">${t}</span>`).join('')}</div></div><div class="lgr"><span class="lgh">Below the water level at the selected time, by:</span><span><i style="background:rgba(${LOWC[0].slice(0,3)},.75)"></i>0 to 1 ft</span><span><i style="background:rgba(${LOWC[1].slice(0,3)},.85)"></i>1 to 2 ft</span><span><i style="background:rgba(${LOWC[2].slice(0,3)},.9)"></i>2+ ft</span></div><div class="lgn2">That is how deep it would flood if water got past the shoreline and seawalls, which are all that keep this ground dry.<span class="lghat"><br><i class="hatch"></i>Striped: water below SFO's wall (about 9.2 ft) or OAK's South Field dike (about 13 ft), which have low spots.</span></div>`;
 document.getElementById('lgd').innerHTML=LGH;
 requestAnimationFrame(()=>requestAnimationFrame(fitView));
-Promise.all([fetch(DB+'data/bay.json').then(r=>r.json()),fetch(DB+'data/tides.json').then(r=>r.json())]).then(([b,t])=>{BAY=b;
+Promise.all([getJSON(DB+'data/bay.json'),getJSON(DB+'data/tides.json')]).then(([b,t])=>{BAY=b;
   for(const z of ZONES){const st=t[z];if(!st)continue;EVZ[z]=st.hilo.map(([tt,h])=>({t:parseT(tt),h}));NAVZ[z]=st.navd_above_mllw??0}
   if(WEEK)weekTides();
   gG.querySelector('#bland').setAttribute('d',b.land);gG.querySelector('#bclip').setAttribute('d',b.land);gG.querySelector('#broads').setAttribute('d',b.roads||'');if(b.oak)gG.querySelector('#oakp').setAttribute('d',b.oak);
   gG.querySelector('#bshore').innerHTML=Object.entries(b.shore||{}).map(([z,d])=>`<path class="shore2" data-z="${z}" d="${d}"/>`).join('');
-  const tp=b.topo;if(GLR){const r={x:tp.x,y:tp.y,w:tp.w,h:tp.h};const ld=[GLR.load('topo_light',DB+tp.light,'rgba',r),GLR.load('topo_dark',DB+tp.dark,'rgba',r),...(tp.mask?[GLR.load('mask',DB+tp.mask.file,'l',{x:tp.mask.x,y:tp.mask.y,w:tp.mask.w,h:tp.mask.h})]:[]),...(b.protect?[GLR.load('prot',DB+b.protect.file,'n',{x:b.protect.x,y:b.protect.y,w:b.protect.w,h:b.protect.h}).then(()=>document.documentElement.classList.add('hasprot'))]:[]),...Object.entries(b.low.zones).map(([z,o])=>GLR.load('low_'+z,DB+o.file,'la',{x:o.x,y:o.y,w:o.w,h:o.h}))];for(const q of ld)q.then(()=>GLR.draw(),e=>console.warn('raster',e))}else{topoSrc();for(const k of ['x','y'])topoImg.setAttribute(k,tp[k]);topoImg.setAttribute('width',tp.w);topoImg.setAttribute('height',tp.h);
-  lowG.innerHTML=GLR?'':Object.entries(b.low.zones).map(([z,o])=>`<image href="${DB+o.file}" x="${o.x}" y="${o.y}" width="${o.w}" height="${o.h}" preserveAspectRatio="none" filter="url(#fz_${z})"/>`).join('');}
+  const tp=b.topo;if(GLR){const r={x:tp.x,y:tp.y,w:tp.w,h:tp.h};const ld=[GLR.load('topo_light',DB+tp.light,'rgba',r),GLR.load('topo_dark',DB+tp.dark,'rgba',r),...(tp.mask?[GLR.load('mask',DB+tp.mask.file,'l',{x:tp.mask.x,y:tp.mask.y,w:tp.mask.w,h:tp.mask.h})]:[]),...(b.protect?[GLR.load('prot',DB+b.protect.file,'n',{x:b.protect.x,y:b.protect.y,w:b.protect.w,h:b.protect.h}).then(()=>document.documentElement.classList.add('hasprot'))]:[]),...Object.entries(b.low.zones).map(([z,o])=>GLR.load('low_'+z,DB+o.file,'la',{x:o.x,y:o.y,w:o.w,h:o.h}))];const lz=Object.keys(b.low.zones);ld.forEach((q,i)=>q.then(()=>GLR.draw(),e=>{console.warn('raster',e);const z=lz[i-(ld.length-lz.length)];if(z!=null){lowFail.add(z);paintMap(cur)}}))}else{topoSrc();for(const k of ['x','y'])topoImg.setAttribute(k,tp[k]);topoImg.setAttribute('width',tp.w);topoImg.setAttribute('height',tp.h);
+  lowG.innerHTML=GLR?'':Object.entries(b.low.zones).map(([z,o])=>`<image href="${DB+o.file}" x="${o.x}" y="${o.y}" width="${o.w}" height="${o.h}" preserveAspectRatio="none" filter="url(#fz_${z})" data-z="${z}"/>`).join('');for(const im of lowG.querySelectorAll('image'))im.addEventListener('error',()=>{console.warn('raster',im.dataset.z);lowFail.add(im.dataset.z);paintMap(cur)})}
   bayReady=true;for(const btn of document.querySelectorAll('.vw button'))btn.disabled=false;for(const z in zKey)delete zKey[z];paintMap(cur);drawMap();addrRead()
-}).catch(e=>{console.warn('bay data',e);document.getElementById('rLow').textContent='Ground heights did not load.'});
-if(/[?&]bench\b/.test(location.search)){const wait=ms=>new Promise(r=>setTimeout(r,ms));
+}).catch(e=>{console.warn('bay data',e);bayFail=true;document.getElementById('lgd').textContent=GFAIL;paintMap(cur);addrRead()});
+if(!PATHMODE&&/[?&]bench\b/.test(location.search)){const wait=ms=>new Promise(r=>setTimeout(r,ms));
   const frames=async(ms,fn)=>{const ts=[];let run=true;const loop=t=>{ts.push(t);if(run)requestAnimationFrame(loop)};requestAnimationFrame(loop);const a=performance.now();while(performance.now()-a<ms){if(fn)fn();await wait(16)}run=false;await wait(50);const d=[];for(let i=1;i<ts.length;i++)d.push(ts[i]-ts[i-1]);d.sort((x,y)=>x-y);return `${(d.reduce((x,y)=>x+y,0)/d.length).toFixed(1)} avg, ${d[Math.floor(d.length*.95)].toFixed(1)} p95`};
   const box=document.createElement('pre');box.style.cssText='position:fixed;left:8px;right:8px;bottom:8px;z-index:99;background:#111c20;color:#fff;font:12px/1.4 ui-monospace,monospace;padding:10px;border-radius:8px;white-space:pre-wrap;margin:0';document.body.appendChild(box);
   const out=[`${GLR?'WebGL: '+GLR.rend:'SVG fallback'} | ${innerWidth}x${innerHeight} @${devicePixelRatio}x`];const show=()=>box.textContent=out.join('\n')+'\n(frame ms; 16.7 = 60 fps)';show();
@@ -649,7 +653,7 @@ let LA=[0,0];
 function lutUpdate(aOP,aSF){LA=[aOP,aSF];for(const L of LUTS){const bar=L.querySelector('.lbar'),w=bar.clientWidth;if(!w)continue;
   const put=(pc,lc,a,txt)=>{const x=Math.max(0,Math.min(1,(a-CBMIN)/(CBMAX-CBMIN)))*w,p=bar.querySelector(pc),l=bar.querySelector(lc);p.style.left=x+'px';l.textContent=txt;const lw=l.offsetWidth;l.style.left=Math.max(0,Math.min(w-lw,x-lw/2))+'px'};
   put('.mp1','.ml1',aOP,`SFO ${aOP.toFixed(1)}`);put('.mp2','.ml2',aSF,`Pier 14 ${aSF.toFixed(1)}`)}}
-function levels(WZ){document.getElementById('krows').innerHTML=KEYS.map(([n,g,f,sn])=>{const w=WZ[g];if(w==null)return `<div class="kr"><span class="kn"><span class="ln">${n}</span><span class="sn">${sn}</span></span><span class="kv"><b>…</b></span></div>`;const d=w-f,st=d>=0.05?'over':d>-0.05?'at':'';return `<div class="kr" style="border-color:${heat(w)}" title="${n}: water ${w.toFixed(1)} ft, floods at ${f} ft (${Math.abs(d).toFixed(1)} ft ${d>=0?'over':'below'})"><span class="kn"><span class="ln">${n}</span><span class="sn">${sn}</span><span class="ksep"> · </span><span class="kf${st?' kfo':''}">floods at ${f}</span></span><span class="kv"><b>${w.toFixed(1)} ft</b>${st?`<span class="ko">${st==='over'?'flooding':'at edge'}</span>`:''}</span></div>`}).join('');fitNames();lutUpdate(WZ.op,WZ.sf)}
+function levels(WZ){document.getElementById('krows').innerHTML=KEYS.map(([n,g,f,sn])=>{const w=WZ[g];if(w==null)return `<div class="kr"><span class="kn"><span class="ln">${n}</span><span class="sn">${sn}</span></span><span class="kv"><b>${bayReady||bayFail?'did not load':'…'}</b></span></div>`;const d=w-f,st=d>=0.05?'over':d>-0.05?'at':'';return `<div class="kr" style="border-color:${heat(w)}" title="${n}: water ${w.toFixed(1)} ft, floods at ${f} ft (${Math.abs(d).toFixed(1)} ft ${d>=0?'over':'below'})"><span class="kn"><span class="ln">${n}</span><span class="sn">${sn}</span><span class="ksep"> · </span><span class="kf${st?' kfo':''}">floods at ${f}</span></span><span class="kv"><b>${w.toFixed(1)} ft</b>${st?`<span class="ko">${st==='over'?'flooding':'at edge'}</span>`:''}</span></div>`}).join('');fitNames();lutUpdate(WZ.op,WZ.sf)}
 function fitNames(){for(const r of document.querySelectorAll('#krows .kr')){r.classList.remove('short','wrap');const k=r.querySelector('.kn'),ov=()=>k.scrollWidth>k.clientWidth+1;if(ov())r.classList.add('short');if(ov())r.classList.add('wrap')}}
 const ro3=new ResizeObserver(()=>{fitNames();lutUpdate(...LA)});ro3.observe(document.getElementById('krows'));for(const L of LUTS)ro3.observe(L);
 const ro1=new ResizeObserver(drawChart);ro1.observe(csvg);
@@ -669,9 +673,10 @@ function aZoneRule(lat,lon){const [o0,o1,a0,a1]=[-122.53,-122.30403,37.564,37.81
   const st=BAY&&BAY.stations;if(!st)return 'sf';const [x,y]=P(lat,lon);let best='sf',bd=1e18;for(const z of ZONES){const s=st[z];if(!s)continue;const [sx,sy]=P(s.lat,s.lon),d=(sx-x)**2+(sy-y)**2;if(d<bd){bd=d;best=z}}return best}
 async function aWall(lat,lon){const pr=BAY&&BAY.protect;if(!pr)return 0;try{const d=await aPx(pr.file,pr,lat,lon);return d?Math.round(d[0]/85):0}catch(e){return 0}}
 async function aGround(lat,lon){const g=await aGround0(lat,lon),id=await aWall(lat,lon);g.wall=WALLS[id]?id:0;return g}
-async function aGround0(lat,lon){if(!BAY||!BAY.low)return {kind:'none',zone:aZoneRule(lat,lon)};
+async function aGround0(lat,lon){if(!BAY||!BAY.low)return {kind:'none',zone:aZoneRule(lat,lon),miss:bayFail};let miss=false;
   for(const [z,o] of Object.entries(BAY.low.zones)){if(!o.file)continue;const [x,y]=P(lat,lon);if(x<o.x||y<o.y||x>o.x+o.w||y>o.y+o.h)continue;
-    try{const d=await aPx(o.file,o,lat,lon);if(d&&d[3]>127){const c=Math.floor(d[0]*42/255);if(c<41)return {kind:'low',zone:z,c,g:c===0?3.75:4.125+0.25*(c-1)}}}catch(e){}}
+    try{const d=await aPx(o.file,o,lat,lon);if(d&&d[3]>127){const c=Math.floor(d[0]*42/255);if(c<41)return {kind:'low',zone:z,c,g:c===0?3.75:4.125+0.25*(c-1)}}}catch(e){miss=true}}
+  if(miss)return {kind:'none',zone:aZoneRule(lat,lon),miss};
   const zone=aZoneRule(lat,lon),tp=BAY.topo;
   if(tp&&tp.light){try{const d=await aPx(tp.light,tp,lat,lon);if(d&&d[3]>127){const PL=['e6eedb','dce8cc','d1e0be','c6d8b1','cfd4a3','d8cc95','d6bb83','c9a370','b78c61','a07656'].map(h=>[0,2,4].map(i=>parseInt(h.substr(i,2),16)));let k=0,bd=1e9;PL.forEach((c,j)=>{const e=(c[0]-d[0])**2+(c[1]-d[1])**2+(c[2]-d[2])**2;if(e<bd){bd=e;k=j}});return {kind:k>=3?'high':'none',zone}}}catch(e){}}
   return {kind:'none',zone}}
@@ -684,8 +689,9 @@ function addrRead(){if(!ADDR)return;const o=document.getElementById('addro');if(
   let t=`<b>${esc(ADDR.name)}</b>. `;
   if(G.kind==='low')t+=G.c===0?'Ground here is under about 4 ft (NAVD88). ':`Ground here is about ${G.g.toFixed(1)} ft (NAVD88, a 30 m average). `;
   else if(G.kind==='high')t+='Ground here sits above about 14 ft (NAVD88). ';
+  else if(G.miss||bayFail)t+='The ground-height map for this spot did not load. ';
   else t+='No reliable ground height for this exact spot (it may be a pier, a wharf or open water). ';
-  if(w==null)t+='Bay levels are still loading.';
+  if(w==null)t+=bayReady||bayFail?'Bay levels for this area did not load, so this check is incomplete. Reload the page, or check NWS.':'Bay levels are still loading.';
   else{t+=`At ${lab(sel)} the bay near ${ZNM[z]||'here'} is forecast at ${w.toFixed(1)} ft`;
     const WL=WALLS[G.wall],wtxt=WL&&G.kind==='low'?(w<WL.crest?` It is behind ${WL.name}, listed at about ${WL.crest} ft, which is above that water, though some stretches of the wall are lower.`:` That water is above the listed height of ${WL.name} (about ${WL.crest} ft), so it could come over the wall's lowest stretches.`):' The shoreline and seawalls are what keep it dry.';
     if(G.kind==='low'&&G.c===0){const d=w-4;t+=d>0?`, so this spot sits more than ${d.toFixed(1)} ft below the water level.${wtxt}`:'.'}
@@ -709,14 +715,14 @@ document.getElementById('addr').addEventListener('submit',async e=>{e.preventDef
   if(SUG.ctl)SUG.ctl.abort();sClose();
   const key=q.toLowerCase();if(innerWidth<760)inp.blur();const tok=++aReq;
   if(ACACHE.has(key)){const r=ACACHE.get(key);r?aShow(r):aFail('No match on this map for that address. Try adding the city.');return}
-  const btn=document.getElementById('addrb'),ctl=aNom=new AbortController();aBusy=true;btn.disabled=true;aMsg('Looking up...');
+  const btn=document.getElementById('addrb'),ctl=aNom=new AbortController();let tOut=false;const tmr=setTimeout(()=>{tOut=true;ctl.abort()},12000);aBusy=true;btn.disabled=true;aMsg('Looking up...');
   try{const wait=1100-(Date.now()-aLast);if(wait>0)await new Promise(r=>setTimeout(r,wait));if(tok!==aReq)return;aLast=Date.now();
     const u='https://nominatim.openstreetmap.org/search?format=jsonv2&limit=1&addressdetails=1&countrycodes=us&accept-language=en&viewbox=-122.56,37.96,-121.90,37.40&bounded=1&q='+encodeURIComponent(q);
     const res=await fetch(u,{headers:{Accept:'application/json'},signal:ctl.signal});if(!res.ok)throw new Error(res.status);const js=await res.json(),r=js&&js[0]||null;ACACHE.set(key,r);
     if(tok!==aReq)return;
     if(r)aShow(r);else aFail('No match on this map for that address. Try adding the city.')}
-  catch(err){if(err.name!=='AbortError'&&tok===aReq)aFail("Address search isn't reachable right now. Try again in a moment.")}
-  finally{aBusy=false;btn.disabled=false;if(aNom===ctl)aNom=null}});
+  catch(err){if((err.name!=='AbortError'||tOut)&&tok===aReq)aFail("Address search isn't reachable right now. Try again in a moment.")}
+  finally{clearTimeout(tmr);aBusy=false;btn.disabled=false;if(aNom===ctl)aNom=null}});
 function aCancel(){aReq++;aShowSeq++;if(aNom)aNom.abort()}
 document.getElementById('addrx').addEventListener('click',()=>{aCancel();ADDR=null;const inp=document.getElementById('addrq');inp.value='';aMsg('');sClose();document.getElementById('addrx').hidden=true;drawMap();inp.focus()});
 document.getElementById('addrq').addEventListener('input',e=>{document.getElementById('addrx').hidden=!e.target.value&&!ADDR});
