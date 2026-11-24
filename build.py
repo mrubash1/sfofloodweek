@@ -1,5 +1,6 @@
 """Rebuild index.html from src/page.html and the embedded data files, and pin the page's
-inline script in vercel.json's Content-Security-Policy by its SHA-256 hash.
+inline script in vercel.json's Content-Security-Policy by its SHA-256 hash, and generate vercel.json's
+Cache-Control rules (one per response; data/*.png rasters long-cached, see below).
 
 python3 build.py          write index.html and the headers block of vercel.json
 python3 build.py --check  write nothing; exit 1 if index.html or vercel.json is stale
@@ -71,7 +72,6 @@ csp = "; ".join([
 cfg_path = root / "vercel.json"
 cfg = json.loads(cfg_path.read_text())
 headers = [
-    {"key": "Cache-Control", "value": "public, max-age=300, must-revalidate"},
     {"key": "Content-Security-Policy", "value": csp},
     {"key": "X-Content-Type-Options", "value": "nosniff"},
     {"key": "Referrer-Policy", "value": "strict-origin-when-cross-origin"},
@@ -79,7 +79,29 @@ headers = [
     {"key": "Cross-Origin-Opener-Policy", "value": "same-origin"},
     {"key": "Permissions-Policy", "value": "camera=(), microphone=(), geolocation=(), payment=(), usb=(), browsing-topics=()"},
 ]
-block = [{"source": "/(.*)", "headers": headers}]
+# Cache-Control: every response gets it exactly once. Vercel applies EVERY matching headers rule, and does not document
+# which value wins when two rules set the same key, so the three Cache-Control rules below have mutually exclusive
+# sources and the security rule on /(.*) sets no Cache-Control at all.
+#   - the data rasters on disk right now: 7 days, immutable. Safe because the page requests them as ?v=<bay.json built>,
+#     so a data rebuild changes every raster URL. Listing only files that exist means a missing raster's 404 is never
+#     cached for a week; a new raster added without rerunning build.py falls back to the 5-minute rule (and --check fails).
+#   - favicon and apple-touch-icon: 1 day.
+#   - everything else (HTML, JSON, og.jpg, 404s, redirects): 5 minutes, must-revalidate, so corrections propagate fast.
+RASTERS = sorted(p.stem for p in (root / "data").glob("*.png"))
+for r in RASTERS:
+    if not re.fullmatch(r"[A-Za-z0-9_-]+", r):
+        fail("data/%s.png: raster names must be [A-Za-z0-9_-] to go into a vercel.json source pattern" % r)
+if not RASTERS:
+    fail("no data/*.png rasters found")
+ras = "(?:%s)" % "|".join(RASTERS)
+ICONS = "(?:favicon|apple-touch-icon)"
+CC_SHORT, CC_RASTER, CC_ICON = "public, max-age=300, must-revalidate", "public, max-age=604800, immutable", "public, max-age=86400"
+block = [
+    {"source": "/(.*)", "headers": headers},
+    {"source": "/((?!data/%s\\.png$|%s\\.png$).*)" % (ras, ICONS), "headers": [{"key": "Cache-Control", "value": CC_SHORT}]},
+    {"source": "/data/(%s\\.png)" % ras, "headers": [{"key": "Cache-Control", "value": CC_RASTER}]},
+    {"source": "/(%s\\.png)" % ICONS, "headers": [{"key": "Cache-Control", "value": CC_ICON}]},
+]
 
 if CHECK:
     problems = []
