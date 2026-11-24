@@ -8,12 +8,12 @@
 <meta property="og:description" content="Hour by hour bay levels at SFO, the SF waterfront and Oakland airport this week, with a map of the ground that sits below the water around the Bay and an address check.">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://sfofloodweek.com/">
-<meta property="og:image" content="https://sfofloodweek.com/og.jpg">
+<meta property="og:image" content="https://sfofloodweek.com/og.jpg?v=2">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta property="og:image:alt" content="SFO flood week: tide chart and a map of SFO ground that sits below the water level">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="https://sfofloodweek.com/og.jpg">
+<meta name="twitter:image" content="https://sfofloodweek.com/og.jpg?v=2">
 <link rel="icon" type="image/png" href="/favicon.png">
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <title>SFO Flood Week</title>
@@ -72,7 +72,8 @@ h1{font-size:clamp(24px,2.4vw,30px);line-height:1.1;margin:0;font-weight:700}
 .mp{position:absolute;border-left:1.5px solid var(--ink);margin-left:-.75px}.mp1{top:-15px;height:25px}.mp2{top:-2px;height:12px}
 /* timeline */
 .tline{background:var(--panel);border-bottom:1px solid var(--line);padding-block:8px 6px}
-.tlh{display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:2px 16px}
+.tlh{display:grid;grid-template-columns:1fr auto;align-items:start;gap:3px 14px}.tlh .tlt{grid-column:1;grid-row:1}.tlh .key{grid-column:1/-1;grid-row:2}
+.tlh .segr{grid-column:2;grid-row:1;align-self:start}.tlh .segr button{min-height:32px;padding:0 11px;font-size:13.5px}
 .tlt{font-size:19px;font-weight:700}
 .key{display:flex;flex-wrap:wrap;gap:2px 14px;font-size:13px;color:var(--mute)}
 .key i{display:inline-block;width:16px;height:3px;margin-right:5px;vertical-align:middle;border-radius:2px}
@@ -203,7 +204,7 @@ html:not(.nolow) .mapw.gl .landp,html:not(.nolow) .mapw.gl .sfop{fill:none;strok
 <body>
 <header class="hd pad">
   <div class="hdi">
-    <div class="ttl"><h1>SFO flood week</h1><span class="sub">Now through Thu Nov 26, forecast as of Mon Nov 23, 7 AM PT</span></div>
+    <div class="ttl"><h1>SFO flood week</h1><span class="sub">Now through <span id="rngTo">Thu Nov 26</span>, forecast as of Mon Nov 23, 1 PM PT</span></div>
     <p class="warn"><b>Unofficial estimate, not a flood warning.</b> A low reading doesn't mean a spot stays dry. <a href="https://forecast.weather.gov/showsigwx.php?warnzone=CAZ006&amp;warncounty=CAC075&amp;firewxzone=CAZ006&amp;local_place1=San+Francisco+CA&amp;product1=Coastal+Flood+Advisory&amp;lat=37.7801&amp;lon=-122.4202">NWS coastal flood warning</a></p>
   </div>
 </header>
@@ -225,7 +226,7 @@ html:not(.nolow) .mapw.gl .landp,html:not(.nolow) .mapw.gl .sfop{fill:none;strok
 <main class="mainx">
 <div class="leftc">
 <section class="tline pad" aria-label="Week timeline">
-  <div class="tlh"><span class="tlt">Bay level at SFO, now through Thursday</span><div class="key"><span><i style="background:var(--teal)"></i>forecast</span><span><i style="background:var(--teal);opacity:.3;height:9px"></i>range</span><span><i style="background:var(--tab);height:1.5px"></i>tide table</span></div></div>
+  <div class="tlh"><span class="tlt" id="tlt">Bay level at SFO, now through Thursday</span><div class="key"><span><i style="background:var(--teal)"></i>forecast</span><span><i style="background:var(--teal);opacity:.3;height:9px"></i>range</span><span><i style="background:var(--tab);height:1.5px"></i>tide table</span></div><div class="seg segr" role="group" aria-label="Time range"><button id="r3" aria-pressed="true">3 days</button><button id="r7" aria-pressed="false" title="Loads the 7-day forecast">7 days</button></div></div>
   <div class="fig" id="chart"><svg role="img" aria-label="Week of bay level next to SFO with flood thresholds, rain, and 3-hour flood, drain and wind ratings"></svg></div>
 </section>
 <aside class="side">
@@ -275,9 +276,9 @@ html:not(.nolow) .mapw.gl .landp,html:not(.nolow) .mapw.gl .sfop{fill:none;strok
     <p class="note" style="margin-top:8px">Tap a day to jump to its peak. Feet (NAVD88) at Oyster Point, next to SFO. SF gauge, when shown, is the NWS forecast for the official gauge, which peaks about 40 minutes earlier. Warning runs to Thursday 4 PM.</p></details>
   </div>
   <div class="blk" id="story"><details class="fold"><summary><span class="st">Tides lead, the storm slips between them</span><span class="sg">Peak Wed about 11:30 AM; rain and wind land between peaks</span></summary>
-    <p>In the Likely case, every daily high from Monday to Saturday reaches the minor flood level at SFO's shoreline, and Tuesday and Wednesday cross into moderate. The top is <b>Wednesday around 11:30 AM, about <span id="pkv">9.6</span> ft</b> at SFO's shoreline, roughly 40 minutes after the official San Francisco gauge peaks. NWS forecasts that gauge at 8.6 ft on its own scale (8.7 ft here), a hair under its record from January 1983.</p>
+    <p>In the Likely case, every daily high from Monday to Saturday reaches the minor flood level at SFO's shoreline, and Wednesday crosses into moderate. The top is <b>Wednesday around 11:30 AM, about <span id="pkv">9.5</span> ft</b> at SFO's shoreline, roughly 40 minutes after the official San Francisco gauge peaks. NWS's Monday afternoon update forecasts that gauge at 8.5 ft on its own scale (8.6 ft here), close to its record from January 1983. Monday morning's high came in at 7.9 ft there, right on the forecast.</p>
     <p>The NWS meteorologist who warned SFO's emergency manager on Saturday puts the water at about 9.9 ft against SFO's shoreline, where some seawall sections are as low as 8 ft. Heights there may use a different reference than these, so read his number as a cross-check, not a wall-by-wall comparison.</p>
-    <p>NWS's hourly grid for SFO has about <b>0.55 in</b> of rain from Tuesday 3 PM to Wednesday morning, mostly Tuesday evening and overnight, with southerly gusts near 40 mph from Tuesday noon into the night. Both mostly land between Tuesday's and Wednesday's peaks. Wind-driven surge is the forecast's biggest unknown, which is what the High case covers.</p></details>
+    <p>NWS's hourly grid for SFO has about <b>0.5 in</b> of rain from Tuesday 3 PM to Wednesday morning, mostly Tuesday evening and overnight, with gusts up to about 37 mph from Tuesday noon into the night. Both mostly land between Tuesday's and Wednesday's peaks. Wind-driven surge is the forecast's biggest unknown, which is what the High case covers. Rain returns Saturday into Monday, with gusts near 39 mph Sunday afternoon; switch the chart to 7 days to see it.</p></details>
   </div>
   <div class="blk" id="places"><details class="fold"><summary><span class="st">Where SFO is exposed</span><span class="sg">A: SE corner by 28L · B: north runway ends · C: 101 south of SFO</span></summary>
     <ol class="places">
@@ -298,7 +299,7 @@ html:not(.nolow) .mapw.gl .landp,html:not(.nolow) .mapw.gl .sfop{fill:none;strok
     </ul></details>
   </div>
   <div class="blk" id="method"><details class="fold"><summary><span class="st">How the estimate works</span><span class="sg">NOAA tide table plus the NWS forecast; ground heights from USGS lidar</span></summary>
-    <p><b>Expected</b> is NOAA's tide table at Oyster Point plus however far NWS expects the San Francisco gauge to run above its own table that day: 1.1 to 1.8 ft Monday to Saturday, including up to 1.6 ft of surge. Sunday, past the NWS forecast, assumes 1.2 ft, about where El Niño has held the bay for a month. <b>Range</b> is 0.3 ft either side; <b>High case</b> adds 0.3 ft, the margin by which storm days beat the forecast surge last week, per the Oakland Flood Week analysis.</p>
+    <p><b>Expected</b> is NOAA's tide table at Oyster Point plus however far NWS expects the San Francisco gauge to run above its own table that day: 1.0 to 1.8 ft Monday to Saturday, including up to 1.5 ft of surge; Monday uses the observed high at the San Francisco gauge. Sunday, past the NWS forecast, assumes 1.2 ft, about where El Niño has held the bay for a month. <b>Range</b> is 0.3 ft either side; <b>High case</b> adds 0.3 ft, the margin by which storm days beat the forecast surge last week, per the Oakland Flood Week analysis.</p>
     <p>SFO flood levels: minor 8.5 ft, moderate 9.4 ft, major 10.7 ft. These are NOAA's San Francisco thresholds, carried over as height above Oyster Point's average high tide. Expected is shown with a range of 0.3 ft either side.</p>
     <p>Rain and wind are NWS's gridded forecast for SFO, in 3-hour blocks. <b>Drains</b> turns orange when rain falls while the bay sits a foot or more above its average high tide, so outfalls can't empty, and red when that happens at minor flood level or higher. NWS notes high tide can arrive up to 90 minutes off the predicted time.</p>
     <p><b>All heights</b> are in feet above NAVD88, a fixed survey reference. NOAA's tide tables count from each station's own low-water mark instead: at the San Francisco gauge the two are within 0.1 ft, but at Oyster Point the low-water mark sits about 0.6 ft lower, so this page reads about 0.6 ft below NOAA's SFO-area tide tables. Flood levels under the color bar: SFO's shoreline protection, 9.2 ft in a typical section of SFO's maintenance drawings; the Embarcadero promenade and roadway between the Ferry Building and Pier 14, 9.2 ft; China Basin Park on Mission Creek, 9.3 ft (Port of San Francisco flood risk profiles). The Port notes nuisance flooding and wave splash near Pier 14 already happen below that level.</p>
@@ -307,8 +308,8 @@ html:not(.nolow) .mapw.gl .landp,html:not(.nolow) .mapw.gl .sfop{fill:none;strok
   </div>
   <div class="blk" id="sources" style="border-bottom:0"><details class="fold"><summary><span class="st">Sources</span><span class="sg">NWS, NOAA, SF Chronicle, NBC, OSM, Census, FAA</span></summary>
     <ul class="src">
-      <li><a href="https://forecast.weather.gov/product.php?site=MTR&amp;issuedby=MTR&amp;product=AFD">NWS Bay Area forecast discussion</a>, Nov 23, 7:06 AM: tide forecasts, surge</li>
-      <li>NWS gridded forecast for SFO (rain, wind, gusts), updated Nov 23</li>
+      <li><a href="https://forecast.weather.gov/product.php?site=MTR&amp;issuedby=MTR&amp;product=AFD">NWS Bay Area forecast discussion</a>, Nov 23 (Fri and Sat tide forecasts); <a href="https://forecast.weather.gov/product.php?site=MTR&amp;issuedby=MTR&amp;product=CFW">NWS coastal hazard message</a>, Nov 23, 1:10 PM: San Francisco gauge forecasts Tue to Thu, surge; <a href="https://tidesandcurrents.noaa.gov/waterlevels.html?id=9414290">NOAA San Francisco gauge</a>: Monday's observed high</li>
+      <li>NWS gridded forecast for SFO (rain, wind, gusts), updated Nov 23, 1 PM</li>
       <li><a href="https://tidesandcurrents.noaa.gov/noaatidepredictions.html?id=9414392">NOAA tide predictions and datums, Oyster Point 9414392</a>; flood thresholds, San Francisco 9414290; Bay Area shoreline levels from the nearest of <a href="https://tidesandcurrents.noaa.gov/noaatidepredictions.html?id=9414750">Alameda 9414750</a>, <a href="https://tidesandcurrents.noaa.gov/noaatidepredictions.html?id=9414863">Richmond 9414863</a>, <a href="https://tidesandcurrents.noaa.gov/noaatidepredictions.html?id=9414523">Redwood City 9414523</a> and <a href="https://tidesandcurrents.noaa.gov/noaatidepredictions.html?id=9414575">Coyote Creek 9414575</a>, each with the same storm surge added</li>
       <li><a href="https://www.sfchronicle.com/travel/article/sfo-airport-flood-weather-22543280.php">SF Chronicle: SFO will flood this week</a>; <a href="https://www.nbcbayarea.com/news/local/flooding-sfo-oak-national-weather-service/4180385/">NBC Bay Area</a>; <a href="https://deeparrival.com/news/sfo-flood-risk-san-francisco-meters-free-november-23-25-2026/">Deep Arrival</a></li>
       <li>Port of San Francisco Waterfront Resilience Program flood risk profiles: Ferry Building (Subarea 2-2), Mission Rock (Subarea 3-3)</li>
@@ -346,22 +347,25 @@ html:not(.nolow) .mapw.gl .landp,html:not(.nolow) .mapw.gl .sfop{fill:none;strok
 </main>
 <footer class="ft pad">
   <p><b>Credit:</b> this page is a remix of <a href="https://claude.ai/artifact/7udMTTZs1kN4kNBM3pfFgo">Oakland Flood Week</a>, the flood map someone shared on Reddit that started it. If you're in Oakland or the East Bay, check it out.</p>
-  <p class="note">A snapshot of the NOAA and NWS forecasts as of Mon Nov 23, 7 AM PT. It doesn't update itself; check the NWS for anything newer.</p>
+  <p class="note">A snapshot of the NOAA and NWS forecasts as of Mon Nov 23, 1 PM PT. It doesn't update itself; check the NWS for anything newer.</p>
 </footer>
 <script>
 /*GEO*/
 {
-const H=3600e3,T=(d,hm)=>Date.parse(`2026-11-${d}T${hm}:00-08:00`),mk=a=>a.map(([d,hm,h])=>({t:T(d,hm),h}));
-const OP=mk([[22,'23:15',5.72],[23,'04:07',2.501],[23,'10:06',8.26],[23,'17:18',-1.104],[24,'00:12',5.915],[24,'04:52',2.813],[24,'10:46',8.535],[24,'18:03',-1.485],[25,'01:07',6.026],[25,'05:39',3.038],[25,'11:30',8.646],[25,'18:52',-1.652],[26,'02:01',6.059],[26,'06:30',3.172],[26,'12:19',8.55],[26,'19:42',-1.607],[27,'02:55',6.054],[27,'07:26',3.225],[27,'13:12',8.225],[27,'20:35',-1.372],[28,'03:50',6.07],[28,'08:31',3.197],[28,'14:09',7.674],[28,'21:30',-0.987],[29,'04:44',6.164],[29,'09:49',3.048],[29,'15:13',6.948],[29,'22:27',-0.497],[30,'05:37',6.364]]);
+const H=3600e3,T=(d,hm)=>Date.parse(d>30?`2026-12-${String(d-30).padStart(2,'0')}T${hm}:00-08:00`:`2026-11-${d}T${hm}:00-08:00`),mk=a=>a.map(([d,hm,h])=>({t:T(d,hm),h}));
+const OP=mk([[22,'23:15',5.72],[23,'04:07',2.501],[23,'10:06',8.26],[23,'17:18',-1.104],[24,'00:12',5.915],[24,'04:52',2.813],[24,'10:46',8.535],[24,'18:03',-1.485],[25,'01:07',6.026],[25,'05:39',3.038],[25,'11:30',8.646],[25,'18:52',-1.652],[26,'02:01',6.059],[26,'06:30',3.172],[26,'12:19',8.55],[26,'19:42',-1.607],[27,'02:55',6.054]]);
 // NWS San Francisco gauge forecast vs that gauge's own tide table at the same high tide
-const SFE=mk([[22,'15:35',-0.539],[22,'22:34',4.651],[23,'03:07',2.501],[23,'09:25',6.716],[23,'16:18',-1.104],[23,'23:31',4.809],[24,'03:52',2.813],[24,'10:05',6.939],[24,'17:03',-1.485],[25,'00:26',4.899],[25,'04:39',3.038],[25,'10:49',7.029],[25,'17:52',-1.652],[26,'01:20',4.926],[26,'05:30',3.172],[26,'11:38',6.952],[26,'18:42',-1.607],[27,'02:14',4.922],[27,'06:26',3.225],[27,'12:31',6.687],[27,'19:35',-1.372],[28,'03:09',4.935],[28,'07:31',3.197],[28,'13:28',6.239],[28,'20:30',-0.987],[29,'04:03',5.011],[29,'08:49',3.048],[29,'14:32',5.649],[29,'21:27',-0.497],[30,'04:56',5.174]]);
-const NWS=[[23,'09:25',7.8,6.716],[24,'10:05',8.4,6.939],[25,'10:49',8.6,7.029],[26,'11:38',8.2,6.952],[27,'12:31',7.9,6.687],[28,'13:28',8.0,6.239]].map(([d,hm,f,tt])=>({t:T(d,hm),f,a:f-tt}));
-const AN=[...NWS.map(p=>({t:p.t,a:p.a})),{t:T(29,'14:32'),a:1.2}];
+const SFE=mk([[22,'15:35',-0.539],[22,'22:34',4.651],[23,'03:07',2.501],[23,'09:25',6.716],[23,'16:18',-1.104],[23,'23:31',4.809],[24,'03:52',2.813],[24,'10:05',6.939],[24,'17:03',-1.485],[25,'00:26',4.899],[25,'04:39',3.038],[25,'10:49',7.029],[25,'17:52',-1.652],[26,'01:20',4.926],[26,'05:30',3.172],[26,'11:38',6.952],[26,'18:42',-1.607],[27,'02:14',4.922]]);
+const nwsP=a=>a.map(([d,hm,f,tt])=>({t:T(d,hm),f,a:f-tt}));
+// Mon: observed peak at the SF gauge; Tue to Thu: NWS coastal hazard message, Nov 23 1:10 PM; Fri: NWS discussion
+const NWS=nwsP([[23,'09:25',7.94,6.716],[24,'10:05',8.2,6.939],[25,'10:49',8.5,7.029],[26,'11:38',8.0,6.952],[27,'12:31',7.9,6.687]]);
+const AN=NWS.map(p=>({t:p.t,a:p.a}));
 const MHHW=7.18,THR=[9.05-0.5,9.05,9.98,11.25],HI=0.3,RG=0.3;
-const QPF=[0,0,0,0,0,0,0,0,0,0,0,0,0,2.3,3.4,3.2,3,1.4,0.5,0.2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0.1,0.1,0.2,0.3,0.2,0.1,0.1,0.1,0.6,0.8,0.8,0.9,0.8,0.8,0.7];
-const WND=[6,7,7,8,6,0,5,9,10,12,14,21,30,30,30,30,28,18,8,7,7,1,0,0,3,3,3,5,5,2,2,3,3,5,6,7,7,5,3,6,6,6,8,12,12,12,13,17,17,13,12,16,22,22,17,17];
-const GST=[6,7,8,9,8,3,5,10,12,16,20,30,39,39,39,39,38,28,12,8,8,5,5,3,3,5,5,6,6,5,6,7,7,7,9,12,12,7,7,12,12,12,14,21,23,23,21,31,31,24,22,28,36,36,29,28];
-const B0=T(23,'00:00'),t1=T(27,'00:00'),t0=Math.min(Math.max(Math.floor(Date.now()/36e5)*36e5,T(23,'12:00')),T(26,'12:00')),STEP=15*60e3;
+const QPF=[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2.4, 3.6, 3.2, 3, 1.1, 0.1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+const WND=[6, 7, 8, 7, 5, 0, 6, 9, 10, 12, 12, 17, 24, 24, 28, 28, 23, 14, 10, 8, 7, 2, 2, 1, 3, 3, 3, 5, 5, 3, 3, 2];
+const GST=[6, 7, 8, 8, 7, 3, 6, 10, 12, 15, 16, 23, 32, 32, 37, 37, 35, 23, 14, 12, 9, 6, 6, 3, 3, 3, 3, 6, 6, 5, 5, 6];
+const B0=T(23,'00:00'),T1_3=T(27,'00:00'),t0=Math.min(Math.max(Math.floor(Date.now()/36e5)*36e5,T(23,'12:00')),T(26,'12:00')),STEP=15*60e3;
+let RANGE=3,WEEK=null,WEEK_END=0,t1=T1_3;
 function tideE(ev,t){for(let i=0;i<ev.length-1;i++){const a=ev[i],b=ev[i+1];if(t>=a.t&&t<=b.t){const f=(t-a.t)/(b.t-a.t);return a.h+(b.h-a.h)*(1-Math.cos(Math.PI*f))/2}}return ev[ev.length-1].h}
 const tide=t=>tideE(OP,t);
 function anom(t){if(t<=AN[0].t)return AN[0].a;for(let i=0;i<AN.length-1;i++){const a=AN[i],b=AN[i+1];if(t<=b.t)return a.a+(b.a-a.a)*(t-a.t)/(b.t-a.t)}return AN[AN.length-1].a}
@@ -382,12 +386,14 @@ const fDay={format:t=>fWk.format(t)+' '+fDn.format(t)};
 const fTime=new Intl.DateTimeFormat('en-US',{timeZone:PT,hour:'numeric',minute:'2-digit'});
 const lab=t=>fmt.format(t).replace(' AM',' am').replace(' PM',' pm');
 const tm=t=>fTime.format(t).replace(' AM',' am').replace(' PM',' pm');
-const blk=t=>Math.max(0,Math.min(55,Math.floor((t-B0)/(3*H))));
-function blocks(){const out=[];for(let b=0;b<56;b++){let m=-9;for(let t=B0+b*3*H;t<=B0+(b+1)*3*H;t+=10*60e3)m=Math.max(m,lvl(t));
+const blk=t=>Math.max(0,Math.min(QPF.length-1,Math.floor((t-B0)/(3*H))));
+function blocks(){const out=[];for(let b=0;b<QPF.length;b++){let m=-9;for(let t=B0+b*3*H;t<=B0+(b+1)*3*H;t+=10*60e3)m=Math.max(m,lvl(t));
   const q=QPF[b],dr=q>=0.5&&m>=THR[1]?2:q>0.05&&m>=MHHW+1?1:q>=2?1:0,w=GST[b]>=35?2:GST[b]>=25?1:0;out.push({m,c:cls(m),dr,w})}return out}
 let B=blocks();
 // daily peaks
-const days=[];for(let d=23;d<=26;d++){const ev=OP.filter(e=>e.t>=T(d,'00:00')&&e.t<T(d+1,'00:00'));const pk=ev.reduce((a,e)=>e.h>a.h?e:a);if(pk.t>=t0)days.push(pk)}
+const days=[];function mkDays(){days.length=0;for(let d=23;T(d,'00:00')<t1;d++){const ev=OP.filter(e=>e.t>=T(d,'00:00')&&e.t<T(d+1,'00:00'));if(!ev.length)continue;const pk=ev.reduce((a,e)=>e.h>a.h?e:a);if(pk.t>=t0)days.push(pk)}}
+mkDays();
+const dEnd=()=>{let d=23;while(T(d+1,'00:00')<t1)d++;return d};
 
 /* chart */
 const csvg=document.querySelector('#chart svg');let CG=null;
@@ -403,8 +409,8 @@ function drawChart(){
     lk+=(lk?'L':'M')+x+' '+Y(e).toFixed(1);tb+=(tb?'L':'M')+x+' '+Y(a).toFixed(1);up+=(up?'L':'M')+x+' '+Y(e+RG).toFixed(1);lo='L'+x+' '+Y(e-RG).toFixed(1)+lo}
   let g=`<defs><clipPath id="cc"><rect x="${m.l}" y="${m.t-2}" width="${pw}" height="${ch+2}"/></clipPath></defs>`;
   for(let v=Math.ceil(yMin/2)*2;v<=yMax;v+=2)g+=`<line class="grid" x1="${m.l}" x2="${W-m.r}" y1="${Y(v+OPN)}" y2="${Y(v+OPN)}"/><text class="ax" x="${m.l-6}" y="${Y(v+OPN)+4}" text-anchor="end">${v} ft</text>`;
-  for(let d=24;d<=26;d+=2){const ds=Math.max(T(d,'00:00'),t0),de=Math.min(T(d+1,'00:00'),t1);if(de>ds)g+=`<rect x="${X(ds)}" y="${m.t}" width="${X(de)-X(ds)}" height="${dY+4-m.t}" fill="var(--ink)" opacity=".045"/>`}
-  for(let d=24;d<=26;d++){const x=X(T(d,'00:00'));g+=`<line class="dayl" x1="${x}" x2="${x}" y1="${m.t}" y2="${rEnd+3}"/><line class="dayl" x1="${x}" x2="${x}" y1="${hY+4}" y2="${dY+4}"/>`}
+  for(let d=24;d<=dEnd();d+=2){const ds=Math.max(T(d,'00:00'),t0),de=Math.min(T(d+1,'00:00'),t1);if(de>ds)g+=`<rect x="${X(ds)}" y="${m.t}" width="${X(de)-X(ds)}" height="${dY+4-m.t}" fill="var(--ink)" opacity=".045"/>`}
+  for(let d=24;d<=dEnd();d++){const x=X(T(d,'00:00'));g+=`<line class="dayl" x1="${x}" x2="${x}" y1="${m.t}" y2="${rEnd+3}"/><line class="dayl" x1="${x}" x2="${x}" y1="${hY+4}" y2="${dY+4}"/>`}
   g+=`<g clip-path="url(#cc)"><path d="${up}${lo}Z" fill="var(--teal)" opacity=".22"/><path d="${tb}" fill="none" stroke="var(--tab)" stroke-width="1.2"/><path d="${lk}" fill="none" stroke="var(--teal)" stroke-width="2.4"/></g>`;
   g+=`<line class="thr" x1="${m.l}" x2="${W-m.r}" y1="${Y(THR[2])}" y2="${Y(THR[2])}"/><text class="thrl" x="${W-m.r-2}" y="${Y(THR[2])-4}" text-anchor="end">moderate ${(THR[2]-OPN).toFixed(1)}</text>`;
   g+=`<line class="thr" x1="${m.l}" x2="${W-m.r}" y1="${Y(THR[1])}" y2="${Y(THR[1])}" opacity=".6"/><text class="thrl" x="${W-m.r-2}" y="${Y(THR[1])+13}" text-anchor="end">minor ${(THR[1]-OPN).toFixed(1)}</text>`;
@@ -413,11 +419,11 @@ function drawChart(){
   QPF.forEach((q,b)=>{const r=bx(b);if(q>0&&r){const h=Math.max(1.5,Math.min(rainH,q/3.5*rainH));g+=`<rect x="${r[0].toFixed(1)}" y="${(rT+rainH-h).toFixed(1)}" width="${r[1].toFixed(1)}" height="${h.toFixed(1)}" fill="var(--rain)"/>`}});
   rows.forEach((r,i)=>{const y=rowT+i*(rowH+gap);g+=`<text class="ax" x="${m.l-6}" y="${y+rowH-1}" text-anchor="end">${r}</text>`;
     B.forEach((o,b)=>{const r=bx(b);if(!r)return;const c=i===0?CV(o.c):i===1?(o.dr?CV(o.dr+1):'var(--c0)'):(o.w?CV(o.w):'var(--c0)');g+=`<rect x="${r[0].toFixed(1)}" y="${y}" width="${r[1].toFixed(1)}" height="${rowH}" fill="${c}" rx="1"/>`})});
-  {const sp=pw*6*H/(t1-t0),hrs=sp<24?[0,12]:[0,6,12,18],nm=sp>=38?['12am','6am','12pm','6pm']:['12a','6a','12p','6p'];
-   for(let d=23;d<=26;d++)for(const h of hrs){const t=T(d,String(h).padStart(2,'0')+':00');if(t<=t0||t>=t1)continue;const x=X(t);
+  {const sp=pw*6*H/(t1-t0),hrs=sp<14?[12]:sp<24?[0,12]:[0,6,12,18],nm=sp>=38?['12am','6am','12pm','6pm']:['12a','6a','12p','6p'];
+   for(let d=23;d<=dEnd();d++)for(const h of hrs){const t=T(d,String(h).padStart(2,'0')+':00');if(t<=t0||t>=t1)continue;const x=X(t);
     if(h)g+=`<line class="grid" x1="${x}" x2="${x}" y1="${m.t}" y2="${m.t+ch}" opacity=".45"/>`;g+=`<line x1="${x}" x2="${x}" y1="${rEnd}" y2="${rEnd+3}" stroke="var(--mute)"/>`;
-    if(x>m.l+10&&x<W-m.r-10)g+=`<text class="axh" x="${x}" y="${hY}" text-anchor="middle">${nm[h/6]}</text>`}}
-  for(let d=23;d<=26;d++){const ds=Math.max(T(d,'00:00'),t0),de=Math.min(T(d+1,'00:00'),t1);if(de-ds<4*H)continue;const tn=(ds+de)/2,w=X(de)-X(ds);g+=`<text class="axb" x="${X(tn)}" y="${dY}" text-anchor="middle">${w<70?fDay.format(tn).split(' ')[0]:fDay.format(tn)}</text>`}
+    if(sp>=14&&x>m.l+10&&x<W-m.r-10)g+=`<text class="axh" x="${x}" y="${hY}" text-anchor="middle">${nm[h/6]}</text>`}}
+  for(let d=23;d<=dEnd();d++){const ds=Math.max(T(d,'00:00'),t0),de=Math.min(T(d+1,'00:00'),t1);const tn=(ds+de)/2,w=X(de)-X(ds);if(de-ds<4*H||w<30)continue;g+=`<text class="axb" x="${X(tn)}" y="${dY}" text-anchor="middle">${w<70?fDay.format(tn).split(' ')[0]:fDay.format(tn)}</text>`}
   const now=Date.now();if(now>t0+30*60e3&&now<t1)g+=`<line x1="${X(now)}" x2="${X(now)}" y1="${m.t}" y2="${axY-12}" stroke="var(--mute)" stroke-dasharray="2 3"/><text class="ax" x="${X(now)+3}" y="${m.t+10}">now</text>`;
   g+=`<line id="cur" y1="${m.t}" y2="${axY-12}" stroke="var(--ink)" stroke-width="1.5"/><circle id="curd" r="4.5" fill="var(--teal)" stroke="var(--panel)" stroke-width="2"/>`;
   csvg.innerHTML=g;CG={X,Y,m,pw,yMin,yMax};
@@ -430,6 +436,8 @@ let drag=false;csvg.addEventListener('pointerdown',e=>{drag=true;pick(e)});addEv
 
 /* readout */
 function setSel(t){sel=Math.max(t0,Math.min(t1-STEP,t));update()}
+// keep t if it is in range and not yet past; else the next daily peak still ahead, else the present, else (all past) the last peak
+function pickSel(t){const now=Date.now(),ok=t>=t0&&t<=t1-STEP;if(ok&&t>=now)return t;const n=days.find(e=>e.t>=now&&e.t<=t1-STEP);if(n)return n.t;if(now>=t0&&now<=t1-STEP)return Math.ceil(now/STEP)*STEP;return ok?t:days.length?days[days.length-1].t:t}
 function update(){
   const v=lvl(sel),c=cls(v),b=blk(sel),o=B[b];
   document.getElementById('tlabel').textContent=lab(sel);
@@ -455,6 +463,25 @@ function table(){
 document.querySelector('#tbl tbody').addEventListener('click',e=>{const tr=e.target.closest('tr');if(tr)setSel(+tr.dataset.t)});
 document.querySelector('#tbl tbody').addEventListener('keydown',e=>{if(e.key==='Enter'){const tr=e.target.closest('tr');if(tr)setSel(+tr.dataset.t)}});
 document.getElementById('scrub').addEventListener('input',e=>setSel(t0+e.target.value*STEP));
+/* 3-day / 7-day range: the 7-day data file loads only on the first click */
+const fLong=new Intl.DateTimeFormat('en-US',{timeZone:PT,weekday:'short',month:'short',day:'numeric'}),fWkL=new Intl.DateTimeFormat('en-US',{timeZone:PT,weekday:'long'});
+function weekTides(){if(!WEEK||!WEEK.tides)return;for(const z of ZONES){const h=WEEK.tides[z];if(h)EVZ[z]=h.map(([tt,v])=>({t:parseT(tt),h:v}))}}
+function useWeek(w){OP.splice(0,OP.length,...mk(w.op));SFE.splice(0,SFE.length,...mk(w.sfe));
+  NWS.splice(0,NWS.length,...nwsP(w.nws));AN.splice(0,AN.length,...NWS.map(p=>({t:p.t,a:p.a})),...w.tail.map(([d,hm,a])=>({t:T(d,hm),a})));
+  QPF.splice(0,QPF.length,...w.qpf);WND.splice(0,WND.length,...w.wnd);GST.splice(0,GST.length,...w.gst);WEEK=w;WEEK_END=Date.parse(w.end);weekTides()}
+let rngBusy=false;
+async function setRange(n){if(rngBusy||n===RANGE)return;
+  if(n===7&&!WEEK){rngBusy=true;const b7=document.getElementById('r7');b7.setAttribute('aria-busy','true');
+    try{const r=await fetch(DB+'data/week.json');if(!r.ok)throw new Error(r.status);useWeek(await r.json())}
+    catch(e){b7.title="Couldn't load the 7-day forecast. Try again.";rngBusy=false;b7.removeAttribute('aria-busy');return}
+    rngBusy=false;b7.removeAttribute('aria-busy')}
+  RANGE=n;t1=n===7?Math.min(t0+7*24*H,WEEK_END):T1_3;
+  document.getElementById('r3').setAttribute('aria-pressed',n===3);document.getElementById('r7').setAttribute('aria-pressed',n===7);
+  const last=t1-1;document.getElementById('rngTo').textContent=fLong.format(last).replace(',','');
+  document.getElementById('tlt').textContent=`Bay level at SFO, now through ${n===7?fLong.format(last).replace(',',''):fWkL.format(last)}`;
+  document.getElementById('scrub').max=Math.round((t1-t0)/STEP)-1;
+  mkDays();sel=pickSel(sel>=t1-STEP?T(25,'11:30'):sel);B=blocks();table();drawChart();setSel(sel)}
+for(const [id,n] of [['r3',3],['r7',7]])document.getElementById(id).addEventListener('click',()=>setRange(n));
 for(const id of ['likely','high'])document.getElementById(id).addEventListener('click',()=>{high=id==='high';
   document.getElementById('likely').setAttribute('aria-pressed',!high);document.getElementById('high').setAttribute('aria-pressed',high);B=blocks();table();drawChart();update()});
 document.getElementById('back').addEventListener('click',()=>setSel(sel-H));document.getElementById('fwd').addEventListener('click',()=>setSel(sel+H));
@@ -594,6 +621,7 @@ document.getElementById('lgd').innerHTML=LGH;
 requestAnimationFrame(()=>requestAnimationFrame(fitView));
 Promise.all([fetch(DB+'data/bay.json').then(r=>r.json()),fetch(DB+'data/tides.json').then(r=>r.json())]).then(([b,t])=>{BAY=b;
   for(const z of ZONES){const st=t[z];if(!st)continue;EVZ[z]=st.hilo.map(([tt,h])=>({t:parseT(tt),h}));NAVZ[z]=st.navd_above_mllw??0}
+  if(WEEK)weekTides();
   gG.querySelector('#bland').setAttribute('d',b.land);gG.querySelector('#bclip').setAttribute('d',b.land);gG.querySelector('#broads').setAttribute('d',b.roads||'');if(b.oak)gG.querySelector('#oakp').setAttribute('d',b.oak);
   gG.querySelector('#bshore').innerHTML=Object.entries(b.shore||{}).map(([z,d])=>`<path class="shore2" data-z="${z}" d="${d}"/>`).join('');
   const tp=b.topo;if(GLR){const r={x:tp.x,y:tp.y,w:tp.w,h:tp.h};const ld=[GLR.load('topo_light',DB+tp.light,'rgba',r),GLR.load('topo_dark',DB+tp.dark,'rgba',r),...(tp.mask?[GLR.load('mask',DB+tp.mask.file,'l',{x:tp.mask.x,y:tp.mask.y,w:tp.mask.w,h:tp.mask.h})]:[]),...(b.protect?[GLR.load('prot',DB+b.protect.file,'n',{x:b.protect.x,y:b.protect.y,w:b.protect.w,h:b.protect.h}).then(()=>document.documentElement.classList.add('hasprot'))]:[]),...Object.entries(b.low.zones).map(([z,o])=>GLR.load('low_'+z,DB+o.file,'la',{x:o.x,y:o.y,w:o.w,h:o.h}))];for(const q of ld)q.then(()=>GLR.draw(),e=>console.warn('raster',e))}else{topoSrc();for(const k of ['x','y'])topoImg.setAttribute(k,tp[k]);topoImg.setAttribute('width',tp.w);topoImg.setAttribute('height',tp.h);
@@ -725,8 +753,11 @@ function aToForm(){const sb=document.querySelector('.sbar'),top=sb?sb.getBoundin
 aIn.addEventListener('focus',()=>{const q=aIn.value.trim();if(q.length>=3&&SUG.cache.has(q.toLowerCase()))sRender(q,SUG.cache.get(q.toLowerCase()));
   if(innerWidth<760){setTimeout(aToForm,280);setTimeout(aToForm,700)}});
 document.getElementById('zfind').addEventListener('click',()=>{const f=document.getElementById('addr');if(innerWidth>=760)f.scrollIntoView({block:'nearest'});aIn.focus({preventScroll:innerWidth<760})});
-table();setSel(sel<t0&&days.length?days[0].t:sel);
-if(Date.now()>t1){const w=document.querySelector('.warn');if(w)w.insertAdjacentText('afterbegin','This page covered Nov 23 to 26 and is no longer current. ')}
+table();setSel(pickSel(sel));
+// once the 3-day forecast is over, open the 7-day one; flag the page only when the newest data it has has ended
+(async()=>{if(Date.now()>=t1)await setRange(7);if(Date.now()<t1)return;const w=document.querySelector('.warn');if(!w)return;
+  const md=new Intl.DateTimeFormat('en-US',{timeZone:PT,month:'short',day:'numeric'}),a=md.format(B0),b=md.format(t1-1),sm=a.split(' ')[0]===b.split(' ')[0];
+  w.insertAdjacentText('afterbegin',`This page covered ${a} to ${sm?b.split(' ')[1]:b} and is no longer current. `)})();
 }
 </script>
 </body>
