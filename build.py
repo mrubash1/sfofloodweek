@@ -16,15 +16,29 @@ def fail(msg):
     sys.exit(1)
 
 
+INLINE = re.compile(r"<script>(.*?)</script>", re.S)
+# An external script is allowed only as <script [defer|async] src="/same/origin/path"></script> with an empty body:
+# script-src 'self' already covers same-origin files (e.g. /_vercel/insights/script.js), so it needs no hash.
+# src must start with exactly one "/" (no scheme, no "//" or "/\" host), so nothing off-site can slip in.
+EXTERNAL = re.compile(r'<script((?:\s+(?:defer|async|src="/(?![/\\])[^"\\\s<>]*"))+)></script>')
+
+
 def inline_scripts(html, where):
-    """The inline scripts the CSP must pin. Refuses pages the regex would silently misread."""
-    scripts = re.findall(r"<script>(.*?)</script>", html, re.S)
-    opens = len(re.findall(r"<script\b", html, re.I))
+    """The inline scripts the CSP must pin. Refuses pages the regex would silently misread:
+    every <script open tag must be a bare inline <script>...</script> or a same-origin external tag (see EXTERNAL)."""
+    scripts = []
+    for m in re.finditer(r"<script\b", html, re.I):
+        i = m.start()
+        inline, ext = INLINE.match(html, i), EXTERNAL.match(html, i)
+        if inline and not re.search(r"</?script", inline.group(1), re.I):
+            scripts.append(inline.group(1))
+        elif ext and len(re.findall(r'\ssrc="', ext.group(1))) == 1:
+            pass
+        else:
+            fail("%s: unsupported script tag %r; use a bare <script> tag with a lowercase </script> close (hashed into the CSP), "
+                 "or an empty <script defer src=\"/same-origin/path.js\"></script>" % (where, html[i:i + 80]))
     if not scripts:
         fail(where + ": no inline <script>...</script> found; refusing to emit a script-src without a hash")
-    if opens != len(scripts):
-        fail("%s: %d <script open tag(s) but only %d plain <script>...</script> block(s) captured; "
-             "use a bare <script> tag and a lowercase </script> close so the hash covers every script" % (where, opens, len(scripts)))
     return scripts
 
 
