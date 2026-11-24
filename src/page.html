@@ -303,7 +303,7 @@ html:not(.nolow) .mapw.gl .landp,html:not(.nolow) .mapw.gl .sfop{fill:none;strok
     <p>SFO flood levels: minor 8.5 ft, moderate 9.4 ft, major 10.7 ft. These are NOAA's San Francisco thresholds, carried over as height above Oyster Point's average high tide. Expected is shown with a range of 0.3 ft either side.</p>
     <p>Rain and wind are NWS's gridded forecast for SFO, in 3-hour blocks. <b>Drains</b> turns orange when rain falls while the bay sits a foot or more above its average high tide, so outfalls can't empty, and red when that happens at minor flood level or higher. NWS notes high tide can arrive up to 90 minutes off the predicted time.</p>
     <p><b>All heights</b> are in feet above NAVD88, a fixed survey reference. NOAA's tide tables count from each station's own low-water mark instead: at the San Francisco gauge the two are within 0.1 ft, but at Oyster Point the low-water mark sits about 0.6 ft lower, so this page reads about 0.6 ft below NOAA's SFO-area tide tables. Flood levels under the color bar: SFO's shoreline protection, 9.2 ft in a typical section of SFO's maintenance drawings; the Embarcadero promenade and roadway between the Ferry Building and Pier 14, 9.2 ft; China Basin Park on Mission Creek, 9.3 ft (Port of San Francisco flood risk profiles). The Port notes nuisance flooding and wave splash near Pier 14 already happen below that level.</p>
-    <p><b>Ground height</b> on the map shades all land by height above sea level (USGS 3DEP, cells about 90 m across). Near the water, pink to purple marks ground that sits below the water level right now, shaded by how far below (pink under 1 ft, dark pink 1 to 2 ft, deep purple 2 ft or more), from the same lidar averaged into cells about 30 m across and compared with the water at the nearest gauge: Oyster Point from Candlestick south, the SF gauge elsewhere. It's a bathtub view. It ignores seawalls, levees, pumps and drains, so pink and purple ground inside the shoreline floods only if water gets over or through the shoreline and seawalls, and a wall thinner than a cell won't show. Heights are feet above NAVD88; forecast water is converted the same way (at Oyster Point, low-water datum sits about 0.57 ft below NAVD88). SFO's own maintenance drawings put existing shoreline protection at 9.2 ft in a typical section, and 1 m lidar sampled along 53 lines across SFO's bay edge puts about 20 of those crests below Wednesday's likely peak. Lidar can miss a thin wall, so treat that as a place to watch, not a forecast that water gets in.</p>
+    <p><b>Ground height</b> on the map shades all land by height above sea level (USGS 3DEP, cells about 90 m across). Near the water, pink to purple marks ground that sits below the water level at the selected time, shaded by how far below (pink under 1 ft, dark pink 1 to 2 ft, deep purple 2 ft or more), from the same lidar averaged into cells about 30 m across and compared with the water at the nearest gauge: Oyster Point from Candlestick south, the SF gauge elsewhere. It's a bathtub view. It ignores seawalls, levees, pumps and drains, so pink and purple ground inside the shoreline floods only if water gets over or through the shoreline and seawalls, and a wall thinner than a cell won't show. Heights are feet above NAVD88; forecast water is converted the same way (at Oyster Point, low-water datum sits about 0.57 ft below NAVD88). SFO's own maintenance drawings put existing shoreline protection at 9.2 ft in a typical section, and 1 m lidar sampled along 53 lines across SFO's bay edge puts about 20 of those crests below Wednesday's likely peak. Lidar can miss a thin wall, so treat that as a place to watch, not a forecast that water gets in.</p>
     <p class="note">This page is a snapshot and doesn't update itself. Live data: <a href="https://tidesandcurrents.noaa.gov/waterlevels.html?id=9414290">SF gauge water level</a>, <a href="https://sf-bay-flood-watch.plotly.app">Bay Flood Watch</a>.</p></details>
   </div>
   <div class="blk" id="sources" style="border-bottom:0"><details class="fold"><summary><span class="st">Sources</span><span class="sg">NWS, NOAA, SF Chronicle, NBC, OSM, Census, FAA</span></summary>
@@ -436,6 +436,8 @@ let drag=false;csvg.addEventListener('pointerdown',e=>{drag=true;pick(e)});addEv
 
 /* readout */
 function setSel(t){sel=Math.max(t0,Math.min(t1-STEP,t));update()}
+// keep t if it is in range and not yet past; else the next daily peak still ahead, else the present, else (all past) the last peak
+function pickSel(t){const now=Date.now(),ok=t>=t0&&t<=t1-STEP;if(ok&&t>=now)return t;const n=days.find(e=>e.t>=now&&e.t<=t1-STEP);if(n)return n.t;if(now>=t0&&now<=t1-STEP)return Math.ceil(now/STEP)*STEP;return ok?t:days.length?days[days.length-1].t:t}
 function update(){
   const v=lvl(sel),c=cls(v),b=blk(sel),o=B[b];
   document.getElementById('tlabel').textContent=lab(sel);
@@ -478,8 +480,7 @@ async function setRange(n){if(rngBusy||n===RANGE)return;
   const last=t1-1;document.getElementById('rngTo').textContent=fLong.format(last).replace(',','');
   document.getElementById('tlt').textContent=`Bay level at SFO, now through ${n===7?fLong.format(last).replace(',',''):fWkL.format(last)}`;
   document.getElementById('scrub').max=Math.round((t1-t0)/STEP)-1;
-  if(sel>=t1-STEP)sel=T(25,'11:30')<t1-STEP?Math.max(T(25,'11:30'),t0):t0;
-  mkDays();B=blocks();table();drawChart();setSel(sel)}
+  mkDays();sel=pickSel(sel>=t1-STEP?T(25,'11:30'):sel);B=blocks();table();drawChart();setSel(sel)}
 for(const [id,n] of [['r3',3],['r7',7]])document.getElementById(id).addEventListener('click',()=>setRange(n));
 for(const id of ['likely','high'])document.getElementById(id).addEventListener('click',()=>{high=id==='high';
   document.getElementById('likely').setAttribute('aria-pressed',!high);document.getElementById('high').setAttribute('aria-pressed',high);B=blocks();table();drawChart();update()});
@@ -589,13 +590,13 @@ function drawMap(){
   if(ADDR){const [x,y]=S(...P(ADDR.lat,ADDR.lon));if(x>-20&&x<W+20&&y>-10&&y<Hh+40)o+=`<g class="apin" transform="translate(${x.toFixed(1)} ${y.toFixed(1)})"><title>${esc(ADDR.name)}</title><path d="M0 0C-2-6-11-11-11-19a11 11 0 1 1 22 0C11-11 2-6 0 0Z"/><circle cy="-19" r="4.2"/></g>`}
   gO.innerHTML=o;msvg.classList.toggle('zoomed',view.k>1.3);paintMap(cur);
 }
-function paintMap(c){cur=c;const aOP=lvl(sel)-OPN,aSF=sfLvl(sel)+SFN,hOP=heat(aOP),hSF=heat(aSF),WZ=zlAll(sel);if(lowOn&&!GLR)lowPaint(WZ);if(GLR)GLR.draw();for(const e of gG.querySelectorAll('#bshore path')){const v=WZ[e.dataset.z];if(v!=null)e.style.stroke=heat(v)}{const fs=pctBelow(BAY&&BAY.stats&&BAY.stats.sfo,aOP),fo=pctBelow(BAY&&BAY.stats&&BAY.stats.oak,WZ.ala),pc=v=>Math.round(v*100);document.getElementById('rLow').textContent=fs==null?'Loading ground heights…':`SFO: ${pc(fs)}% of its ground sits below the water level right now${fo!=null?`. OAK: ${pc(fo)}%`:''}. The shoreline and seawalls are what keep it dry.`}const sh=gG.querySelector('#shore');if(sh){sh.style.stroke=hOP;sh.style.opacity=wallOn?.3:1}
+function paintMap(c){cur=c;const aOP=lvl(sel)-OPN,aSF=sfLvl(sel)+SFN,hOP=heat(aOP),hSF=heat(aSF),WZ=zlAll(sel);if(lowOn&&!GLR)lowPaint(WZ);if(GLR)GLR.draw();for(const e of gG.querySelectorAll('#bshore path')){const v=WZ[e.dataset.z];if(v!=null)e.style.stroke=heat(v)}{const fs=pctBelow(BAY&&BAY.stats&&BAY.stats.sfo,aOP),fo=pctBelow(BAY&&BAY.stats&&BAY.stats.oak,WZ.ala),pc=v=>Math.round(v*100);document.getElementById('rLow').textContent=fs==null?'Loading ground heights…':`SFO: ${pc(fs)}% of its ground sits below the water level at ${lab(sel)}${fo!=null?`. OAK: ${pc(fo)}%`:''}. The shoreline and seawalls are what keep it dry.`}const sh=gG.querySelector('#shore');if(sh){sh.style.stroke=hOP;sh.style.opacity=wallOn?.3:1}
   const so=gG.querySelector('#shOP'),ss=gG.querySelector('#shSF');if(so)so.style.stroke=hOP;if(ss)ss.style.stroke=hSF;
   levels(WZ);
   for(const m of gO.querySelectorAll('.kpt'))m.setAttribute('fill',hSF);
   for(const p of ['A','B','C']){const e=document.getElementById('pin'+p);if(e)e.style.background=hOP}
   document.getElementById('eT').hidden=document.getElementById('rEdge').hidden=!wallOn;
-  if(wallOn){const w=lvl(sel)-OPN,n=CREST.filter(([a,b,h])=>h<w).length;document.getElementById('rEdge').textContent=`Water could spill over ${n} of ${CREST.length} sampled spots on SFO's shoreline now: their tops (lidar) sit below the ${w.toFixed(1)} ft water. Lowest top: ${Math.min(...CREST.map(c=>c[2])).toFixed(1)} ft.`;const ds=gO.querySelectorAll('.wd');CREST.forEach(([a,b,h],i)=>{const m=h-w;if(ds[i])ds[i].setAttribute('fill',m>=2?'#0f9b78':m>=1?'#e3c341':m>=0?'var(--c2)':'var(--c3)')})}
+  if(wallOn){const w=lvl(sel)-OPN,n=CREST.filter(([a,b,h])=>h<w).length;document.getElementById('rEdge').textContent=`Water could spill over ${n} of ${CREST.length} sampled spots on SFO's shoreline at ${lab(sel)}: their tops (lidar) sit below the ${w.toFixed(1)} ft water. Lowest top: ${Math.min(...CREST.map(c=>c[2])).toFixed(1)} ft.`;const ds=gO.querySelectorAll('.wd');CREST.forEach(([a,b,h],i)=>{const m=h-w;if(ds[i])ds[i].setAttribute('fill',m>=2?'#0f9b78':m>=1?'#e3c341':m>=0?'var(--c2)':'var(--c3)')})}
   for(const m of gO.querySelectorAll('.mk'))m.setAttribute('fill',hOP);for(const m of gO.querySelectorAll('.ring')){m.setAttribute('stroke',hOP);m.style.display=c>=2?'':'none'}}
 let fitted=true,vmode=VM0;
 const fitView=()=>{if(fitted){view=VIEW[vmode]();drawMap()}};
@@ -615,7 +616,7 @@ ovb.addEventListener('click',()=>{lowOn=!lowOn;ovb.setAttribute('aria-pressed',l
 const kb=document.getElementById('keyb'),mkey=document.getElementById('mkey');
 kb.addEventListener('click',()=>{mkey.hidden=!mkey.hidden;kb.setAttribute('aria-expanded',!mkey.hidden)});
 const TED=[5,10,15,25,50,100,200,400,700];
-const LGH=`<div class="lga"><div class="lgt">Ground height above sea level</div><div class="tbar">${[...Array(10).keys()].map(c=>`<i style="background:var(--t${c})"></i>`).join('')}</div><div class="tticks">${[[2,'10'],[5,'50'],[7,'200'],[9,'700 ft']].map(([k,t])=>`<span style="left:${k*10}%">${t}</span>`).join('')}</div></div><div class="lgr"><span class="lgh">Below the water level now, by:</span><span><i style="background:rgba(${LOWC[0].slice(0,3)},.75)"></i>0 to 1 ft</span><span><i style="background:rgba(${LOWC[1].slice(0,3)},.85)"></i>1 to 2 ft</span><span><i style="background:rgba(${LOWC[2].slice(0,3)},.9)"></i>2+ ft</span></div><div class="lgn2">That is how deep it would flood if water got past the shoreline and seawalls, which are all that keep this ground dry.<span class="lghat"><br><i class="hatch"></i>Striped: water below SFO's wall (about 9.2 ft) or OAK's South Field dike (about 13 ft), which have low spots.</span></div>`;
+const LGH=`<div class="lga"><div class="lgt">Ground height above sea level</div><div class="tbar">${[...Array(10).keys()].map(c=>`<i style="background:var(--t${c})"></i>`).join('')}</div><div class="tticks">${[[2,'10'],[5,'50'],[7,'200'],[9,'700 ft']].map(([k,t])=>`<span style="left:${k*10}%">${t}</span>`).join('')}</div></div><div class="lgr"><span class="lgh">Below the water level at the selected time, by:</span><span><i style="background:rgba(${LOWC[0].slice(0,3)},.75)"></i>0 to 1 ft</span><span><i style="background:rgba(${LOWC[1].slice(0,3)},.85)"></i>1 to 2 ft</span><span><i style="background:rgba(${LOWC[2].slice(0,3)},.9)"></i>2+ ft</span></div><div class="lgn2">That is how deep it would flood if water got past the shoreline and seawalls, which are all that keep this ground dry.<span class="lghat"><br><i class="hatch"></i>Striped: water below SFO's wall (about 9.2 ft) or OAK's South Field dike (about 13 ft), which have low spots.</span></div>`;
 document.getElementById('lgd').innerHTML=LGH;
 requestAnimationFrame(()=>requestAnimationFrame(fitView));
 Promise.all([fetch(DB+'data/bay.json').then(r=>r.json()),fetch(DB+'data/tides.json').then(r=>r.json())]).then(([b,t])=>{BAY=b;
@@ -752,7 +753,11 @@ function aToForm(){const sb=document.querySelector('.sbar'),top=sb?sb.getBoundin
 aIn.addEventListener('focus',()=>{const q=aIn.value.trim();if(q.length>=3&&SUG.cache.has(q.toLowerCase()))sRender(q,SUG.cache.get(q.toLowerCase()));
   if(innerWidth<760){setTimeout(aToForm,280);setTimeout(aToForm,700)}});
 document.getElementById('zfind').addEventListener('click',()=>{const f=document.getElementById('addr');if(innerWidth>=760)f.scrollIntoView({block:'nearest'});aIn.focus({preventScroll:innerWidth<760})});
-table();update();
+table();setSel(pickSel(sel));
+// once the 3-day forecast is over, open the 7-day one; flag the page only when the newest data it has has ended
+(async()=>{if(Date.now()>=t1)await setRange(7);if(Date.now()<t1)return;const w=document.querySelector('.warn');if(!w)return;
+  const md=new Intl.DateTimeFormat('en-US',{timeZone:PT,month:'short',day:'numeric'}),a=md.format(B0),b=md.format(t1-1),sm=a.split(' ')[0]===b.split(' ')[0];
+  w.insertAdjacentText('afterbegin',`This page covered ${a} to ${sm?b.split(' ')[1]:b} and is no longer current. `)})();
 }
 </script>
 </body>
