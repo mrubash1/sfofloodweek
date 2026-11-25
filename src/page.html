@@ -8,12 +8,12 @@
 <meta property="og:description" content="Hour by hour bay levels at SFO, the SF waterfront and Oakland airport this week, with a map of the ground that sits below the water around the Bay and an address check.">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://sfofloodweek.com/">
-<meta property="og:image" content="https://sfofloodweek.com/og.jpg?v=2">
+<meta property="og:image" content="https://sfofloodweek.com/og.jpg?v=3">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta property="og:image:alt" content="SFO flood week: tide chart and a map of SFO ground that sits below the water level">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="https://sfofloodweek.com/og.jpg?v=2">
+<meta name="twitter:image" content="https://sfofloodweek.com/og.jpg?v=3">
 <link rel="icon" type="image/png" href="/favicon.png">
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <title>SFO Flood Week</title>
@@ -204,7 +204,7 @@ html:not(.nolow) .mapw.gl .landp,html:not(.nolow) .mapw.gl .sfop{fill:none;strok
 <body>
 <header class="hd pad">
   <div class="hdi">
-    <div class="ttl"><h1>SFO flood week</h1><span class="sub">Now through <span id="rngTo">Fri Nov 27</span>, forecast as of Tue Nov 24, 6 AM PT</span></div>
+    <div class="ttl"><h1>SFO flood week</h1><span class="sub">Now through <span id="rngTo">Sat Nov 28</span>, forecast as of Wed Nov 25, 10:40 AM PT</span></div>
     <p class="warn"><b>Unofficial estimate, not a flood warning.</b> A low reading doesn't mean a spot stays dry. <a href="https://forecast.weather.gov/showsigwx.php?warnzone=CAZ006&amp;warncounty=CAC075&amp;firewxzone=CAZ006&amp;local_place1=San+Francisco+CA&amp;product1=Coastal+Flood+Advisory&amp;lat=37.7801&amp;lon=-122.4202">NWS coastal flood warning</a></p>
   </div>
 </header>
@@ -226,7 +226,7 @@ html:not(.nolow) .mapw.gl .landp,html:not(.nolow) .mapw.gl .sfop{fill:none;strok
 <main class="mainx">
 <div class="leftc">
 <section class="tline pad" aria-label="Week timeline">
-  <div class="tlh"><span class="tlt" id="tlt">Bay level at SFO, now through Fri Nov 27</span><div class="key"><span><i style="background:var(--teal)"></i>forecast</span><span><i style="background:var(--teal);opacity:.3;height:9px"></i>range</span><span><i style="background:var(--tab);height:1.5px"></i>tide table</span></div><div class="seg segr" role="group" aria-label="Time range"><button id="r3" aria-pressed="true">3 days</button><button id="r7" aria-pressed="false" title="Loads the 7-day forecast">7 days</button></div><p id="rngMsg" role="status" hidden style="grid-column:1/-1;margin:2px 0 0;font-size:13px;color:var(--ink)"></p></div>
+  <div class="tlh"><span class="tlt" id="tlt">Bay level at SFO, now through Sat Nov 28</span><div class="key"><span><i style="background:var(--teal)"></i>forecast</span><span><i style="background:var(--teal);opacity:.3;height:9px"></i>range</span><span><i style="background:var(--tab);height:1.5px"></i>tide table</span></div><div class="seg segr" role="group" aria-label="Time range"><button id="r3" aria-pressed="true">3 days</button><button id="r7" aria-pressed="false" title="Loads the 7-day forecast">7 days</button></div><p id="rngMsg" role="status" hidden style="grid-column:1/-1;margin:2px 0 0;font-size:13px;color:var(--ink)"></p></div>
   <div class="fig" id="chart"><svg role="img" aria-label="Week of bay level next to SFO with flood thresholds, rain, and 3-hour flood, drain and wind ratings"></svg></div>
 </section>
 <aside class="side">
@@ -275,10 +275,10 @@ html:not(.nolow) .mapw.gl .landp,html:not(.nolow) .mapw.gl .sfop{fill:none;strok
     <div class="tw"><table id="tbl"><thead><tr><th>Day</th><th>High tide</th><th>Tide table</th><th>Expected</th><th>Level</th><th>SF gauge</th></tr></thead><tbody></tbody></table></div>
     <p class="note" style="margin-top:8px">Tap a day to jump to its peak. Feet (NAVD88) at Oyster Point, next to SFO. SF gauge, when shown, is the NWS forecast for the official gauge, which peaks about 40 minutes earlier. Warning runs to Thursday 4 PM.</p></details>
   </div>
-  <div class="blk" id="story"><details class="fold"><summary><span class="st">Tides lead, the storm slips between them</span><span class="sg">Peak Wed about 11:30 AM; rain and wind land between peaks</span></summary>
-    <p>In the Likely case, every daily high from Tuesday to Saturday reaches the minor flood level at SFO's shoreline, and Wednesday crosses into moderate. The top is <b>Wednesday around 11:30 AM, about <span id="pkv">9.5</span> ft</b> at SFO's shoreline, roughly 40 minutes after the official San Francisco gauge peaks. NWS's Tuesday morning discussion still forecasts that gauge at 8.5 ft on its own scale (8.6 ft here), close to its record from January 1983. Monday's high came in at 7.9 ft there, right on the forecast, and overnight the bay ran about 1 ft above its tide table.</p>
+  <div class="blk" id="story"><details class="fold"><summary><span class="st">Tides lead, the storm slips between them</span><span class="sg">Peak Wed about 11:30 AM, just under moderate; next storm Sunday</span></summary>
+    <p>In the Likely case, every daily high from Wednesday to Saturday reaches the minor flood level at SFO's shoreline, and Wednesday's peaks just under moderate. The top is <b>Wednesday around 11:30 AM, about <span id="pkv">9.5</span> ft</b> at SFO's shoreline, roughly 40 minutes after the official San Francisco gauge peaks. NWS forecast that gauge at 8.5 ft on its own scale (8.6 ft here), close to its record from January 1983. At 10:36 AM Wednesday, minutes before its peak, it read 8.2 ft, about 0.3 ft under the forecast, so this page now uses the gauge's own reading for Wednesday. Tuesday's high came in at 8.2 ft, right on the forecast.</p>
     <p>The NWS meteorologist who warned SFO's emergency manager on Saturday puts the water at about 9.9 ft against SFO's shoreline, where some seawall sections are as low as 8 ft. Heights there may use a different reference than these, so read his number as a cross-check, not a wall-by-wall comparison.</p>
-    <p>NWS's hourly grid for SFO has about <b>0.5 in</b> of rain from Tuesday 3 PM to Wednesday morning, mostly Tuesday night, with gusts up to about 31 mph from Tuesday noon into the night. Both mostly land between Tuesday's and Wednesday's peaks. Wind-driven surge is the forecast's biggest unknown, which is what the High case covers. Light rain returns Saturday into Monday, with gusts near 35 mph Sunday afternoon into early Monday, and a wetter storm starts Monday afternoon, about 0.6 in by Tuesday morning; switch the chart to 7 days to see it.</p></details>
+    <p>Tuesday night's storm was forecast to fall between Tuesday's and Wednesday's peaks, and NWS's hourly grid for SFO is now dry and calm through Saturday. The next storm arrives Sunday: about <b>0.4 in</b> of rain, with gusts near 39 mph from Sunday morning into early Monday, then a wetter round late Monday into Tuesday Dec 1, about 1.5 in with gusts near 39 mph again. By then the daily highs sit well below flood level; switch the chart to 7 days to see it. Wind-driven surge is the forecast's biggest unknown, which is what the High case covers.</p></details>
   </div>
   <div class="blk" id="places"><details class="fold"><summary><span class="st">Where SFO is exposed</span><span class="sg">A: SE corner by 28L · B: north runway ends · C: 101 south of SFO</span></summary>
     <ol class="places">
@@ -289,9 +289,9 @@ html:not(.nolow) .mapw.gl .landp,html:not(.nolow) .mapw.gl .sfop{fill:none;strok
     <p class="note">Map markers take the bay's flood class at the selected time.</p>
     <p>SFO says drainage is cleared, pump stations are in "top operating condition", and sandbags and portable barriers are in high-risk areas. UC Davis's Fraser Shilling rates the chance of SFO flooding as very low, but says no runway escapes if water tops the wall.</p></details>
   </div>
-  <div class="blk" id="flying"><details class="fold"><summary><span class="st">If you're flying Tuesday to Thursday</span><span class="sg">Skip late mornings, leave early, BART if 101 floods</span></summary>
+  <div class="blk" id="flying"><details class="fold"><summary><span class="st">If you're flying Wednesday to Saturday</span><span class="sg">Skip the midday high tide, leave early, BART if 101 floods</span></summary>
     <ul>
-      <li>Avoid late-morning flights if you can, or get to SFO well before high tide.</li>
+      <li>Avoid flights around high tide if you can (late morning Wednesday, drifting to early afternoon by Saturday), or get to SFO well before it.</li>
       <li>Check your airline's app and flysfo.com before leaving.</li>
       <li>Take BART if Highway 101 floods near the airport.</li>
       <li>From the East Bay, Oakland's perimeter dike was raised to 13 ft, 17 ft in places.</li>
@@ -299,7 +299,7 @@ html:not(.nolow) .mapw.gl .landp,html:not(.nolow) .mapw.gl .sfop{fill:none;strok
     </ul></details>
   </div>
   <div class="blk" id="method"><details class="fold"><summary><span class="st">How the estimate works</span><span class="sg">NOAA tide table plus the NWS forecast; ground heights from USGS lidar</span></summary>
-    <p><b>Expected</b> is NOAA's tide table at Oyster Point plus however far NWS expects the San Francisco gauge to run above its own table that day: 1.0 to 1.6 ft Tuesday to Saturday, including up to 1.6 ft of surge; before that it uses what the San Francisco gauge actually measured. From Sunday, past the NWS forecast, it assumes 1.2 ft, about where El Niño has held the bay for a month. <b>Range</b> is 0.3 ft either side; <b>High case</b> adds 0.3 ft, the margin by which storm days beat the forecast surge last week, per the Oakland Flood Week analysis.</p>
+    <p><b>Expected</b> is NOAA's tide table at Oyster Point plus however far NWS expects the San Francisco gauge to run above its own table that day: 1.0 to 1.6 ft Thursday to Saturday, including up to 1.6 ft of surge; through Wednesday it uses what the San Francisco gauge actually measured, which on Wednesday ran about 0.3 ft under the NWS forecast. From Sunday, past the NWS forecast, it assumes 1.2 ft, about where El Niño has held the bay for a month. <b>Range</b> is 0.3 ft either side; <b>High case</b> adds 0.3 ft, the margin by which storm days beat the forecast surge last week, per the Oakland Flood Week analysis.</p>
     <p>SFO flood levels: minor 8.5 ft, moderate 9.4 ft, major 10.7 ft. These are NOAA's San Francisco thresholds, carried over as height above Oyster Point's average high tide. Expected is shown with a range of 0.3 ft either side.</p>
     <p>Rain and wind are NWS's gridded forecast for SFO, in 3-hour blocks. <b>Drains</b> turns orange when rain falls while the bay sits a foot or more above its average high tide, so outfalls can't empty, and red when that happens at minor flood level or higher. NWS notes high tide can arrive up to 90 minutes off the predicted time.</p>
     <p><b>All heights</b> are in feet above NAVD88, a fixed survey reference. NOAA's tide tables count from each station's own low-water mark instead: at the San Francisco gauge the two are within 0.1 ft, but at Oyster Point the low-water mark sits about 0.6 ft lower, so this page reads about 0.6 ft below NOAA's SFO-area tide tables. Flood levels under the color bar: SFO's shoreline protection, 9.2 ft in a typical section of SFO's maintenance drawings; the Embarcadero promenade and roadway between the Ferry Building and Pier 14, 9.2 ft; China Basin Park on Mission Creek, 9.3 ft (Port of San Francisco flood risk profiles). The Port notes nuisance flooding and wave splash near Pier 14 already happen below that level.</p>
@@ -308,8 +308,8 @@ html:not(.nolow) .mapw.gl .landp,html:not(.nolow) .mapw.gl .sfop{fill:none;strok
   </div>
   <div class="blk" id="sources" style="border-bottom:0"><details class="fold"><summary><span class="st">Sources</span><span class="sg">NWS, NOAA, SF Chronicle, NBC, OSM, Census, FAA</span></summary>
     <ul class="src">
-      <li><a href="https://forecast.weather.gov/product.php?site=MTR&amp;issuedby=MTR&amp;product=AFD">NWS Bay Area forecast discussion</a>, Nov 24, 3:35 AM: San Francisco gauge forecasts Tue to Sat, surge; <a href="https://forecast.weather.gov/product.php?site=MTR&amp;issuedby=MTR&amp;product=CFW">NWS coastal hazard message</a>, Nov 23, 1:10 PM: warning times; <a href="https://tidesandcurrents.noaa.gov/waterlevels.html?id=9414290">NOAA San Francisco gauge</a>: observed levels through Tue 6 AM</li>
-      <li>NWS gridded forecast for SFO (rain, wind, gusts), updated Nov 24, 2 AM</li>
+      <li><a href="https://forecast.weather.gov/product.php?site=MTR&amp;issuedby=MTR&amp;product=AFD">NWS Bay Area forecast discussion</a>, Nov 25 (tides section 3:48 AM): San Francisco gauge forecasts Wed to Sat, surge; <a href="https://forecast.weather.gov/product.php?site=MTR&amp;issuedby=MTR&amp;product=CFW">NWS coastal hazard message</a>, Nov 25, 5:53 AM: warning times; <a href="https://tidesandcurrents.noaa.gov/waterlevels.html?id=9414290">NOAA San Francisco gauge</a>: observed levels through Wed 10:36 AM, including Tuesday's high and Wednesday's rise</li>
+      <li>NWS gridded forecast for SFO (rain, wind, gusts), updated Nov 25, 10:26 AM</li>
       <li><a href="https://tidesandcurrents.noaa.gov/noaatidepredictions.html?id=9414392">NOAA tide predictions and datums, Oyster Point 9414392</a>; flood thresholds, San Francisco 9414290; Bay Area shoreline levels from the nearest of <a href="https://tidesandcurrents.noaa.gov/noaatidepredictions.html?id=9414750">Alameda 9414750</a>, <a href="https://tidesandcurrents.noaa.gov/noaatidepredictions.html?id=9414863">Richmond 9414863</a>, <a href="https://tidesandcurrents.noaa.gov/noaatidepredictions.html?id=9414523">Redwood City 9414523</a> and <a href="https://tidesandcurrents.noaa.gov/noaatidepredictions.html?id=9414575">Coyote Creek 9414575</a>, each with the same storm surge added</li>
       <li><a href="https://www.sfchronicle.com/travel/article/sfo-airport-flood-weather-22543280.php">SF Chronicle: SFO will flood this week</a>; <a href="https://www.nbcbayarea.com/news/local/flooding-sfo-oak-national-weather-service/4180385/">NBC Bay Area</a>; <a href="https://deeparrival.com/news/sfo-flood-risk-san-francisco-meters-free-november-23-25-2026/">Deep Arrival</a></li>
       <li>Port of San Francisco Waterfront Resilience Program flood risk profiles: Ferry Building (Subarea 2-2), Mission Rock (Subarea 3-3)</li>
@@ -347,7 +347,7 @@ html:not(.nolow) .mapw.gl .landp,html:not(.nolow) .mapw.gl .sfop{fill:none;strok
 </main>
 <footer class="ft pad">
   <p><b>Credit:</b> this page is a remix of <a href="https://claude.ai/artifact/7udMTTZs1kN4kNBM3pfFgo">Oakland Flood Week</a>, the flood map someone shared on Reddit that started it. If you're in Oakland or the East Bay, check it out.</p>
-  <p class="note">A snapshot of the NOAA and NWS forecasts as of Tue Nov 24, 6 AM PT. It doesn't update itself; check the NWS for anything newer.</p>
+  <p class="note">A snapshot of the NOAA and NWS forecasts as of Wed Nov 25, 10:40 AM PT. It doesn't update itself; check the NWS for anything newer.</p>
 </footer>
 <script>
 /*GEO*/
@@ -357,18 +357,19 @@ const OP=mk([[22,'23:15',5.72],[23,'04:07',2.501],[23,'10:06',8.26],[23,'17:18',
 // NWS San Francisco gauge forecast vs that gauge's own tide table at the same high tide
 const SFE=mk([[22,'15:35',-0.539],[22,'22:34',4.651],[23,'03:07',2.501],[23,'09:25',6.716],[23,'16:18',-1.104],[23,'23:31',4.809],[24,'03:52',2.813],[24,'10:05',6.939],[24,'17:03',-1.485],[25,'00:26',4.899],[25,'04:39',3.038],[25,'10:49',7.029],[25,'17:52',-1.652],[26,'01:20',4.926],[26,'05:30',3.172],[26,'11:38',6.952],[26,'18:42',-1.607],[27,'02:14',4.922],[27,'06:26',3.225],[27,'12:31',6.687],[27,'19:35',-1.372],[28,'03:09',4.935],[28,'07:31',3.197],[28,'13:28',6.239],[28,'20:30',-0.987],[29,'04:03',5.011]]);
 const nwsP=a=>a.map(([d,hm,f,tt])=>({t:T(d,hm),f,a:f-tt}));
-// Mon: observed peak at the SF gauge; Tue to Sat: NWS discussion, Nov 24 3:35 AM (Tue to Thu match the Nov 23 1:10 PM coastal hazard message)
-const NWS=nwsP([[23,'09:25',7.94,6.716],[24,'10:05',8.2,6.939],[25,'10:49',8.5,7.029],[26,'11:38',8.0,6.952],[27,'12:31',7.8,6.687],[28,'13:28',7.8,6.239]]);
+// Mon and Tue: observed peaks at the SF gauge; Wed: the gauge's 10:36 AM reading (1.19 ft over its table) carried to its 10:49 peak, below NWS's 8.5 ft;
+// Thu to Sat: NWS discussion and coastal hazard message, Nov 25
+const NWS=nwsP([[23,'09:25',7.94,6.716],[24,'10:05',8.23,6.939],[25,'10:49',8.22,7.029],[26,'11:38',8.0,6.952],[27,'12:31',7.8,6.687],[28,'13:28',7.8,6.239]]);
 // observed SF gauge minus its tide table, between forecast highs
-const OBS=[[23,'23:36',0.94],[24,'06:06',0.97]];
+const OBS=[[23,'23:36',0.94],[24,'06:06',0.97],[25,'00:36',1.13],[25,'08:30',0.89]];
 const mkAN=(o,tail)=>[...NWS.map(p=>({t:p.t,a:p.a})),...o.map(([d,hm,a])=>({t:T(d,hm),a})),...tail.map(([d,hm,a])=>({t:T(d,hm),a}))].sort((x,y)=>x.t-y.t);
 // past the NWS forecast: the assumed steady anomaly
 const TAIL=[[29,'14:32',1.2]];
 const AN=mkAN(OBS,TAIL);
 const MHHW=7.18,THR=[9.05-0.5,9.05,9.98,11.25],HI=0.3,RG=0.3;
-const QPF=[0,0,0,0,0,0,0,0,0,0,0,0,0,0.9,1.4,2.8,3.6,1.8,0.9,0.4,0.1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0.2,0.3,0.3,0.3,0.6];
-const WND=[6,7,8,7,5,0,6,10,10,10,12,17,23,24,25,24,17,9,7,6,6,7,7,2,5,5,3,5,5,5,3,3,5,5,6,8,8,5,3,5,5,5,6,7,7,8,10,14];
-const GST=[6,7,8,8,7,3,6,12,13,14,14,21,28,30,31,31,23,12,9,8,8,8,8,3,5,5,5,7,7,7,5,5,5,6,6,9,9,7,7,8,8,7,9,12,15,15,18,26];
+const QPF=[0,0,0,0,0,0,0,0,0,0,0,0,0,0.9,1.4,2.8,3.6,1.8,0.3,0.1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
+const WND=[6,7,8,7,5,0,6,10,10,10,12,17,23,24,25,24,17,9,7,7,3,6,0,3,3,3,5,5,5,6,6,2,3,5,5,6,6,7,7,8,8,7,7,8,8,6,3,5];
+const GST=[6,7,8,8,7,3,6,12,13,14,14,21,28,30,31,31,23,12,8,9,7,6,5,3,5,5,5,7,8,7,7,5,5,5,5,7,8,8,8,8,8,8,7,10,10,9,7,9];
 const B0=T(23,'00:00'),t0=Math.min(Math.max(Math.floor(Date.now()/36e5)*36e5,T(23,'12:00')),T(26,'12:00')),STEP=15*60e3;
 // 3 days: whole days, through the midnight after the next 72 hours (3 to 4 days), within the data built into the page (to Sun Nov 29)
 const ceilDay=x=>{let d=23;while(T(d,'00:00')<x)d++;return T(d,'00:00')},T1_3=Math.min(ceilDay(t0+72*H),T(29,'00:00'));
